@@ -1,0 +1,153 @@
+"""Selected-path prerequisite execution using the one shared transaction owner."""
+from pathlib import Path
+import time
+from src.action_verification import ActionLock,upgrade_owned,fresh_transition
+from src.atomic_store import write_json
+from src.semantic_ui import SemanticUI,purchase_delta
+from src.strategy_rules import RoutePlanner,selected_route
+from src.runtime_safety import input_allowed
+
+ALIASES={'Fairy Trade Treaty':'Fairies Trade Treaty','Goblin Trade Treaty':'Goblins Trade Treaty',
+         'Druid Trade Treaty':'Druids Trade Treaty','Demon Trade Treaty':'Demons Trade Treaty',
+         'Angel Trade Treaty':'Angels Trade Treaty','Titan Trade Treaty':'Titans Trade Treaty'}
+
+def catalog_entry(catalog,name):
+    return catalog.get(name) or catalog.get(ALIASES.get(name,''),{})
+
+
+def template_progress(before,after,manifest):
+    ids=manifest['required_upgrade_ids'];spells=manifest.get('merc_spells',[])
+    old={identifier for identifier in ids if upgrade_owned(before,identifier)}
+    new={identifier for identifier in ids if upgrade_owned(after,identifier)}
+    a=before.get('raw_data',{});b=after.get('raw_data',{})
+    old_spells={a.get('mercSpell1'),a.get('mercSpell2')}&set(spells)
+    new_spells={b.get('mercSpell1'),b.get('mercSpell2')}&set(spells)
+    return {'progressed':bool(new-old or new_spells-old_spells),
+            'complete':len(new)==len(ids) and len(new_spells)==len(set(spells)),
+            'upgrades_owned':len(new),'upgrade_total':len(ids),'spells_selected':len(new_spells),
+            'spell_total':len(set(spells)),'new_upgrade_ids':sorted(new-old)}
+
+
+class RouteExecutor:
+    def __init__(self,actions):
+        self.actions=actions
+        self.planner=RoutePlanner()
+
+    def plan(self,state=None):
+        from src.config import load_config
+        selection=load_config().get('selected_path','Automatic')
+        state=state or self.actions.read()
+        catalog=self.actions.load('upgrade_catalog.json')
+        for alias,name in ALIASES.items():
+            if name in catalog:catalog.setdefault(alias,catalog[name])
+        step=self.planner.next_step(state,selection,catalog)
+        step['selected_path']=selection
+        step['observed_at']=time.time()
+        write_json(self.actions.state_dir/'selected_route.json',step)
+        return step
+
+    def purchase_named(self,step):
+        name=step['target'];before=self.actions.read()
+        catalog=self.actions.load('upgrade_catalog.json');known=catalog_entry(catalog,name)
+        if known.get('id') is not None and upgrade_owned(before,known['id']):
+            return {'success':True,'status':'VERIFIED','action':'ALREADY_OWNED','message':name+' is already purchased'}
+        cancelled=lambda:not input_allowed(self.actions.window)
+        ui=SemanticUI(self.actions.window,cancelled)
+        resolved=name if name in ui.registry else ALIASES.get(name,name)
+        holder={}
+        def precondition(state):
+            if known.get('save_version') not in (None,state['raw_data'].get('saveVersion')):return False
+            target=ui.find_named(resolved)
+            if target is None:return False
+            holder['target']=target
+            return True
+        def verify(old,new):
+            proof=purchase_delta(old,new,known,step.get('expect',{}))
+            holder['proof']=proof
+            return fresh_transition(old,new) and proof['verified']
+        result=self.actions.runner.run('PURCHASE_'+name,precondition,
+            lambda:ui.click_target(holder['target']),verify,allow_no_effect=True)
+        if result['success']:
+            proof=holder['proof'];after=self.actions.read()
+            evidence={'name':name,'target':holder['target'],'proof':proof,'timestamp':time.time(),
+                      'save_version':after['raw_data']['saveVersion'],'sources':step.get('sources',[]),
+                      'before_fingerprint':before.get('save_fingerprint'),'after_fingerprint':after.get('save_fingerprint')}
+            filename='purchase-'+''.join(ch if ch.isalnum() else '-' for ch in name.lower())+'.json'
+            write_json(self.actions.state_dir/filename,evidence)
+            if proof.get('learned_id') is not None and not known:
+                catalog[name]={'id':proof['learned_id'],'save_version':after['raw_data']['saveVersion'],
+                    'verification':'normal_single_target_save_delta','evidence':filename,'sources':step.get('sources',[])}
+                write_json(self.actions.state_dir/'upgrade_catalog.json',catalog)
+            result['message']=name+': purchase and game-state change verified'
+        elif result['status']=='BLOCKED':
+            result['message']=name+': target unavailable, obscured, unaffordable, or input paused; no purchase claimed'
+        return result
+
+    def collect(self,step=None):
+        if not input_allowed(self.actions.window):
+            return {'success':False,'status':'BLOCKED','action':'PAUSED','message':'Setup is paused or the game window/session is not eligible'}
+        before=self.actions.read();ui=SemanticUI(self.actions.window,lambda:not input_allowed(self.actions.window))
+        with ActionLock(self.actions.state_dir):
+            # Once gem power is active, ordinary buildings start the production loop.
+            for _ in range(5):ui.click_control('realm')
+            ui.click_control('buy_all_buildings')
+            if before.get('alignment',0):ui.click_control('buy_all_upgrades')
+            from src.spell_policy import plan_spells
+            from src.config import load_config
+            policy=plan_spells(self.actions.read())
+            write_json(self.actions.state_dir/'spell_plan.json',dict(policy,timestamp=time.time()))
+            if load_config().get('auto_spells',True):
+                for cast in policy['casts']:
+                    if not input_allowed(self.actions.window):break
+                    self.actions.window.press_key(cast['key'],delay_after=.1)
+        after=self.actions.read()
+        observed=fresh_transition(before,after) and (after.get('coins_this_game',0)>before.get('coins_this_game',0))
+        return {'success':observed,'status':'VERIFIED' if observed else 'OBSERVING',
+                'action':'COLLECT_RESOURCES','message':'Building/coin setup input sent; waiting for measured production',
+                'target_coins':(step or {}).get('target_coins')}
+
+    def run_once(self):
+        step=self.plan();action=step['action']
+        if action=='purchase_named':return self.purchase_named(step)
+        if action=='collect_coins':return self.collect(step)
+        if action=='deploy_build':
+            result=self.actions.deploy_template(step['template'])
+            # A partial build can still make ordinary production progress.
+            if not result.get('build_verified') and input_allowed(self.actions.window):
+                self.collect()
+            return result
+        if action=='maintain_faction':return self.collect(step)
+        return {'success':False,'status':'BLOCKED','action':action.upper(),'message':step['reason'],'sources':step['sources']}
+
+
+    def deploy_template(self,template):
+        from src.build_catalog import compile_template,load_reference_ids
+        state=self.actions.read()
+        manifest=compile_template(template,load_reference_ids(),state['raw_data']['saveVersion'])
+        if not manifest['verified']:
+            return {'success':False,'status':'BLOCKED','action':'UNKNOWN_TEMPLATE_TOKEN',
+                    'message':'Unresolved template selections: '+', '.join(manifest['unresolved_tokens'])}
+        existing=template_progress(state,state,manifest)
+        if existing['complete']:
+            return {'success':True,'status':'VERIFIED','action':'BUILD_SELECTIONS_OWNED',
+                    'message':'All requested upgrade and spell selections are already owned','build_verified':True}
+        if state['faction']!=11:
+            return {'success':False,'status':'BLOCKED','action':'RESEARCH_UI_NOT_CALIBRATED',
+                    'message':'Research selections are known, but this faction needs its Research interface calibrated'}
+        ui=SemanticUI(self.actions.window,lambda:not input_allowed(self.actions.window))
+        observed={}
+        def verify(before,after):
+            progress=template_progress(before,after,manifest);observed.update(progress)
+            return fresh_transition(before,after) and progress['progressed']
+        result=self.actions.runner.run('MERCENARY_TEMPLATE',
+            lambda current:current['faction']==11 and current['raw_data']['saveVersion']==manifest['save_version'],
+            lambda:ui.enter_mercenary_template(template),verify,allow_no_effect=True)
+        result['build_verified']=bool(observed.get('complete'))
+        if result['success']:
+            result.update(action='BUILD_COMPLETE' if observed['complete'] else 'BUILD_PARTIAL',
+                message=f"Verified template: {observed['upgrades_owned']}/{observed['upgrade_total']} upgrades, "
+                        f"{observed['spells_selected']}/{observed['spell_total']} spells; "
+                        +('selections complete' if observed['complete'] else 'continuing prerequisites and resource production'),
+                progress=observed)
+        write_json(self.actions.state_dir/'template_application.json',dict(result,template=template,manifest=manifest,timestamp=time.time()))
+        return result

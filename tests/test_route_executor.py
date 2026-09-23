@@ -1,0 +1,62 @@
+import importlib
+from pathlib import Path
+import copy
+import pytest
+
+def api():
+    assert Path('src/route_executor.py').exists(), 'Selected-route execution is not integrated'
+    return importlib.import_module('src.route_executor')
+
+def test_resolve_plural_installed_faction_labels():
+    catalog={'Goblins Trade Treaty':{'id':216},'Fairies Trade Treaty':{'id':197}}
+    assert api().catalog_entry(catalog,'Goblin Trade Treaty')['id']==216
+    assert api().catalog_entry(catalog,'Fairy Trade Treaty')['id']==197
+
+def test_already_owned_stoic_does_not_search_or_click(tmp_path):
+    class Actions:
+        state_dir=tmp_path
+        window=None
+        def read(self):return {'raw_data':{'upgrades':{'552':{'u1':True}}}}
+        def load(self,name):return {'Stoic Resistance':{'id':552}}
+    result=api().RouteExecutor(Actions()).purchase_named({'target':'Stoic Resistance'})
+    assert result['success'] and result['action']=='ALREADY_OWNED'
+
+def test_progression_setup_delegates_to_selected_route():
+    import ast
+    tree=ast.parse(Path('src/progression_actions.py').read_text(encoding='utf-8'))
+    method=next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=='setup_build')
+    assert any(isinstance(n,ast.Attribute) and n.attr=='run_once' for n in ast.walk(method))
+
+def test_route_plan_uses_user_selection_not_only_recommended_build(tmp_path,monkeypatch):
+    import src.config as config
+    monkeypatch.setattr(config,'load_config',lambda:{'selected_path':'Goblin'})
+    class Actions:
+        state_dir=tmp_path
+        window=None
+        def read(self):return {'reincarnation':24,'gems':1e68,'coins':1e68,'alignment':2,'faction':-1,'ascension':0,
+                    'raw_data':{'trophies':{},'upgrades':{'20':{'u1':True}}}}
+        def load(self,name):return {'Gem Power':{'id':20},'Goblins Trade Treaty':{'id':216}}
+    result=api().RouteExecutor(Actions()).plan()
+    assert result['target']=='Goblin Trade Treaty' and result['selected_path']=='Goblin'
+
+def test_transaction_can_report_proven_no_effect_for_purchase_only(tmp_path):
+    from src.action_verification import TransactionRunner
+    before={'reincarnation':24,'save_fingerprint':'a','telemetry':{'consequential_actions_allowed':True,'pid':1,'process_start_time':1}}
+    after=dict(before,save_fingerprint='b')
+    clock=[0];calls=[0]
+    def read():calls[0]+=1;return copy.deepcopy(before if calls[0]==1 else after)
+    def sleep(dt):clock[0]+=dt
+    runner=TransactionRunner(read,tmp_path,lambda:False,lambda:'backup',clock=lambda:clock[0],sleep=sleep,timeout=.3,poll_interval=.1)
+    result=runner.run('PURCHASE',lambda s:True,lambda:None,lambda a,b:False,allow_no_effect=True)
+    assert not result['success'] and result['status']=='NO_EFFECT'
+
+
+def test_partial_template_changes_are_not_full_build_success():
+    import src.route_executor as module
+    assert hasattr(module,'template_progress')
+    manifest={'required_upgrade_ids':[1,2,3],'merc_spells':[6,9]}
+    before={'raw_data':{'upgrades':{},'mercSpell1':0,'mercSpell2':0}}
+    after={'raw_data':{'upgrades':{'1':{'u1':True}},'mercSpell1':6,'mercSpell2':0}}
+    result=module.template_progress(before,after,manifest)
+    assert result['progressed'] and not result['complete']
+    assert result['upgrades_owned']==1 and result['spells_selected']==1

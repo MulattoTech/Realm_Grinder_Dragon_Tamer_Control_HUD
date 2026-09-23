@@ -1,0 +1,28 @@
+# Private live state, saves, diagnostics and downloaded references
+/state/
+/backups/
+/logs/
+/screenshots/
+/scratch/
+/scraped_wiki/
+/assets/templates/
+/.pytest_cache/
+/.venv/
+/.coverage
+/htmlcov/
+/dist/
+/build/
+*.egg-info/
+__pycache__/
+*.py[cod]
+*.sol
+*.log
+*.tmp
+.env
+.env.*
+# Root-level development captures/exports are not application source
+/*.png
+/*.jpg
+/*.json
+/*.txt
+!requirements.txt
