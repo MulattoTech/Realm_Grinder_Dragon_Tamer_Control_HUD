@@ -167,34 +167,12 @@ class ProgressionActions:
             lambda before,after:fresh_transition(before,after) and milestone_owned(after,name,catalog) is True)
 
     def maintain_production(self):
-        before=self.read();build=self.diagnose_build(before)
-        if not build['build_verified']: return blocked('; '.join(build['missing']),'BUILD_UNVERIFIED')
-        if not input_allowed(self.window): return blocked('Paused or game is not in this interactive desktop','PAUSED')
-        from src.config import load_config
-        cfg=load_config()
-        try:
-            with ActionLock(self.state_dir):
-                if cfg.get('auto_spells',True):
-                    for key in ('6','5','4','3','2')+('1',)*10:
-                        if not input_allowed(self.window): return blocked('Input cancelled','PAUSED')
-                        self.window.press_key(key,delay_after=0.01)
-                profile=self.load('ui_actions.json')
-                for category in ('buildings','upgrades'):
-                    op='buy_all_'+category
-                    if (cfg.get('auto_buy_'+category,True) and ui_action_verified(profile,op,before) and
-                            profile.get('client_size')==list(self.window.get_client_size())):
-                        self._dispatch(profile['actions'][op])
-        except (OSError,RuntimeError,ValueError) as exc:
-            return blocked(str(exc))
-        after=self.read()
-        metric=(after.get('reincarnation'),after.get('gems'),after.get('coins_this_game'),after.get('potential_gems'))
-        if metric!=self._metric: self._metric=metric;self._last_improvement=time.monotonic()
-        stalled=time.monotonic()-self._last_improvement>float(cfg.get('stall_timeout_sec',300))
-        observed=fresh_transition(before,after) and after.get('coins_this_game',0)>before.get('coins_this_game',0)
-        return {'success':bool(observed),'status':'VERIFIED' if observed else 'OBSERVING',
-                'action':'STALL_DIAGNOSIS' if stalled else ('PRODUCTION_OBSERVED' if observed else 'INPUT_SENT_AWAITING_STATE'),
-                'message':'No meaningful production improvement; recheck build and spell/mana telemetry' if stalled else
-                          ('Coin production increased in a fresh save' if observed else 'Bounded input sent; no production gain claimed yet')}
+        # The same executor that starts a run also maintains it; do not revive the
+        # obsolete fixed-profile purchase loop or indiscriminate spell spam.
+        state=self.read()
+        build=self.diagnose_build(state)
+        if not build['build_verified']:return blocked('; '.join(build.get('missing',[])),'BUILD_UNVERIFIED')
+        return self.route.collect()
 
     def advance_reincarnation(self,decision=None):
         state=self.read()

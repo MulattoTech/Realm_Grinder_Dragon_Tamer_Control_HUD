@@ -56,23 +56,27 @@ class ProgressionTracker:
 
     def observe_state(self,state,paused=False):
         token=state.get('save_fingerprint')
-        if self.history and self.history[-1].get('save_fingerprint')==token:return
-        run=[state.get('reincarnation'),state.get('gems'),state.get('faction')]
+        previous=self.history[-1] if self.history else {}
+        identity=[state.get('reincarnation'),state.get('gems'),state.get('faction'),state.get('alignment')]
+        boundary=previous.get('identity')!=identity or previous.get('paused')!=bool(paused)
+        if previous.get('save_fingerprint')==token and not boundary:return
+        segment=int(previous.get('segment',0))+(1 if boundary else 0)
         entry={'time':state.get('save_timestamp',time.time()),'r':state['reincarnation'],
                'gems':state['gems'],'coins':state.get('coins_this_game',0),
                'potential_gems':state.get('potential_gems',0),'stage':state.get('current_stage',''),
-               'run':run,'paused':bool(paused),'save_fingerprint':token}
+               'identity':identity,'segment':segment,'run':identity+[segment,bool(paused)],
+               'paused':bool(paused),'save_fingerprint':token}
         self.history.append(entry);self.history=self.history[-self.max_history:]
         self.save_history()
 
-    def calculate_etas(self,current_r,current_gems,current_coins,stage_timestamps,hellfire_time=0):
+    def calculate_etas(self,current_r,current_gems,current_coins,stage_timestamps,hellfire_time=0,*,reload_history=False):
         from src.measured_eta import estimate_target
         from src.wiki_data import get_reincarnation_gem_requirement
         from src.config import load_config
-        self.history=self.load_history()
+        if reload_history:self.history=self.load_history()
         rows=[{'time':row['time'],'value':row.get('potential_gems',0),'run':row.get('run')}
-              for row in self.history if row.get('r')==current_r and row.get('run') is not None]
-        paused=load_config().get('paused',True)
+              for row in self.history if row.get('r')==current_r and row.get('gems')==current_gems and row.get('run') is not None]
+        paused=load_config().get('paused',True) or os.path.exists(os.path.join(os.path.dirname(TELEMETRY_FILE),'STOP'))
         estimate=estimate_target(rows,get_reincarnation_gem_requirement(current_r),paused=paused)
         seconds=estimate['seconds']
         unknown='Not established'

@@ -1127,7 +1127,7 @@ class ModernDragonTrackerApp:
                 except Exception:
                     pass
 
-            etas = self.telemetry.calculate_etas(r, gems, coins, stage_timestamps, hellfire_time=hellfire)
+            etas = self.telemetry.calculate_etas(r, gems, coins, stage_timestamps, hellfire_time=hellfire,reload_history=True)
 
             # Update Header Overall ETA and R46 Badge
             self.overall_eta_lbl.configure(text=f"ETA: {etas['total_eta']}")

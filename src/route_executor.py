@@ -41,6 +41,12 @@ class RouteExecutor:
         for alias,name in ALIASES.items():
             if name in catalog:catalog.setdefault(alias,catalog[name])
         step=self.planner.next_step(state,selection,catalog)
+        if step['action']=='deploy_build':
+            manifest=self.actions.manifest(step['recommendation'])
+            if manifest.get('verified') and manifest.get('required_upgrade_ids'):
+                progress=template_progress(state,state,manifest)
+                if progress['complete']:
+                    step.update(action='maintain_faction',reason='Requested upgrade and spell selections are owned; maintain production',build_verified=True)
         step['selected_path']=selection
         step['observed_at']=time.time()
         write_json(self.actions.state_dir/'selected_route.json',step)
@@ -87,16 +93,19 @@ class RouteExecutor:
         if not input_allowed(self.actions.window):
             return {'success':False,'status':'BLOCKED','action':'PAUSED','message':'Setup is paused or the game window/session is not eligible'}
         before=self.actions.read();ui=SemanticUI(self.actions.window,lambda:not input_allowed(self.actions.window))
+        from src.config import load_config
+        config=load_config()
         with ActionLock(self.actions.state_dir):
             # Once gem power is active, ordinary buildings start the production loop.
-            for _ in range(5):ui.click_control('realm')
-            ui.click_control('buy_all_buildings')
-            if before.get('alignment',0):ui.click_control('buy_all_upgrades')
+            if config.get('auto_click_realm',True):
+                for _ in range(5):ui.click_control('realm')
+            if config.get('auto_buy_buildings',True):ui.click_control('buy_all_buildings')
+            if before.get('alignment',0) and config.get('auto_buy_upgrades',True):ui.click_control('buy_all_upgrades')
             from src.spell_policy import plan_spells
             from src.config import load_config
             policy=plan_spells(self.actions.read())
             write_json(self.actions.state_dir/'spell_plan.json',dict(policy,timestamp=time.time()))
-            if load_config().get('auto_spells',True):
+            if config.get('auto_spells',True) and config.get('auto_cast_spells',True):
                 for cast in policy['casts']:
                     if not input_allowed(self.actions.window):break
                     self.actions.window.press_key(cast['key'],delay_after=.1)
