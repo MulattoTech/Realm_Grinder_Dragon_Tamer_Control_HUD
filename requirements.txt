@@ -1,6 +1,9 @@
-mss>=10.2.0
-pillow>=12.3.0
-opencv-python>=5.0.0
-pyautogui>=0.9.54
-pywin32>=312
-psutil>=5.9.0
+# Runtime dependencies tested on Windows / Python 3.12.
+Pillow>=12.3.0,<13
+numpy>=2.5.3,<3
+opencv-python>=5.0.0.93,<6
+beautifulsoup4>=4.15.0,<5
+pywin32>=312; sys_platform == "win32"
+# Retained for legacy capture helpers, not process-memory control.
+mss>=10.2.0,<11
+pyautogui>=0.9.54,<1

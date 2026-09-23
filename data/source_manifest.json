@@ -1,0 +1,958 @@
+{
+  "schema_version": 1,
+  "policy": "URLs, capture provenance and hashes only; source content is fetched into the local ignored cache.",
+  "sources": [
+    {
+      "source_url": "http://musicfamily.org/realm/",
+      "title": "realm",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/",
+      "captured_at": null,
+      "sha256": "b2d38664505b22034e9448465155449e691d9e20725676927470deca62c50734"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/3.3Patch/",
+      "title": "3.3Patch",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/3.3Patch/",
+      "captured_at": null,
+      "sha256": "e440f3ae26078091a9d05235e2ee95cccff1e7294e3bc0df64094bd80989ff43"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/3.4Patch/",
+      "title": "3.4Patch",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/3.4Patch/",
+      "captured_at": null,
+      "sha256": "8f525425c336158916161cbe095c708d08918027015ceedba87b5782283367e4"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/3.5Patch/",
+      "title": "3.5Patch",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/3.5Patch/",
+      "captured_at": null,
+      "sha256": "694aae72be2e0d3978e0181ff10ec5e73581d32feb60bf501430cf52c55651e4"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/3.6Patch/",
+      "title": "3.6Patch",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/3.6Patch/",
+      "captured_at": null,
+      "sha256": "ad287f665be8c696be0bf0bf4a2a8a607d5b98ac4f705e271cb8c78c7e8f1390"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/3.7Patch/",
+      "title": "3.7Patch",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/3.7Patch/",
+      "captured_at": null,
+      "sha256": "95b7f081b0334f4999b5bbf1bc6ac032d1869f6dc0b7e26d099dc60da2444a4a"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/3.8Patch/",
+      "title": "3.8Patch",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/3.8Patch/",
+      "captured_at": null,
+      "sha256": "dfecab92ed098b0687e07f482ae46291186ab40e429aee5b5ab4ce2525c10e13"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/4.0Patch/",
+      "title": "4.0Patch",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/4.0Patch/",
+      "captured_at": null,
+      "sha256": "098000c9a38edb68e1c4e9d81fb1bada59f3e60ee96e4a38c8c53119c1199f04"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/4.1Patch/",
+      "title": "4.1Patch",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/4.1Patch/",
+      "captured_at": null,
+      "sha256": "ac4d424333560377d1eedf529a9453d20387c3d4a1167f17fdaf70c5d6922bf9"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Abdication/",
+      "title": "Abdication",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Abdication/",
+      "captured_at": null,
+      "sha256": "0db9dd648aebdc9609b391340d9bcffdaa3a32dde1ccc9923c1a3da222e875e7"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/AllTrophies/",
+      "title": "AllTrophies",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/AllTrophies/",
+      "captured_at": null,
+      "sha256": "a8ff86234bdd764a2536547e6a8a8936c81659afce1f308bdd31b438502ab799"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Angel/",
+      "title": "Angel",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Angel/",
+      "captured_at": null,
+      "sha256": "fab3120de19f0d7d9d62661ec40938d00e9d58f3d6f03f02395999d41f662e79"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/AngelFaction/",
+      "title": "AngelFaction",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/AngelFaction/",
+      "captured_at": null,
+      "sha256": "b1d7a7f74962d83dcd8ca5ada72e6dd576917311224246abb9150eb4c69d46a7"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Archon/",
+      "title": "Archon",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Archon/",
+      "captured_at": null,
+      "sha256": "057b289f697d4f9efbb85f034855e9da762ed23498e8aea1e45970231db70799"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/ArchonFaction/",
+      "title": "ArchonFaction",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/ArchonFaction/",
+      "captured_at": null,
+      "sha256": "8b69d1e7dd3745aa48abfd00235c819438d987a5e22af4fd01a620cade2a2207"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/ArtifactSet/",
+      "title": "ArtifactSet",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/ArtifactSet/",
+      "captured_at": null,
+      "sha256": "d120e598509db750d7a5a334d0de4818d26390f374e6f6a0bf4d2a268e817a16"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Artifacts/",
+      "title": "Artifacts",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Artifacts/",
+      "captured_at": null,
+      "sha256": "91e9bbc3ced92541f2e34a10b66e56b1d5e03af932c4df05217c013e8d557e13"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Ascension/",
+      "title": "Ascension",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/Ascension/",
+      "captured_at": null,
+      "sha256": "6fa5dce17af91c1e8d6bf198e8cea25a55087221ff436b9bb4eec4a566e51a9d"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Ascension2/",
+      "title": "Ascension2",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Ascension2/",
+      "captured_at": null,
+      "sha256": "3d42b8feb68ceda357771f12cd1835248f41facd7db719a1919f4c0c4bc3a6b4"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Ascension4/",
+      "title": "Ascension4",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Ascension4/",
+      "captured_at": null,
+      "sha256": "c0e0bc22855151fde788dbb5f16c14c66363f43028caeb4aa09d9a40c28b265b"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Bloodline/",
+      "title": "Bloodline",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/Bloodline/",
+      "captured_at": null,
+      "sha256": "9facfa07926d316cb3fa061285f8e7a668c375e7df81edbe3478e351042065ed"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/BuildingAlignments/",
+      "title": "BuildingAlignments",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/BuildingAlignments/",
+      "captured_at": null,
+      "sha256": "4285d429af4386f3ea8f2a6a29f30d527930ec3be6d59d1a7ed1f5784ab88d67"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/BuildingUpgrades/",
+      "title": "BuildingUpgrades",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/BuildingUpgrades/",
+      "captured_at": null,
+      "sha256": "9a8ed5bca28551d9abd1fe28d3fde169bf5a57950fbae63b233147b24376e4fc"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Challenges/",
+      "title": "Challenges",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/Challenges/",
+      "captured_at": null,
+      "sha256": "bfff3d405ac1600c4e6e8d7899238cfbed397f37263aeda28ecdf533e12cd651"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Changelog/",
+      "title": "Changelog",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Changelog/",
+      "captured_at": null,
+      "sha256": "480489a061ec4b592e189182c5f92b4815c5b7e38b062806d984ebcb8cc41aff"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Changes/",
+      "title": "Changes",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Changes/",
+      "captured_at": null,
+      "sha256": "9dc202c6e07a31f56c6cefb200a725204bd7c5be626d60396158e798929b0d4f"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Demon/",
+      "title": "Demon",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Demon/",
+      "captured_at": null,
+      "sha256": "29e902032769aa96ccb501d4e95ddc3c3bbc8ea7e5c35e358dd47c51e4e33f6d"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/DemonFaction/",
+      "title": "DemonFaction",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/DemonFaction/",
+      "captured_at": null,
+      "sha256": "86004acfaefa362e02b75d80a54c03fd4b4eea1dbae4747eb052d0820b7b0baf"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Djinn/",
+      "title": "Djinn",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Djinn/",
+      "captured_at": null,
+      "sha256": "cbd11fb5778a396ba6bc69b868ef11278d8425ce5f6532621175486a0b8a6f64"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/DjinnFaction/",
+      "title": "DjinnFaction",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/DjinnFaction/",
+      "captured_at": null,
+      "sha256": "e4ef1de12ecb28e4e344c07ead3315ad11541efb14c11beeab766c4e7a1ee99e"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/DragonFaction/",
+      "title": "DragonFaction",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/DragonFaction/",
+      "captured_at": null,
+      "sha256": "176f0e10ae3dedb5024ee7696355a176e14206d50e985d1d138fa39500d55814"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Dragons/",
+      "title": "Dragons",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Dragons/",
+      "captured_at": null,
+      "sha256": "1432a77761465e7ca7c290b17400f97e28bb3e462f04c25700c4ba59d39a8d00"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Drow/",
+      "title": "Drow",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Drow/",
+      "captured_at": null,
+      "sha256": "95f42fbf1b88ed7a8f6a062380f6a7679b2600375c9e6f0eaf2f8681b9e8f531"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/DrowFaction/",
+      "title": "DrowFaction",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/DrowFaction/",
+      "captured_at": null,
+      "sha256": "d882bd080164488aaa1aabb27c760d3a84d1922c9021edc9962457a497a6f6f0"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Druid/",
+      "title": "Druid",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Druid/",
+      "captured_at": null,
+      "sha256": "b9474ab9434b28dbaf4d145dfa43451ebda8b361dc3725c1691c882a3278d07e"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/DruidFaction/",
+      "title": "DruidFaction",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/DruidFaction/",
+      "captured_at": null,
+      "sha256": "1c05e27f519f86b8118389d8567aeebb162ba4ff5f1475424102a15315ee9e18"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Dwarf/",
+      "title": "Dwarf",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Dwarf/",
+      "captured_at": null,
+      "sha256": "442f8a9674c4a16251d304543e0f9e839835e22ed0a8b691527b470855fc86fb"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/DwarfFaction/",
+      "title": "DwarfFaction",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/DwarfFaction/",
+      "captured_at": null,
+      "sha256": "949242d22699b687b5df871a9b5feef7fe2d4f32da653337c75384e868b2e378"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Elf/",
+      "title": "Elf",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Elf/",
+      "captured_at": null,
+      "sha256": "d099ca90d9cfd01ebd859b1cec0d0e4e7146ac6d47ec83014c939bb10df79a30"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/ElfFaction/",
+      "title": "ElfFaction",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/ElfFaction/",
+      "captured_at": null,
+      "sha256": "71b4aed4140d7a1d95b02349051713dfb01dad9acd4ff16450a00c021f223a4f"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Events/",
+      "title": "Events",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Events/",
+      "captured_at": null,
+      "sha256": "3e28b837b95fb1ba8973e88a32eb4d34ebdba9a32964f19880b2d656fc0c1601"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Faceless/",
+      "title": "Faceless",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Faceless/",
+      "captured_at": null,
+      "sha256": "0efb188fa198307f676213d1002b346e6e1082847919797a90be1281eb58d756"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/FacelessFaction/",
+      "title": "FacelessFaction",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/FacelessFaction/",
+      "captured_at": null,
+      "sha256": "cd2bfe123031c54a7685f417ece3cad4663d401f400616ae656ebbbf23d94db8"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/FactionUpgrades/",
+      "title": "FactionUpgrades",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/FactionUpgrades/",
+      "captured_at": null,
+      "sha256": "c59202f3fca61db00509dab952db70815e485e11512fd2c0930fccee42de935d"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Factions/",
+      "title": "Factions",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/Factions/",
+      "captured_at": null,
+      "sha256": "2655aed997de3a027d0b6e1528cf77464ab5c3416db5705f608ea80f6f4dfa1c"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Fairy/",
+      "title": "Fairy",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Fairy/",
+      "captured_at": null,
+      "sha256": "475619fddd3d32acdbff76d329caceb7d8dcad3a6d647d4594d7c89ab5bc9264"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/FairyFaction/",
+      "title": "FairyFaction",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/FairyFaction/",
+      "captured_at": null,
+      "sha256": "fa80e890c337955a792ce33f30e657a78133893cec0b57015eac3d1fd10fac4f"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/GameWindow/",
+      "title": "GameWindow",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/GameWindow/",
+      "captured_at": null,
+      "sha256": "dc4b2d046ba32cdf2dc0b7589c09ccbc0d6be3076ae7dcd61eb721e1f97f2393"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Goblin/",
+      "title": "Goblin",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Goblin/",
+      "captured_at": null,
+      "sha256": "074acf7bbe39e207833fc5b9e57e81e4488d4f1f7589060c927cd1e2b4586dfc"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/GoblinFaction/",
+      "title": "GoblinFaction",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/GoblinFaction/",
+      "captured_at": null,
+      "sha256": "6e184dda7d2132098051a9be20964eb3232a5944ef01b1733def7845cbf6c15c"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Heritages/",
+      "title": "Heritages",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/Heritages/",
+      "captured_at": null,
+      "sha256": "97daddb7d2133146fdd5e39b9cc1734a4c496c842d3814497bf33909b64e86d6"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Kong/",
+      "title": "Kong",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Kong/",
+      "captured_at": null,
+      "sha256": "fc17262ff839c1c46e22d316d271dc2876d755e8ea33311f7defe341d75630d5"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Legacies/",
+      "title": "Legacies",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Legacies/",
+      "captured_at": null,
+      "sha256": "2869dfea70beff564f87f813be3da79669b39743a8715b451e7c06f0b555c0e9"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Lineages/",
+      "title": "Lineages",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/Lineages/",
+      "captured_at": null,
+      "sha256": "6b6df8c2986b2af2988c87bc8a6dc3d05bcbdf8479c9ec2bbec98a979b69a774"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/LoreArtifacts/",
+      "title": "LoreArtifacts",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/LoreArtifacts/",
+      "captured_at": null,
+      "sha256": "649d723e7b56c60c0d9f29758e394994fbf97c984e5e36fe13e44eac24c8eb17"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Makers/",
+      "title": "Makers",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Makers/",
+      "captured_at": null,
+      "sha256": "53976c2507b9588d1889c4f90fae0beb6227c3c5c3c8164d38afec7e6b75ae6a"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/MakersFaction/",
+      "title": "MakersFaction",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/MakersFaction/",
+      "captured_at": null,
+      "sha256": "692a690f834a4bcc5cbc2af8d46ee297280383ab3f0df69dfd65bb9c0ea44413"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/MercBuilds/",
+      "title": "MercBuilds",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/MercBuilds/",
+      "captured_at": null,
+      "sha256": "2eb7764176d9bf1769b0eb9fbe27874543b9aebdb3844541cb724b61266b416c"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Mercenary/",
+      "title": "Mercenary",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/Mercenary/",
+      "captured_at": null,
+      "sha256": "04886bbfcd052812b59b9c4e04205a7e6d14fb4cc79e344babebda4767a8e308"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/MercenaryFaction/",
+      "title": "MercenaryFaction",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/MercenaryFaction/",
+      "captured_at": null,
+      "sha256": "80612beb5950e74fe1da23f70559da55a253a5f011a92a5e2d759f43ca16f1cb"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Notation/",
+      "title": "Notation",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Notation/",
+      "captured_at": null,
+      "sha256": "0fd7b10755815cc390ca22c38693d33ffc6282bdf945322baad7538310f6d632"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/PBuilds/",
+      "title": "PBuilds",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/PBuilds/",
+      "captured_at": null,
+      "sha256": "273cee8bab5845c1c167738aec645cb0a61811da3c35a6e351b4f70a928f029d"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/PremiumUpgrades/",
+      "title": "PremiumUpgrades",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/PremiumUpgrades/",
+      "captured_at": null,
+      "sha256": "d78de31f8417852448d69f6c91fe319cabd8b8964584046980e16c54cb097c44"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/QuestArtifacts/",
+      "title": "QuestArtifacts",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/QuestArtifacts/",
+      "captured_at": null,
+      "sha256": "8ff766718366428d4517df63875bd305fa74ac7b2731f35cda74fae2401ab371"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/R100Plus/",
+      "title": "R100Plus",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/R100Plus/",
+      "captured_at": null,
+      "sha256": "5883739073d7061ac996b1ddcb76a755078bdabad1f4f1cfe51082ee15f5fcb7"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/R116Plus/",
+      "title": "R116Plus",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/R116Plus/",
+      "captured_at": null,
+      "sha256": "a5bcccb9d1d63dea7ef436830d954ee17be85a7dffecbe8c333a5fe45799af97"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/R125Plus/",
+      "title": "R125Plus",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/R125Plus/",
+      "captured_at": null,
+      "sha256": "50dacad851a7373b3ed0166a84c14c1a332684ea4c2708cac5cb7dcae14fc701"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/R135Plus/",
+      "title": "R135Plus",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/R135Plus/",
+      "captured_at": null,
+      "sha256": "c42a49b5b268a7d6286b872fb608fa67ac40f8628047f64505b279ca4ef58499"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/R160Plus/",
+      "title": "R160Plus",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/R160Plus/",
+      "captured_at": null,
+      "sha256": "a618ad050faf65d723cbee1db77f3d506520840511fc083d2278ec0b8aa6885f"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/R16Guide/",
+      "title": "R16Guide",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/R16Guide/",
+      "captured_at": null,
+      "sha256": "d5dfd7aea8069d5b13f984b9fa3398a4edadd884ad7c4ae10c579282974654c0"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/R190Plus/",
+      "title": "R190Plus",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/R190Plus/",
+      "captured_at": null,
+      "sha256": "fa57ecaf9abb994dd97c905d93e8bbdcae87d5e23b26eb163f8d32cca0840207"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/R220Plus/",
+      "title": "R220Plus",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/R220Plus/",
+      "captured_at": null,
+      "sha256": "01dcc8944ce060ec316813ce79f2a4c965b2ec5529f6b14f71b846c44b0fff0b"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/R40-R46/",
+      "title": "R40-R46",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/R40-R46/",
+      "captured_at": null,
+      "sha256": "4b6f3e4775f7288106c2c05219d2996defabc94fe80acae80436c3dabafbf463"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/R47-R60/",
+      "title": "R47-R60",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/R47-R60/",
+      "captured_at": null,
+      "sha256": "7816ab46ab7ce408ab81a71497e6754baadfcf5dbe057ef6dadefc3f8734706e"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/R60-R75/",
+      "title": "R60-R75",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/R60-R75/",
+      "captured_at": null,
+      "sha256": "c308c8ebecc9a914990bb45353ccf53f6f504f2f9e368cca8f4e6dce82861c9b"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/R75Plus/",
+      "title": "R75Plus",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/R75Plus/",
+      "captured_at": null,
+      "sha256": "8d07b3b53d698b26c57b7ea3d29b5ba0f430849d14cca80383386f091f1f1f94"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/RNG/",
+      "title": "RNG",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/RNG/",
+      "captured_at": null,
+      "sha256": "5abb61a92ea6339999ccadcf2f3d1838cd3bb882fbcdf99db3a649cf473fcb58"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Reincarnation/",
+      "title": "Reincarnation",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/Reincarnation/",
+      "captured_at": null,
+      "sha256": "648006cc3949145a1a30f463390a6cbc8f199333f78616db2178d6c065e2c9bf"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Research/",
+      "title": "Research",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/Research/",
+      "captured_at": null,
+      "sha256": "4f33029b83dabd8c6884ab9b10db810c59c75f421e37dbb300873e2f741db4a0"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/ResearchBuilds/",
+      "title": "ResearchBuilds",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/ResearchBuilds/",
+      "captured_at": null,
+      "sha256": "41168ec1f2816e1776636cd5ef0f4bc8e35083e0cb1ab50966b5c2f4fe1e2570"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/ResearchList/",
+      "title": "ResearchList",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/ResearchList/",
+      "captured_at": null,
+      "sha256": "ddab0c69a36410d366864b9fa657b832f17cc3b85a5e9076c7cc45d1e6cd353b"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Researchtree/",
+      "title": "Researchtree",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Researchtree/",
+      "captured_at": null,
+      "sha256": "aff02fd4723c4dd5ad94e00b3dfe18b3c127f5e73affe2aa2b8c203bc19b9e64"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Reset/",
+      "title": "Reset",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Reset/",
+      "captured_at": null,
+      "sha256": "1ed572388bfc65d117ed6147bf017f8074d6db15f235479a20e62fa9e0917977"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Resources/",
+      "title": "Resources",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Resources/",
+      "captured_at": null,
+      "sha256": "f569385ddf8cfc0e60aa8af56d8bcd70127c631531cfe7a77e672f4aab7965cb"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Rubies/",
+      "title": "Rubies",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Rubies/",
+      "captured_at": null,
+      "sha256": "88a640e935897a0d71348589c57d0099186ab4c7d0cb628932f1fcd95a64ea54"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/SiteMap/",
+      "title": "SiteMap",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/SiteMap/",
+      "captured_at": null,
+      "sha256": "ade8a87c92c09266be45fa82ec974b992ce0a1f88e303f448df6d636ae9b68e8"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/SpeedRun/",
+      "title": "SpeedRun",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/SpeedRun/",
+      "captured_at": null,
+      "sha256": "6ee014416f3a4ca5972c585b0aee394dd1ee19b35a4c09abd8edd21b77967fc6"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/SpellTiers/",
+      "title": "SpellTiers",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/SpellTiers/",
+      "captured_at": null,
+      "sha256": "806887a84515246d583c7f03907b0f6112977af798efe16747177f4f2bdf2fdc"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Spells/",
+      "title": "Spells",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/Spells/",
+      "captured_at": null,
+      "sha256": "8f8fc894dd8cc112c5c109bf78fd1c13010260a0e03d77b8b0dd0d4b54d3ca28"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/SunForce/",
+      "title": "SunForce",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/SunForce/",
+      "captured_at": null,
+      "sha256": "fd51a7e1b05c99b5c0786d617427ca67952571641e9ca54a2df85ad33802b441"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Terminology/",
+      "title": "Terminology",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Terminology/",
+      "captured_at": null,
+      "sha256": "a8b9dec7cd5df72568279ac65a53a753920d8e1addc8a24b293aee5761d2fb30"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Titan/",
+      "title": "Titan",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Titan/",
+      "captured_at": null,
+      "sha256": "fd6d6bb7bf01eaa03b0b7af88549ea5f4f981002ba3c3ef6e9ea40e64185ad35"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/TitanFaction/",
+      "title": "TitanFaction",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/TitanFaction/",
+      "captured_at": null,
+      "sha256": "75316544067533e9d883a15ed3779b175760c3c61fb891c9cf06910d54907789"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Tools/",
+      "title": "Tools",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Tools/",
+      "captured_at": null,
+      "sha256": "94fc76c17466981641383262665ff2077e557a9aaeb77e65f2448fc4d51bc397"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/TrophyGuide/",
+      "title": "TrophyGuide",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/TrophyGuide/",
+      "captured_at": null,
+      "sha256": "267efb17d23ba2bf0692e8d7c32da2d9ee02e04c678084655de58c5716942f98"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/TrophyPage/",
+      "title": "TrophyPage",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/TrophyPage/",
+      "captured_at": null,
+      "sha256": "ae91ccc8c64e0df946166853cb26b5ab8b23defe7e8ded0e97cff896b25f9d3b"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Undead/",
+      "title": "Undead",
+      "origin": "musicfamily_cached",
+      "resolved_url": "http://musicfamily.org/realm/Undead/",
+      "captured_at": null,
+      "sha256": "160be16b7244d06ac848403c810346becaeb2dec9d407793645142662251d4ce"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/UndeadFaction/",
+      "title": "UndeadFaction",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/UndeadFaction/",
+      "captured_at": null,
+      "sha256": "c3a40ebfbd60f16abb25a10d56c35b2bdd08fbc5c0e0d68352be57c5425cc5a8"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/UniqueBuilding/",
+      "title": "UniqueBuilding",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/UniqueBuilding/",
+      "captured_at": null,
+      "sha256": "fdac3aeff46512ed739254af9131b6e54557519020d25da936d82ca2fa76596b"
+    },
+    {
+      "source_url": "http://musicfamily.org/realm/Upgrades/",
+      "title": "Upgrades",
+      "origin": "musicfamily_live",
+      "resolved_url": "http://musicfamily.org/realm/Upgrades/",
+      "captured_at": null,
+      "sha256": "de6dca39e06e3bce9389327a130bb095d998071017581cbf829abd4a7f67099c"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Abdication",
+      "title": "Abdication",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260204043805/https://realm-grinder.fandom.com/wiki/Abdication",
+      "captured_at": "2026-02-04",
+      "sha256": "d40e847234f930061c2e6aacc10b76533b20bb2c19140d22b9dbd476c753de20"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Assistants",
+      "title": "Assistants",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260309170100/https://realm-grinder.fandom.com/wiki/Assistants",
+      "captured_at": "2026-03-09",
+      "sha256": "53a67ea8383c77b67229414e7546456c1f19ad6b39b1710cea92d2b7ab1b08da"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Bloodline",
+      "title": "Bloodline",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260406072102/https://realm-grinder.fandom.com/wiki/Bloodline",
+      "captured_at": "2026-04-06",
+      "sha256": "16b21964bd8c2cc562591546f054828d579357e3ecad79b14630b0d3a71a1373"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Dragon",
+      "title": "Dragon",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260705213906/https://realm-grinder.fandom.com/wiki/Dragon",
+      "captured_at": "2026-07-05",
+      "sha256": "11d4947132815c6860e6d7f73dbf885704fb7f5fc1dd7c2da22c680ce31aa253"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Druid",
+      "title": "Druid",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260222100312/https://realm-grinder.fandom.com/wiki/Druid",
+      "captured_at": "2026-02-22",
+      "sha256": "79aae77804000925b9f5f38438d9aea2266030e80c8c23e271acda102218ec46"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Faceless",
+      "title": "Faceless",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260705213925/https://realm-grinder.fandom.com/wiki/Faceless",
+      "captured_at": "2026-07-05",
+      "sha256": "2040e9e351f04b6c6445c3e994708cd7f144d821c9d175ed16e3bce81425a0e4"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Factions",
+      "title": "Factions",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260705213906/https://realm-grinder.fandom.com/wiki/Factions",
+      "captured_at": "2026-07-05",
+      "sha256": "2a57623291f0ac9db7f2ca6886fd88a0ad6989158429335212af727a8aa4cb61"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Fairy",
+      "title": "Fairy",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260306050640/https://realm-grinder.fandom.com/wiki/Fairy",
+      "captured_at": "2026-03-06",
+      "sha256": "c04bc266cf1c2f11e3e84b81e6f14700384b59149ed9c9bc0d65af2518ef4460"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Gems",
+      "title": "Gems",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260705213906/https://realm-grinder.fandom.com/wiki/Gems",
+      "captured_at": "2026-07-05",
+      "sha256": "2bfac1de2dd1ee57d1c83a4db58de78d80dddd30173b2e81602d52f403312213"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Mana",
+      "title": "Mana",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260705213906/https://realm-grinder.fandom.com/wiki/Mana",
+      "captured_at": "2026-07-05",
+      "sha256": "bceec037248d43f896cf1997066b92dbdbd3c61a21575d90d9f87d7b7d63e81b"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Mercenary",
+      "title": "Mercenary",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260705213925/https://realm-grinder.fandom.com/wiki/Mercenary",
+      "captured_at": "2026-07-05",
+      "sha256": "c27ac98a0345a8eb229a6b64e5c2a3f708f2187a87e230c2d164e041c56a8611"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Realm_Grinder_Wiki",
+      "title": "Realm_Grinder_Wiki",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260705213925/https://realm-grinder.fandom.com/wiki/Realm_Grinder_Wiki",
+      "captured_at": "2026-07-05",
+      "sha256": "eff1e7a2809ab1e241e4bad0c26e10143f748ca923957079dc35af2f58907e31"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Reincarnation",
+      "title": "Reincarnation",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260222102307/https://realm-grinder.fandom.com/wiki/Reincarnation",
+      "captured_at": "2026-02-22",
+      "sha256": "c3d2b886f0069438476f4b4e0d98051adee92627c1409e29c19054b2ba4b852e"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Research",
+      "title": "Research",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260705213906/https://realm-grinder.fandom.com/wiki/Research",
+      "captured_at": "2026-07-05",
+      "sha256": "2ddceafe6305abd19293e83e2c46021b1cafc6f2b8f2201ac9d815c827ba394f"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Research_Builds",
+      "title": "Research_Builds",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260406072104/https://realm-grinder.fandom.com/wiki/Research_Builds",
+      "captured_at": "2026-04-06",
+      "sha256": "f2b6f90727f6c44ba12a540c9dbf34e7c69ebe8e5fc711669aa5eee8394d156b"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Spells",
+      "title": "Spells",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260218213708/https://realm-grinder.fandom.com/wiki/Spells",
+      "captured_at": "2026-02-18",
+      "sha256": "45dd41143697135390836a5d0c3cd8f6ef9d6bc3b1019f979884aa95575a25df"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Titan",
+      "title": "Titan",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260406072102/https://realm-grinder.fandom.com/wiki/Titan",
+      "captured_at": "2026-04-06",
+      "sha256": "28700ec2bd57887bdcd65f5e41c8c876357174058b334e57aa4b38c7fe7f320b"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Trophies",
+      "title": "Trophies",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260705213906/https://realm-grinder.fandom.com/wiki/Trophies",
+      "captured_at": "2026-07-05",
+      "sha256": "4eaf79eea79b3a3c721f0cddbe638622bbf322c44ebda78e2c4d97540b16f291"
+    },
+    {
+      "source_url": "https://realm-grinder.fandom.com/wiki/Upgrades",
+      "title": "Upgrades",
+      "origin": "fandom_archived",
+      "resolved_url": "http://web.archive.org/web/20260705213906/https://realm-grinder.fandom.com/wiki/Upgrades",
+      "captured_at": "2026-07-05",
+      "sha256": "442dc48b8cc8823b6df1be2f407222aa5c3495e689057ba99832700f2fbc32cb"
+    }
+  ]
+}

@@ -1,0 +1,7548 @@
+{
+  "schema_version": 1,
+  "save_version": 58,
+  "swf_sha256": "b7b299b359d9795a322caab8d4f430e2138ce0d9d7a0c91db1a66bc8da84dfac",
+  "source": "Name and identifier literals observed in the installed game; no executable game content is included.",
+  "definitions": [
+    {
+      "id": 1152,
+      "name": "Homunculus Lab",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1041,
+      "name": "Prophecy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1086,
+      "name": "Godslaying",
+      "kind": "upgrade"
+    },
+    {
+      "id": 723,
+      "name": "Asmodean Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 81,
+      "name": "Hell Rush",
+      "kind": "trophy"
+    },
+    {
+      "id": 659,
+      "name": "Drow Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 660,
+      "name": "Drow Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 661,
+      "name": "Drow Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 797,
+      "name": "Drow Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 944,
+      "name": "Drow Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1232,
+      "name": "Drow Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 886,
+      "name": "Purity of Form",
+      "kind": "upgrade"
+    },
+    {
+      "id": 875,
+      "name": "Absolute Hierarchy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 884,
+      "name": "Essence Extractor",
+      "kind": "upgrade"
+    },
+    {
+      "id": 82,
+      "name": "Trophy Collectors",
+      "kind": "upgrade"
+    },
+    {
+      "id": 83,
+      "name": "Legendary Antics",
+      "kind": "upgrade"
+    },
+    {
+      "id": 84,
+      "name": "Passage to Tartarus",
+      "kind": "upgrade"
+    },
+    {
+      "id": 104,
+      "name": "Demons Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 105,
+      "name": "Demons Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 106,
+      "name": "Demons Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 772,
+      "name": "Demons Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 701,
+      "name": "Dark Covenant",
+      "kind": "upgrade"
+    },
+    {
+      "id": 25,
+      "name": "Improved Autocasting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 577,
+      "name": "Iron Rush",
+      "kind": "upgrade"
+    },
+    {
+      "id": 637,
+      "name": "Sky Monarch",
+      "kind": "upgrade"
+    },
+    {
+      "id": 638,
+      "name": "Barkscales",
+      "kind": "upgrade"
+    },
+    {
+      "id": 639,
+      "name": "Serpent Queller",
+      "kind": "upgrade"
+    },
+    {
+      "id": 640,
+      "name": "Draconstellation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 641,
+      "name": "Ancient Incantation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 642,
+      "name": "Dracomet Vault",
+      "kind": "upgrade"
+    },
+    {
+      "id": 729,
+      "name": "Heavenly Feathers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 730,
+      "name": "God's Chamber",
+      "kind": "upgrade"
+    },
+    {
+      "id": 731,
+      "name": "Boon of Radiance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 423,
+      "name": "General Winter",
+      "kind": "trophy"
+    },
+    {
+      "id": 844,
+      "name": "High Bastion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 237,
+      "name": "Ancient Heirloom",
+      "kind": "trophy"
+    },
+    {
+      "id": 1094,
+      "name": "Eradication",
+      "kind": "upgrade"
+    },
+    {
+      "id": 303,
+      "name": "Enchanting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 372,
+      "name": "Unlimited Mana",
+      "kind": "upgrade"
+    },
+    {
+      "id": 584,
+      "name": "Colorful Autocasting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 500,
+      "name": "Neutral Challenger",
+      "kind": "upgrade"
+    },
+    {
+      "id": 579,
+      "name": "Royal Market",
+      "kind": "upgrade"
+    },
+    {
+      "id": 46,
+      "name": "Angelic Exchange",
+      "kind": "upgrade"
+    },
+    {
+      "id": 334,
+      "name": "Faceless Overmind",
+      "kind": "upgrade"
+    },
+    {
+      "id": 141,
+      "name": "Huge Titan Statue",
+      "kind": "trophy"
+    },
+    {
+      "id": 788,
+      "name": "Chocolate Flavor Smoothie",
+      "kind": "upgrade"
+    },
+    {
+      "id": 580,
+      "name": "1st Anniversary",
+      "kind": "upgrade"
+    },
+    {
+      "id": 117,
+      "name": "Research Faceless Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 266,
+      "name": "Research Undead Trophy2",
+      "kind": "trophy"
+    },
+    {
+      "id": 334,
+      "name": "Aggressive Collector",
+      "kind": "trophy"
+    },
+    {
+      "id": 282,
+      "name": "Commerce",
+      "kind": "upgrade"
+    },
+    {
+      "id": 52,
+      "name": "Mercenary Oath",
+      "kind": "trophy"
+    },
+    {
+      "id": 289,
+      "name": "Trade Routes",
+      "kind": "upgrade"
+    },
+    {
+      "id": 330,
+      "name": "Mercenary Insignia",
+      "kind": "trophy"
+    },
+    {
+      "id": 324,
+      "name": "Assistant Squasher",
+      "kind": "upgrade"
+    },
+    {
+      "id": 345,
+      "name": "Leet",
+      "kind": "upgrade"
+    },
+    {
+      "id": 718,
+      "name": "Scholarship",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1004,
+      "name": "Challenge Power",
+      "kind": "upgrade"
+    },
+    {
+      "id": 140,
+      "name": "Demon Horn",
+      "kind": "trophy"
+    },
+    {
+      "id": 760,
+      "name": "Forbidden Library Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 224,
+      "name": "Proof of Good Deed",
+      "kind": "upgrade"
+    },
+    {
+      "id": 671,
+      "name": "Elven Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 672,
+      "name": "Elven Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 673,
+      "name": "Elven Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 800,
+      "name": "Elven Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 947,
+      "name": "Elven Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1235,
+      "name": "Elven Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 849,
+      "name": "Solidity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 850,
+      "name": "Stonetalking",
+      "kind": "upgrade"
+    },
+    {
+      "id": 848,
+      "name": "Refined Minerals",
+      "kind": "upgrade"
+    },
+    {
+      "id": 72,
+      "name": "Faction Grinder",
+      "kind": "trophy"
+    },
+    {
+      "id": 371,
+      "name": "Unitary",
+      "kind": "upgrade"
+    },
+    {
+      "id": 181,
+      "name": "Rule 'dis",
+      "kind": "trophy"
+    },
+    {
+      "id": 206,
+      "name": "Warm Up",
+      "kind": "trophy"
+    },
+    {
+      "id": 413,
+      "name": "10 Years War",
+      "kind": "trophy"
+    },
+    {
+      "id": 995,
+      "name": "Seed of Life",
+      "kind": "upgrade"
+    },
+    {
+      "id": 996,
+      "name": "Artificial Currency",
+      "kind": "upgrade"
+    },
+    {
+      "id": 997,
+      "name": "Pillars of Creation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 998,
+      "name": "Stoneheart",
+      "kind": "upgrade"
+    },
+    {
+      "id": 999,
+      "name": "Greatest Invention",
+      "kind": "upgrade"
+    },
+    {
+      "id": 312,
+      "name": "Betrayal",
+      "kind": "upgrade"
+    },
+    {
+      "id": 327,
+      "name": "Bloodstream",
+      "kind": "upgrade"
+    },
+    {
+      "id": 98,
+      "name": "Deadly Impatience",
+      "kind": "upgrade"
+    },
+    {
+      "id": 99,
+      "name": "Experienced Helpers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 100,
+      "name": "Death Knights",
+      "kind": "upgrade"
+    },
+    {
+      "id": 102,
+      "name": "Warlord",
+      "kind": "trophy"
+    },
+    {
+      "id": 365,
+      "name": "Rewind",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1213,
+      "name": "Golden Bones",
+      "kind": "upgrade"
+    },
+    {
+      "id": 380,
+      "name": "Searing Summer",
+      "kind": "trophy"
+    },
+    {
+      "id": 840,
+      "name": "Uniformity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 351,
+      "name": "Mythos",
+      "kind": "trophy"
+    },
+    {
+      "id": 249,
+      "name": "Vivification",
+      "kind": "upgrade"
+    },
+    {
+      "id": 392,
+      "name": "Curse of the Fallen",
+      "kind": "trophy"
+    },
+    {
+      "id": 114,
+      "name": "Faction Run",
+      "kind": "trophy"
+    },
+    {
+      "id": 316,
+      "name": "Exertion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 89,
+      "name": "Minedwarf",
+      "kind": "trophy"
+    },
+    {
+      "id": 69,
+      "name": "Exchange Lord",
+      "kind": "trophy"
+    },
+    {
+      "id": 258,
+      "name": "Research Angel Trophy2",
+      "kind": "trophy"
+    },
+    {
+      "id": 706,
+      "name": "Mercenary Camp",
+      "kind": "upgrade"
+    },
+    {
+      "id": 646,
+      "name": "Mana Waste",
+      "kind": "upgrade"
+    },
+    {
+      "id": 81,
+      "name": "Angel Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 346,
+      "name": "Apeiron",
+      "kind": "trophy"
+    },
+    {
+      "id": 789,
+      "name": "Triple Weirdness",
+      "kind": "upgrade"
+    },
+    {
+      "id": 344,
+      "name": "Forgotten Relic",
+      "kind": "trophy"
+    },
+    {
+      "id": 99,
+      "name": "Businessman",
+      "kind": "trophy"
+    },
+    {
+      "id": 241,
+      "name": "Grandmaster Researcher",
+      "kind": "trophy"
+    },
+    {
+      "id": 825,
+      "name": "Demon Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 240,
+      "name": "Obsidian Shard",
+      "kind": "trophy"
+    },
+    {
+      "id": 76,
+      "name": "God's Rest",
+      "kind": "trophy"
+    },
+    {
+      "id": 1219,
+      "name": "Still Lightning",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1078,
+      "name": "Compassion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 18,
+      "name": "Contingency Autocasting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 301,
+      "name": "First Iron Fragment",
+      "kind": "trophy"
+    },
+    {
+      "id": 171,
+      "name": "glho kohhl snod",
+      "kind": "trophy"
+    },
+    {
+      "id": 507,
+      "name": "Wall Fragment",
+      "kind": "upgrade"
+    },
+    {
+      "id": 554,
+      "name": "Blue Omelette",
+      "kind": "upgrade"
+    },
+    {
+      "id": 645,
+      "name": "Master Researcher",
+      "kind": "upgrade"
+    },
+    {
+      "id": 416,
+      "name": "Vanilla Challenger",
+      "kind": "upgrade"
+    },
+    {
+      "id": 370,
+      "name": "True Night",
+      "kind": "upgrade"
+    },
+    {
+      "id": 962,
+      "name": "Djinn Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 963,
+      "name": "Djinn Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 964,
+      "name": "Djinn Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 965,
+      "name": "Djinn Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 966,
+      "name": "Djinn Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1230,
+      "name": "Djinn Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 436,
+      "name": "Meditation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 870,
+      "name": "Advanced Goblin Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 292,
+      "name": "Dragon Scale",
+      "kind": "trophy"
+    },
+    {
+      "id": 712,
+      "name": "Engineering",
+      "kind": "upgrade"
+    },
+    {
+      "id": 514,
+      "name": "Distribution",
+      "kind": "upgrade"
+    },
+    {
+      "id": 543,
+      "name": "Resilience",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1157,
+      "name": "Plating",
+      "kind": "upgrade"
+    },
+    {
+      "id": 777,
+      "name": "Bubble Swarm",
+      "kind": "upgrade"
+    },
+    {
+      "id": 817,
+      "name": "Pheromones",
+      "kind": "upgrade"
+    },
+    {
+      "id": 816,
+      "name": "Dream Catchers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1057,
+      "name": "Officers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 658,
+      "name": "Drow Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 355,
+      "name": "Perfect Combo",
+      "kind": "upgrade"
+    },
+    {
+      "id": 134,
+      "name": "Demonic Figurine",
+      "kind": "trophy"
+    },
+    {
+      "id": 296,
+      "name": "Spark of Life",
+      "kind": "trophy"
+    },
+    {
+      "id": 768,
+      "name": "Flesh Workshop Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1218,
+      "name": "Treachery",
+      "kind": "upgrade"
+    },
+    {
+      "id": 155,
+      "name": "Titan Shield",
+      "kind": "trophy"
+    },
+    {
+      "id": 564,
+      "name": "Enchanted Crystals",
+      "kind": "upgrade"
+    },
+    {
+      "id": 565,
+      "name": "Biased Architecture",
+      "kind": "upgrade"
+    },
+    {
+      "id": 566,
+      "name": "Rich Miners",
+      "kind": "upgrade"
+    },
+    {
+      "id": 567,
+      "name": "Paladins",
+      "kind": "upgrade"
+    },
+    {
+      "id": 568,
+      "name": "Underground Foundations",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1203,
+      "name": "Arcane Brilliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 235,
+      "name": "%0 Grand Champion",
+      "kind": "trophy"
+    },
+    {
+      "id": 736,
+      "name": "Magical Clicks",
+      "kind": "upgrade"
+    },
+    {
+      "id": 737,
+      "name": "Eye of the King",
+      "kind": "upgrade"
+    },
+    {
+      "id": 738,
+      "name": "Spare Green Hands",
+      "kind": "upgrade"
+    },
+    {
+      "id": 624,
+      "name": "Solemnity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 411,
+      "name": "Double Bottom",
+      "kind": "trophy"
+    },
+    {
+      "id": 270,
+      "name": "Inflame",
+      "kind": "upgrade"
+    },
+    {
+      "id": 930,
+      "name": "Makers Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 272,
+      "name": "Assistant Love",
+      "kind": "trophy"
+    },
+    {
+      "id": 13,
+      "name": "Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 343,
+      "name": "Harlequin",
+      "kind": "upgrade"
+    },
+    {
+      "id": 621,
+      "name": "Scintillation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 792,
+      "name": "Grand Avalanche",
+      "kind": "upgrade"
+    },
+    {
+      "id": 623,
+      "name": "Soulrending",
+      "kind": "upgrade"
+    },
+    {
+      "id": 244,
+      "name": "Philosopher's Stone",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1166,
+      "name": "Raiding",
+      "kind": "upgrade"
+    },
+    {
+      "id": 296,
+      "name": "Strategy Room",
+      "kind": "upgrade"
+    },
+    {
+      "id": 295,
+      "name": "Oil Lamp",
+      "kind": "trophy"
+    },
+    {
+      "id": 1215,
+      "name": "Sweet Bedtime",
+      "kind": "upgrade"
+    },
+    {
+      "id": 215,
+      "name": "Fortune Teller Machine",
+      "kind": "trophy"
+    },
+    {
+      "id": 749,
+      "name": "Proof of Order",
+      "kind": "upgrade"
+    },
+    {
+      "id": 88,
+      "name": "Mercenary Spirit",
+      "kind": "trophy"
+    },
+    {
+      "id": 273,
+      "name": "Beard Hair",
+      "kind": "trophy"
+    },
+    {
+      "id": 1146,
+      "name": "Twisting Nether",
+      "kind": "upgrade"
+    },
+    {
+      "id": 367,
+      "name": "Primal Leaf",
+      "kind": "trophy"
+    },
+    {
+      "id": 1060,
+      "name": "True Harlequin",
+      "kind": "upgrade"
+    },
+    {
+      "id": 833,
+      "name": "Goblin Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 522,
+      "name": "Hexing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 873,
+      "name": "Faction Ruler",
+      "kind": "upgrade"
+    },
+    {
+      "id": 97,
+      "name": "Artisan",
+      "kind": "trophy"
+    },
+    {
+      "id": 983,
+      "name": "God's Plan",
+      "kind": "upgrade"
+    },
+    {
+      "id": 984,
+      "name": "An Untimely Death",
+      "kind": "upgrade"
+    },
+    {
+      "id": 985,
+      "name": "Titanomachy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 986,
+      "name": "Time Merge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 987,
+      "name": "Power Overwhelming",
+      "kind": "upgrade"
+    },
+    {
+      "id": 552,
+      "name": "Stoic Resistance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 329,
+      "name": "The Architect",
+      "kind": "trophy"
+    },
+    {
+      "id": 1081,
+      "name": "Viriditas",
+      "kind": "upgrade"
+    },
+    {
+      "id": 300,
+      "name": "Conjuration",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1028,
+      "name": "Mana Loom",
+      "kind": "upgrade"
+    },
+    {
+      "id": 358,
+      "name": "Realm Digger",
+      "kind": "upgrade"
+    },
+    {
+      "id": 869,
+      "name": "Advanced Fairy Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1186,
+      "name": "Expert Combinator",
+      "kind": "upgrade"
+    },
+    {
+      "id": 75,
+      "name": "For Science!",
+      "kind": "trophy"
+    },
+    {
+      "id": 1030,
+      "name": "Battlefield",
+      "kind": "upgrade"
+    },
+    {
+      "id": 130,
+      "name": "Arachnid Figurine",
+      "kind": "trophy"
+    },
+    {
+      "id": 560,
+      "name": "Giant Egg",
+      "kind": "upgrade"
+    },
+    {
+      "id": 359,
+      "name": "Balanced Collector",
+      "kind": "trophy"
+    },
+    {
+      "id": 1061,
+      "name": "God's Fingers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 307,
+      "name": "Projection",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1059,
+      "name": "Sovereignty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 89,
+      "name": "Elven Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 191,
+      "name": "Egg Hunter",
+      "kind": "trophy"
+    },
+    {
+      "id": 674,
+      "name": "Faceless Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 5,
+      "name": "Archeology Faceless Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 174,
+      "name": "Feel the Love",
+      "kind": "trophy"
+    },
+    {
+      "id": 456,
+      "name": "Entrench",
+      "kind": "upgrade"
+    },
+    {
+      "id": 399,
+      "name": "Full-spectrum Color",
+      "kind": "trophy"
+    },
+    {
+      "id": 1006,
+      "name": "Frostmelter",
+      "kind": "upgrade"
+    },
+    {
+      "id": 936,
+      "name": "Pavilion Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 704,
+      "name": "Secrets of the Warriors",
+      "kind": "upgrade"
+    },
+    {
+      "id": 219,
+      "name": "Bloodthirsty",
+      "kind": "trophy"
+    },
+    {
+      "id": 211,
+      "name": "Spiky Rough Egg",
+      "kind": "trophy"
+    },
+    {
+      "id": 1253,
+      "name": "Hired Champions",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1248,
+      "name": "Stream of Dreams",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1139,
+      "name": "Eternal Battlefield",
+      "kind": "upgrade"
+    },
+    {
+      "id": 462,
+      "name": "Stonehenge Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 71,
+      "name": "Faceless Overmind",
+      "kind": "trophy"
+    },
+    {
+      "id": 1179,
+      "name": "Recession",
+      "kind": "upgrade"
+    },
+    {
+      "id": 540,
+      "name": "Trickery",
+      "kind": "upgrade"
+    },
+    {
+      "id": 320,
+      "name": "Rampage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 115,
+      "name": "Thanksgiving",
+      "kind": "trophy"
+    },
+    {
+      "id": 388,
+      "name": "Planar Tax",
+      "kind": "trophy"
+    },
+    {
+      "id": 1034,
+      "name": "Putrefaction",
+      "kind": "upgrade"
+    },
+    {
+      "id": 748,
+      "name": "Proof of Chaos",
+      "kind": "upgrade"
+    },
+    {
+      "id": 260,
+      "name": "Research Druid Trophy2",
+      "kind": "trophy"
+    },
+    {
+      "id": 759,
+      "name": "Forbidden Library",
+      "kind": "upgrade"
+    },
+    {
+      "id": 839,
+      "name": "Ancestral Hourglass",
+      "kind": "upgrade"
+    },
+    {
+      "id": 309,
+      "name": "Vacuumancy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 511,
+      "name": "Rule 'dis",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1025,
+      "name": "Factory",
+      "kind": "upgrade"
+    },
+    {
+      "id": 545,
+      "name": "Torture",
+      "kind": "upgrade"
+    },
+    {
+      "id": 101,
+      "name": "Undead Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 739,
+      "name": "Fight the Goblin Army!",
+      "kind": "upgrade"
+    },
+    {
+      "id": 619,
+      "name": "Gargantuaness",
+      "kind": "upgrade"
+    },
+    {
+      "id": 35,
+      "name": "Priority Autocasting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1090,
+      "name": "Completeness",
+      "kind": "upgrade"
+    },
+    {
+      "id": 263,
+      "name": "Research Fairy Trophy2",
+      "kind": "trophy"
+    },
+    {
+      "id": 741,
+      "name": "Support the Goblin Army",
+      "kind": "upgrade"
+    },
+    {
+      "id": 766,
+      "name": "Mountain Palace Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 86,
+      "name": "Master Archeologist",
+      "kind": "trophy"
+    },
+    {
+      "id": 363,
+      "name": "Frozen Lightning",
+      "kind": "trophy"
+    },
+    {
+      "id": 216,
+      "name": "Goblins Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 217,
+      "name": "Goblins Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 218,
+      "name": "Goblins Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 779,
+      "name": "Goblins Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 310,
+      "name": "Djinn Quest Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 381,
+      "name": "Idillium Explorer",
+      "kind": "trophy"
+    },
+    {
+      "id": 271,
+      "name": "Ruby Shine",
+      "kind": "trophy"
+    },
+    {
+      "id": 361,
+      "name": "Businessman",
+      "kind": "upgrade"
+    },
+    {
+      "id": 301,
+      "name": "Cryomancy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1181,
+      "name": "The Unseen",
+      "kind": "upgrade"
+    },
+    {
+      "id": 125,
+      "name": "Drow Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 587,
+      "name": "Summeraan Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1167,
+      "name": "Scouting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 700,
+      "name": "Autoclicker",
+      "kind": "upgrade"
+    },
+    {
+      "id": 283,
+      "name": "Titan Helmet",
+      "kind": "trophy"
+    },
+    {
+      "id": 129,
+      "name": "Ancient Coin Piece",
+      "kind": "trophy"
+    },
+    {
+      "id": 745,
+      "name": "The Greatest Army",
+      "kind": "upgrade"
+    },
+    {
+      "id": 77,
+      "name": "Grand Diplomat",
+      "kind": "trophy"
+    },
+    {
+      "id": 751,
+      "name": "Holy Site",
+      "kind": "upgrade"
+    },
+    {
+      "id": 262,
+      "name": "Tinkering",
+      "kind": "upgrade"
+    },
+    {
+      "id": 103,
+      "name": "Demon Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1199,
+      "name": "Monstrous",
+      "kind": "upgrade"
+    },
+    {
+      "id": 872,
+      "name": "Advanced Undead Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 288,
+      "name": "Royal Demand",
+      "kind": "upgrade"
+    },
+    {
+      "id": 272,
+      "name": "Retribution",
+      "kind": "upgrade"
+    },
+    {
+      "id": 472,
+      "name": "Intermediate Researcher",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1039,
+      "name": "Restauration",
+      "kind": "upgrade"
+    },
+    {
+      "id": 631,
+      "name": "Authority",
+      "kind": "upgrade"
+    },
+    {
+      "id": 2,
+      "name": "Archeology Druid Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 161,
+      "name": "Key to the Lost City",
+      "kind": "trophy"
+    },
+    {
+      "id": 142,
+      "name": "Jaw Bone",
+      "kind": "trophy"
+    },
+    {
+      "id": 1072,
+      "name": "Azoth",
+      "kind": "upgrade"
+    },
+    {
+      "id": 36,
+      "name": "Reincarnation Power 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1204,
+      "name": "Reincarnation Power 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1205,
+      "name": "Reincarnation Power 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1206,
+      "name": "Reincarnation Power 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1243,
+      "name": "Reincarnation Power 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 530,
+      "name": "Ritualism",
+      "kind": "upgrade"
+    },
+    {
+      "id": 285,
+      "name": "Uniformity",
+      "kind": "trophy"
+    },
+    {
+      "id": 414,
+      "name": "Undercity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 316,
+      "name": "Research Archon Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 1050,
+      "name": "Gathering",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1149,
+      "name": "Artifact Caveau",
+      "kind": "upgrade"
+    },
+    {
+      "id": 608,
+      "name": "Dragonscales",
+      "kind": "upgrade"
+    },
+    {
+      "id": 611,
+      "name": "Iron Flight",
+      "kind": "upgrade"
+    },
+    {
+      "id": 609,
+      "name": "Imposing Presence",
+      "kind": "upgrade"
+    },
+    {
+      "id": 599,
+      "name": "Dragonborn",
+      "kind": "upgrade"
+    },
+    {
+      "id": 596,
+      "name": "Bountiful Hoard",
+      "kind": "upgrade"
+    },
+    {
+      "id": 612,
+      "name": "Sharp Claws",
+      "kind": "upgrade"
+    },
+    {
+      "id": 595,
+      "name": "Ancient Hunger",
+      "kind": "upgrade"
+    },
+    {
+      "id": 610,
+      "name": "Eternal Wisdom",
+      "kind": "upgrade"
+    },
+    {
+      "id": 597,
+      "name": "Chromatic Scales",
+      "kind": "upgrade"
+    },
+    {
+      "id": 85,
+      "name": "Demon Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 422,
+      "name": "Engraving",
+      "kind": "upgrade"
+    },
+    {
+      "id": 228,
+      "name": "Master Researcher",
+      "kind": "trophy"
+    },
+    {
+      "id": 214,
+      "name": "Helden Sterben Nicht",
+      "kind": "trophy"
+    },
+    {
+      "id": 300,
+      "name": "First Crystal Fragment",
+      "kind": "trophy"
+    },
+    {
+      "id": 923,
+      "name": "Djinn Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1156,
+      "name": "Compression",
+      "kind": "upgrade"
+    },
+    {
+      "id": 55,
+      "name": "%0 Upgrades",
+      "kind": "trophy"
+    },
+    {
+      "id": 555,
+      "name": "Golden Egg",
+      "kind": "upgrade"
+    },
+    {
+      "id": 655,
+      "name": "Demon Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 656,
+      "name": "Demon Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 657,
+      "name": "Demon Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 795,
+      "name": "Demon Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 942,
+      "name": "Demon Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1229,
+      "name": "Demon Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 364,
+      "name": "Warlord",
+      "kind": "upgrade"
+    },
+    {
+      "id": 94,
+      "name": "Premeditation",
+      "kind": "trophy"
+    },
+    {
+      "id": 133,
+      "name": "Ceremonial Dagger",
+      "kind": "trophy"
+    },
+    {
+      "id": 67,
+      "name": "Diabolical Evil",
+      "kind": "trophy"
+    },
+    {
+      "id": 627,
+      "name": "Rarity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 283,
+      "name": "Common Business",
+      "kind": "upgrade"
+    },
+    {
+      "id": 375,
+      "name": "Unrequitedness",
+      "kind": "trophy"
+    },
+    {
+      "id": 546,
+      "name": "Dark Light of Bondelnar",
+      "kind": "upgrade"
+    },
+    {
+      "id": 229,
+      "name": "Dragon Fang",
+      "kind": "trophy"
+    },
+    {
+      "id": 223,
+      "name": "Spooky",
+      "kind": "trophy"
+    },
+    {
+      "id": 954,
+      "name": "Planetary Force",
+      "kind": "upgrade"
+    },
+    {
+      "id": 867,
+      "name": "Advanced Elven Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 643,
+      "name": "Dragon Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 411,
+      "name": "Enchanted Field Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 866,
+      "name": "Advanced Dwarven Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 857,
+      "name": "Dragon Pasture Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 250,
+      "name": "Genealogist",
+      "kind": "trophy"
+    },
+    {
+      "id": 244,
+      "name": "Darkest Heresy",
+      "kind": "trophy"
+    },
+    {
+      "id": 1089,
+      "name": "Inanity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 387,
+      "name": "Colorfull",
+      "kind": "trophy"
+    },
+    {
+      "id": 728,
+      "name": "Seraphim Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 193,
+      "name": "Territorial Expanse",
+      "kind": "upgrade"
+    },
+    {
+      "id": 182,
+      "name": "Evolutive Mutation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 181,
+      "name": "Deep Memory",
+      "kind": "upgrade"
+    },
+    {
+      "id": 188,
+      "name": "Gold Synthesis",
+      "kind": "upgrade"
+    },
+    {
+      "id": 191,
+      "name": "Mitosis",
+      "kind": "upgrade"
+    },
+    {
+      "id": 192,
+      "name": "Overgrowth",
+      "kind": "upgrade"
+    },
+    {
+      "id": 190,
+      "name": "Magical Treasure",
+      "kind": "upgrade"
+    },
+    {
+      "id": 180,
+      "name": "Abominations",
+      "kind": "upgrade"
+    },
+    {
+      "id": 189,
+      "name": "Hive Mind",
+      "kind": "upgrade"
+    },
+    {
+      "id": 259,
+      "name": "Research Demon Trophy2",
+      "kind": "trophy"
+    },
+    {
+      "id": 331,
+      "name": "Equality",
+      "kind": "upgrade"
+    },
+    {
+      "id": 178,
+      "name": "Proof of Evil Deed",
+      "kind": "upgrade"
+    },
+    {
+      "id": 485,
+      "name": "Silent Assistance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 486,
+      "name": "Balanced Current",
+      "kind": "upgrade"
+    },
+    {
+      "id": 487,
+      "name": "Eldritch Architecture",
+      "kind": "upgrade"
+    },
+    {
+      "id": 488,
+      "name": "Overflowing Magic",
+      "kind": "upgrade"
+    },
+    {
+      "id": 298,
+      "name": "Augmentation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 93,
+      "name": "Fairy Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1249,
+      "name": "Mummy?",
+      "kind": "upgrade"
+    },
+    {
+      "id": 291,
+      "name": "Carpentry",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1043,
+      "name": "Zealotry",
+      "kind": "upgrade"
+    },
+    {
+      "id": 466,
+      "name": "Olympian Hall Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 348,
+      "name": "Lucky Neutral",
+      "kind": "upgrade"
+    },
+    {
+      "id": 871,
+      "name": "Advanced Titan Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 333,
+      "name": "Exchange Master",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1247,
+      "name": "White Hot Magic",
+      "kind": "upgrade"
+    },
+    {
+      "id": 557,
+      "name": "Arcane Egg",
+      "kind": "upgrade"
+    },
+    {
+      "id": 928,
+      "name": "Archon Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1037,
+      "name": "Genuineness",
+      "kind": "upgrade"
+    },
+    {
+      "id": 827,
+      "name": "Drow Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 267,
+      "name": "Demonology",
+      "kind": "upgrade"
+    },
+    {
+      "id": 391,
+      "name": "Beyond the Looking Glass",
+      "kind": "trophy"
+    },
+    {
+      "id": 241,
+      "name": "Synthesis",
+      "kind": "upgrade"
+    },
+    {
+      "id": 633,
+      "name": "Scavenging",
+      "kind": "upgrade"
+    },
+    {
+      "id": 382,
+      "name": "Expert Combinator",
+      "kind": "trophy"
+    },
+    {
+      "id": 420,
+      "name": "Heavenly Omelette",
+      "kind": "trophy"
+    },
+    {
+      "id": 1040,
+      "name": "Birthright",
+      "kind": "upgrade"
+    },
+    {
+      "id": 517,
+      "name": "Spider Sanctuary",
+      "kind": "upgrade"
+    },
+    {
+      "id": 111,
+      "name": "Vanilla Researcher",
+      "kind": "trophy"
+    },
+    {
+      "id": 361,
+      "name": "Dwarven Anvil",
+      "kind": "trophy"
+    },
+    {
+      "id": 988,
+      "name": "Archon Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 252,
+      "name": "Cultivation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 194,
+      "name": "Egg Collection",
+      "kind": "trophy"
+    },
+    {
+      "id": 549,
+      "name": "Secrets of the Underworld",
+      "kind": "upgrade"
+    },
+    {
+      "id": 187,
+      "name": "Voodoo Doll",
+      "kind": "trophy"
+    },
+    {
+      "id": 909,
+      "name": "Hand of the Makers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 911,
+      "name": "Everlasting Materials",
+      "kind": "upgrade"
+    },
+    {
+      "id": 910,
+      "name": "Infinite Improvements",
+      "kind": "upgrade"
+    },
+    {
+      "id": 908,
+      "name": "Magical Shards",
+      "kind": "upgrade"
+    },
+    {
+      "id": 920,
+      "name": "Treasure Mosaic",
+      "kind": "upgrade"
+    },
+    {
+      "id": 906,
+      "name": "Art of Commerce",
+      "kind": "upgrade"
+    },
+    {
+      "id": 918,
+      "name": "Stonecarving",
+      "kind": "upgrade"
+    },
+    {
+      "id": 916,
+      "name": "Past Trade",
+      "kind": "upgrade"
+    },
+    {
+      "id": 919,
+      "name": "Structural Stability",
+      "kind": "upgrade"
+    },
+    {
+      "id": 96,
+      "name": "Apothecary",
+      "kind": "trophy"
+    },
+    {
+      "id": 982,
+      "name": "Mercenary Union Contract",
+      "kind": "upgrade"
+    },
+    {
+      "id": 710,
+      "name": "Combination",
+      "kind": "upgrade"
+    },
+    {
+      "id": 376,
+      "name": "Rotten Egg",
+      "kind": "trophy"
+    },
+    {
+      "id": 1159,
+      "name": "Virtues",
+      "kind": "upgrade"
+    },
+    {
+      "id": 468,
+      "name": "Excavation Reset",
+      "kind": "upgrade"
+    },
+    {
+      "id": 505,
+      "name": "Mana Matrix",
+      "kind": "upgrade"
+    },
+    {
+      "id": 239,
+      "name": "Deflagration",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1022,
+      "name": "Broken Mirror",
+      "kind": "upgrade"
+    },
+    {
+      "id": 148,
+      "name": "Power Orb",
+      "kind": "trophy"
+    },
+    {
+      "id": 1150,
+      "name": "Dream Realm",
+      "kind": "upgrade"
+    },
+    {
+      "id": 410,
+      "name": "Until Death Do Us Part",
+      "kind": "trophy"
+    },
+    {
+      "id": 351,
+      "name": "Mercenary Spirit",
+      "kind": "upgrade"
+    },
+    {
+      "id": 175,
+      "name": "I Love You in Every Language",
+      "kind": "trophy"
+    },
+    {
+      "id": 389,
+      "name": "Under a Green Sun",
+      "kind": "trophy"
+    },
+    {
+      "id": 1221,
+      "name": "Ghostbuster",
+      "kind": "upgrade"
+    },
+    {
+      "id": 782,
+      "name": "Abyssal Furnace",
+      "kind": "upgrade"
+    },
+    {
+      "id": 808,
+      "name": "Demonic Fury",
+      "kind": "upgrade"
+    },
+    {
+      "id": 809,
+      "name": "Devastation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 446,
+      "name": "Surveyorship",
+      "kind": "upgrade"
+    },
+    {
+      "id": 755,
+      "name": "Ziggurat",
+      "kind": "upgrade"
+    },
+    {
+      "id": 360,
+      "name": "Artisan",
+      "kind": "upgrade"
+    },
+    {
+      "id": 353,
+      "name": "Need a Head Start?",
+      "kind": "upgrade"
+    },
+    {
+      "id": 320,
+      "name": "Future Linkin",
+      "kind": "trophy"
+    },
+    {
+      "id": 237,
+      "name": "Corrosion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 257,
+      "name": "Light Condenser",
+      "kind": "upgrade"
+    },
+    {
+      "id": 251,
+      "name": "Goblin's Bane",
+      "kind": "trophy"
+    },
+    {
+      "id": 761,
+      "name": "Swarming Tower",
+      "kind": "upgrade"
+    },
+    {
+      "id": 271,
+      "name": "Resurrection",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1246,
+      "name": "Bribed Army",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1051,
+      "name": "Inevitability",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1056,
+      "name": "Concealment",
+      "kind": "upgrade"
+    },
+    {
+      "id": 132,
+      "name": "Bottled Voice",
+      "kind": "trophy"
+    },
+    {
+      "id": 325,
+      "name": "World Restoration",
+      "kind": "trophy"
+    },
+    {
+      "id": 157,
+      "name": "No Recruiting",
+      "kind": "trophy"
+    },
+    {
+      "id": 290,
+      "name": "Art of the Crow",
+      "kind": "trophy"
+    },
+    {
+      "id": 318,
+      "name": "Research Makers Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 628,
+      "name": "Psionics",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1044,
+      "name": "Decentralization",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1142,
+      "name": "Sacred Glade",
+      "kind": "upgrade"
+    },
+    {
+      "id": 213,
+      "name": "Dragon's Roar",
+      "kind": "trophy"
+    },
+    {
+      "id": 137,
+      "name": "Druids Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 138,
+      "name": "Druids Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 139,
+      "name": "Druids Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 773,
+      "name": "Druids Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 56,
+      "name": "Research Angel Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 332,
+      "name": "The Undecided Armada",
+      "kind": "trophy"
+    },
+    {
+      "id": 332,
+      "name": "Exchange Lord",
+      "kind": "upgrade"
+    },
+    {
+      "id": 938,
+      "name": "Hall of Origination Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 256,
+      "name": "Journeymen",
+      "kind": "upgrade"
+    },
+    {
+      "id": 131,
+      "name": "Black Sword",
+      "kind": "trophy"
+    },
+    {
+      "id": 362,
+      "name": "Eye of the Dragon",
+      "kind": "trophy"
+    },
+    {
+      "id": 670,
+      "name": "Elven Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 444,
+      "name": "Sifting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 203,
+      "name": "Spell Cataclysm",
+      "kind": "trophy"
+    },
+    {
+      "id": 460,
+      "name": "Survival",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1216,
+      "name": "The Perfect Egg",
+      "kind": "upgrade"
+    },
+    {
+      "id": 278,
+      "name": "Nightmare Figment",
+      "kind": "trophy"
+    },
+    {
+      "id": 1220,
+      "name": "Under the Rainbow",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1210,
+      "name": "Debt for Life",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1076,
+      "name": "Masterpiece",
+      "kind": "upgrade"
+    },
+    {
+      "id": 323,
+      "name": "Reality Crater",
+      "kind": "trophy"
+    },
+    {
+      "id": 967,
+      "name": "Makers Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 185,
+      "name": "Flame of Bondelnar",
+      "kind": "trophy"
+    },
+    {
+      "id": 282,
+      "name": "Spiked Whip",
+      "kind": "trophy"
+    },
+    {
+      "id": 538,
+      "name": "Hierarchy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 535,
+      "name": "Undercutting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 141,
+      "name": "Druidic Vocabulary",
+      "kind": "upgrade"
+    },
+    {
+      "id": 133,
+      "name": "Animal Companions",
+      "kind": "upgrade"
+    },
+    {
+      "id": 145,
+      "name": "Natural Recycling",
+      "kind": "upgrade"
+    },
+    {
+      "id": 142,
+      "name": "Earthly Bond",
+      "kind": "upgrade"
+    },
+    {
+      "id": 134,
+      "name": "Bardic Knowledge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 146,
+      "name": "Shapeshifting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 144,
+      "name": "Mabinogion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 143,
+      "name": "Earthly Soul",
+      "kind": "upgrade"
+    },
+    {
+      "id": 135,
+      "name": "Building Jungle",
+      "kind": "upgrade"
+    },
+    {
+      "id": 122,
+      "name": "Drow Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 123,
+      "name": "Drow Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 124,
+      "name": "Drow Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 846,
+      "name": "Drow Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1085,
+      "name": "Surplus",
+      "kind": "upgrade"
+    },
+    {
+      "id": 155,
+      "name": "Dwarven Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 287,
+      "name": "Bunny Helpers",
+      "kind": "trophy"
+    },
+    {
+      "id": 368,
+      "name": "Spellfury",
+      "kind": "upgrade"
+    },
+    {
+      "id": 254,
+      "name": "Gemcutting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 136,
+      "name": "Dwarven Bow",
+      "kind": "trophy"
+    },
+    {
+      "id": 58,
+      "name": "Research Elven Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 502,
+      "name": "Power Orb",
+      "kind": "upgrade"
+    },
+    {
+      "id": 453,
+      "name": "Runecarving",
+      "kind": "upgrade"
+    },
+    {
+      "id": 415,
+      "name": "White Hot Magic",
+      "kind": "trophy"
+    },
+    {
+      "id": 1032,
+      "name": "Albedo",
+      "kind": "upgrade"
+    },
+    {
+      "id": 212,
+      "name": "Goblin Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 516,
+      "name": "Minecrafting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 144,
+      "name": "Mini-treasure",
+      "kind": "trophy"
+    },
+    {
+      "id": 1242,
+      "name": "Double Bottom",
+      "kind": "upgrade"
+    },
+    {
+      "id": 125,
+      "name": "Bone Fragment 1",
+      "kind": "trophy"
+    },
+    {
+      "id": 126,
+      "name": "Bone Fragment 2",
+      "kind": "trophy"
+    },
+    {
+      "id": 682,
+      "name": "Goblin Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 335,
+      "name": "Faction Grinder",
+      "kind": "upgrade"
+    },
+    {
+      "id": 163,
+      "name": "Gift Collector",
+      "kind": "trophy"
+    },
+    {
+      "id": 547,
+      "name": "Legacy of the Dwarven Kings",
+      "kind": "upgrade"
+    },
+    {
+      "id": 528,
+      "name": "Dispelling",
+      "kind": "upgrade"
+    },
+    {
+      "id": 419,
+      "name": "Adaptation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 961,
+      "name": "Djinn Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 83,
+      "name": "Lightning Storm",
+      "kind": "trophy"
+    },
+    {
+      "id": 322,
+      "name": "Persistent Entropy",
+      "kind": "trophy"
+    },
+    {
+      "id": 379,
+      "name": "Bloody Crown",
+      "kind": "trophy"
+    },
+    {
+      "id": 648,
+      "name": "Heart Bonus Reset",
+      "kind": "upgrade"
+    },
+    {
+      "id": 440,
+      "name": "Collection",
+      "kind": "upgrade"
+    },
+    {
+      "id": 294,
+      "name": "Lantern of Guidance",
+      "kind": "trophy"
+    },
+    {
+      "id": 791,
+      "name": "Ruby Shine",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1049,
+      "name": "Dreamwalking",
+      "kind": "upgrade"
+    },
+    {
+      "id": 753,
+      "name": "Burning Abyss",
+      "kind": "upgrade"
+    },
+    {
+      "id": 268,
+      "name": "Hallowing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 575,
+      "name": "Drow Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 407,
+      "name": "Under the Rainbow",
+      "kind": "trophy"
+    },
+    {
+      "id": 1214,
+      "name": "Jingle Choir",
+      "kind": "upgrade"
+    },
+    {
+      "id": 467,
+      "name": "Excavation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 616,
+      "name": "Calefaction",
+      "kind": "upgrade"
+    },
+    {
+      "id": 720,
+      "name": "Upheaval",
+      "kind": "upgrade"
+    },
+    {
+      "id": 60,
+      "name": "Research Goblin Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 93,
+      "name": "Perfectly Good",
+      "kind": "trophy"
+    },
+    {
+      "id": 201,
+      "name": "Advisor Insight",
+      "kind": "trophy"
+    },
+    {
+      "id": 138,
+      "name": "Glyph Table",
+      "kind": "trophy"
+    },
+    {
+      "id": 212,
+      "name": "Research Dragon Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 826,
+      "name": "Dragon Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 315,
+      "name": "Dueling",
+      "kind": "upgrade"
+    },
+    {
+      "id": 536,
+      "name": "Focus",
+      "kind": "upgrade"
+    },
+    {
+      "id": 398,
+      "name": "Undead Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 399,
+      "name": "Undead Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 400,
+      "name": "Undead Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 781,
+      "name": "Undead Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1202,
+      "name": "Loyalty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1168,
+      "name": "Novice Combinator",
+      "kind": "upgrade"
+    },
+    {
+      "id": 166,
+      "name": "Unholidays",
+      "kind": "trophy"
+    },
+    {
+      "id": 349,
+      "name": "Master Archeologist",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1052,
+      "name": "Invocation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 204,
+      "name": "Pixie Dust Fertilizer",
+      "kind": "upgrade"
+    },
+    {
+      "id": 195,
+      "name": "Fairy Workers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 207,
+      "name": "Spellsmith",
+      "kind": "upgrade"
+    },
+    {
+      "id": 201,
+      "name": "Starmetal Alloys",
+      "kind": "upgrade"
+    },
+    {
+      "id": 202,
+      "name": "Golden Pots",
+      "kind": "upgrade"
+    },
+    {
+      "id": 206,
+      "name": "Swarm of Fairies",
+      "kind": "upgrade"
+    },
+    {
+      "id": 203,
+      "name": "Fairy Cuisine",
+      "kind": "upgrade"
+    },
+    {
+      "id": 205,
+      "name": "Rainbow Link",
+      "kind": "upgrade"
+    },
+    {
+      "id": 208,
+      "name": "Kind Hearts",
+      "kind": "upgrade"
+    },
+    {
+      "id": 415,
+      "name": "Undercity Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 64,
+      "name": "Bloodstream",
+      "kind": "trophy"
+    },
+    {
+      "id": 615,
+      "name": "Wyrm's Den Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 402,
+      "name": "Sweet Bedtime",
+      "kind": "trophy"
+    },
+    {
+      "id": 321,
+      "name": "Chrono Loading",
+      "kind": "trophy"
+    },
+    {
+      "id": 1165,
+      "name": "Necrodoomancy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1209,
+      "name": "Fields of Conflict",
+      "kind": "upgrade"
+    },
+    {
+      "id": 503,
+      "name": "glho kohhl snod",
+      "kind": "upgrade"
+    },
+    {
+      "id": 158,
+      "name": "That Excavated Quickly",
+      "kind": "trophy"
+    },
+    {
+      "id": 1250,
+      "name": "Yule Offering",
+      "kind": "upgrade"
+    },
+    {
+      "id": 118,
+      "name": "Research Titan Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 931,
+      "name": "MAD Masks",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1074,
+      "name": "Exhibition",
+      "kind": "upgrade"
+    },
+    {
+      "id": 280,
+      "name": "Raw Emerald",
+      "kind": "trophy"
+    },
+    {
+      "id": 108,
+      "name": "Demonic Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 183,
+      "name": "Research Dwarven Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 363,
+      "name": "Magician",
+      "kind": "upgrade"
+    },
+    {
+      "id": 146,
+      "name": "Pillar Fragment",
+      "kind": "trophy"
+    },
+    {
+      "id": 196,
+      "name": "Fairy Exchange",
+      "kind": "upgrade"
+    },
+    {
+      "id": 694,
+      "name": "Dragon Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 747,
+      "name": "Proof of Balance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 433,
+      "name": "Deliverance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 373,
+      "name": "Vanilla Researcher",
+      "kind": "upgrade"
+    },
+    {
+      "id": 151,
+      "name": "Rough Stone",
+      "kind": "trophy"
+    },
+    {
+      "id": 626,
+      "name": "Intimidation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1223,
+      "name": "Until Death Do Us Part",
+      "kind": "upgrade"
+    },
+    {
+      "id": 3,
+      "name": "Archeology Dwarf Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 174,
+      "name": "Elven Mint",
+      "kind": "upgrade"
+    },
+    {
+      "id": 175,
+      "name": "Sylvan Treasure Frills",
+      "kind": "upgrade"
+    },
+    {
+      "id": 177,
+      "name": "Ancient Clicking Arts",
+      "kind": "upgrade"
+    },
+    {
+      "id": 167,
+      "name": "Elven Emissary",
+      "kind": "upgrade"
+    },
+    {
+      "id": 166,
+      "name": "Elven Efficiency",
+      "kind": "upgrade"
+    },
+    {
+      "id": 176,
+      "name": "Secret Clicking Techniques",
+      "kind": "upgrade"
+    },
+    {
+      "id": 165,
+      "name": "Elven Diplomacy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 173,
+      "name": "Elven Luck",
+      "kind": "upgrade"
+    },
+    {
+      "id": 163,
+      "name": "Elven Treasure Casing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1178,
+      "name": "Discount",
+      "kind": "upgrade"
+    },
+    {
+      "id": 719,
+      "name": "Flanking",
+      "kind": "upgrade"
+    },
+    {
+      "id": 231,
+      "name": "Mana Waste",
+      "kind": "trophy"
+    },
+    {
+      "id": 887,
+      "name": "Star Trading",
+      "kind": "upgrade"
+    },
+    {
+      "id": 885,
+      "name": "Energy Recharge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 883,
+      "name": "Cosmic Resonance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 882,
+      "name": "Constellation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 881,
+      "name": "Archon Pride",
+      "kind": "upgrade"
+    },
+    {
+      "id": 874,
+      "name": "Absent-mindedness",
+      "kind": "upgrade"
+    },
+    {
+      "id": 889,
+      "name": "Superior Consciousness",
+      "kind": "upgrade"
+    },
+    {
+      "id": 888,
+      "name": "Strange Attraction",
+      "kind": "upgrade"
+    },
+    {
+      "id": 876,
+      "name": "Arcane Core",
+      "kind": "upgrade"
+    },
+    {
+      "id": 192,
+      "name": "Golden Chicken",
+      "kind": "trophy"
+    },
+    {
+      "id": 403,
+      "name": "The Perfect Egg",
+      "kind": "trophy"
+    },
+    {
+      "id": 1002,
+      "name": "Reverse Autocasting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 756,
+      "name": "Ziggurat Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 253,
+      "name": "Dummy Targets",
+      "kind": "upgrade"
+    },
+    {
+      "id": 341,
+      "name": "Chaos Restoration",
+      "kind": "trophy"
+    },
+    {
+      "id": 233,
+      "name": "Mercenary Magic Contract",
+      "kind": "upgrade"
+    },
+    {
+      "id": 234,
+      "name": "Mercenary Sorcery Contract",
+      "kind": "upgrade"
+    },
+    {
+      "id": 534,
+      "name": "Slavery",
+      "kind": "upgrade"
+    },
+    {
+      "id": 404,
+      "name": "Heaven's Domain",
+      "kind": "upgrade"
+    },
+    {
+      "id": 304,
+      "name": "Incantation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 635,
+      "name": "Helden Sterben Nicht",
+      "kind": "upgrade"
+    },
+    {
+      "id": 38,
+      "name": "Underworld Diplomacy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 173,
+      "name": "Mana Matrix",
+      "kind": "trophy"
+    },
+    {
+      "id": 108,
+      "name": "True Night",
+      "kind": "trophy"
+    },
+    {
+      "id": 588,
+      "name": "Sun Beams",
+      "kind": "upgrade"
+    },
+    {
+      "id": 589,
+      "name": "Eruption",
+      "kind": "upgrade"
+    },
+    {
+      "id": 590,
+      "name": "Burning Rage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 764,
+      "name": "Slave Market Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 356,
+      "name": "Eternal Battle",
+      "kind": "trophy"
+    },
+    {
+      "id": 394,
+      "name": "Loyalty",
+      "kind": "trophy"
+    },
+    {
+      "id": 314,
+      "name": "Freezing Hell",
+      "kind": "trophy"
+    },
+    {
+      "id": 1162,
+      "name": "Avatars",
+      "kind": "upgrade"
+    },
+    {
+      "id": 40,
+      "name": "Angels Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 41,
+      "name": "Angels Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 42,
+      "name": "Angels Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 770,
+      "name": "Angels Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 86,
+      "name": "Advanced Civilization",
+      "kind": "upgrade"
+    },
+    {
+      "id": 87,
+      "name": "Light Collector",
+      "kind": "upgrade"
+    },
+    {
+      "id": 88,
+      "name": "Runic Conversion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1080,
+      "name": "Scriptures",
+      "kind": "upgrade"
+    },
+    {
+      "id": 168,
+      "name": "Elven Exchange",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1079,
+      "name": "Rigor",
+      "kind": "upgrade"
+    },
+    {
+      "id": 829,
+      "name": "Dwarven Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 326,
+      "name": "Beard Carpet",
+      "kind": "upgrade"
+    },
+    {
+      "id": 242,
+      "name": "Fusion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 317,
+      "name": "Research Djinn Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 1148,
+      "name": "Mystic Forest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 783,
+      "name": "Fool's Gems",
+      "kind": "upgrade"
+    },
+    {
+      "id": 819,
+      "name": "Money is Magic",
+      "kind": "upgrade"
+    },
+    {
+      "id": 818,
+      "name": "Lousy Architecture",
+      "kind": "upgrade"
+    },
+    {
+      "id": 299,
+      "name": "Climate Forecast",
+      "kind": "trophy"
+    },
+    {
+      "id": 372,
+      "name": "Demon Tail",
+      "kind": "trophy"
+    },
+    {
+      "id": 1005,
+      "name": "The Undecided Armada",
+      "kind": "upgrade"
+    },
+    {
+      "id": 408,
+      "name": "Training Grounds",
+      "kind": "upgrade"
+    },
+    {
+      "id": 221,
+      "name": "Monster Breeder",
+      "kind": "trophy"
+    },
+    {
+      "id": 727,
+      "name": "Nephilim Glory",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1017,
+      "name": "Order Remnant",
+      "kind": "upgrade"
+    },
+    {
+      "id": 319,
+      "name": "Planetary Force",
+      "kind": "trophy"
+    },
+    {
+      "id": 80,
+      "name": "Harlequin",
+      "kind": "trophy"
+    },
+    {
+      "id": 561,
+      "name": "Radiant Egg",
+      "kind": "upgrade"
+    },
+    {
+      "id": 251,
+      "name": "Automatons",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1000,
+      "name": "Makers Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 281,
+      "name": "Coinage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 386,
+      "name": "Mask of Scorch'Rah",
+      "kind": "trophy"
+    },
+    {
+      "id": 891,
+      "name": "Djinn Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 892,
+      "name": "Djinn Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 893,
+      "name": "Djinn Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 894,
+      "name": "Djinn Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 229,
+      "name": "Mercenary First Contract",
+      "kind": "upgrade"
+    },
+    {
+      "id": 230,
+      "name": "Mercenary Second Contract",
+      "kind": "upgrade"
+    },
+    {
+      "id": 231,
+      "name": "Mercenary Third Contract",
+      "kind": "upgrade"
+    },
+    {
+      "id": 979,
+      "name": "Mercenary Fourth Contract",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1136,
+      "name": "Unrequitedness",
+      "kind": "upgrade"
+    },
+    {
+      "id": 385,
+      "name": "Titan Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 955,
+      "name": "Archon Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 604,
+      "name": "Hatch!",
+      "kind": "upgrade"
+    },
+    {
+      "id": 605,
+      "name": "Drakeling",
+      "kind": "upgrade"
+    },
+    {
+      "id": 606,
+      "name": "Dragon",
+      "kind": "upgrade"
+    },
+    {
+      "id": 607,
+      "name": "Elder Dragon",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1137,
+      "name": "Rotten Egg",
+      "kind": "upgrade"
+    },
+    {
+      "id": 95,
+      "name": "Realm Digger",
+      "kind": "trophy"
+    },
+    {
+      "id": 407,
+      "name": "Infernal Realm Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 438,
+      "name": "Mutation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 541,
+      "name": "Ambush",
+      "kind": "upgrade"
+    },
+    {
+      "id": 327,
+      "name": "God's Fingers",
+      "kind": "trophy"
+    },
+    {
+      "id": 276,
+      "name": "Weather Control",
+      "kind": "upgrade"
+    },
+    {
+      "id": 265,
+      "name": "Communion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1062,
+      "name": "Perfect Snowflake",
+      "kind": "upgrade"
+    },
+    {
+      "id": 259,
+      "name": "Refining",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1160,
+      "name": "Oilery",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1208,
+      "name": "Eggsercise",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1084,
+      "name": "Rigmarole",
+      "kind": "upgrade"
+    },
+    {
+      "id": 313,
+      "name": "Critical Strike",
+      "kind": "upgrade"
+    },
+    {
+      "id": 278,
+      "name": "Bartering",
+      "kind": "upgrade"
+    },
+    {
+      "id": 359,
+      "name": "Apothecary",
+      "kind": "upgrade"
+    },
+    {
+      "id": 79,
+      "name": "Halls of Balance",
+      "kind": "trophy"
+    },
+    {
+      "id": 1155,
+      "name": "Liquefaction",
+      "kind": "upgrade"
+    },
+    {
+      "id": 219,
+      "name": "Goblin Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1007,
+      "name": "Balance Remnant",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1042,
+      "name": "Selection",
+      "kind": "upgrade"
+    },
+    {
+      "id": 451,
+      "name": "Mesmerization",
+      "kind": "upgrade"
+    },
+    {
+      "id": 136,
+      "name": "Druid Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 388,
+      "name": "Proof of Neutrality",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1,
+      "name": "Archeology Drow Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 401,
+      "name": "Undead Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 57,
+      "name": "Research Demon Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 711,
+      "name": "Customizing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 252,
+      "name": "Goblin's Commander",
+      "kind": "trophy"
+    },
+    {
+      "id": 539,
+      "name": "Spellbinding",
+      "kind": "upgrade"
+    },
+    {
+      "id": 165,
+      "name": "Snowpile",
+      "kind": "trophy"
+    },
+    {
+      "id": 260,
+      "name": "Reinforcing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1033,
+      "name": "Equivalence",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1012,
+      "name": "Chaos Remnant",
+      "kind": "upgrade"
+    },
+    {
+      "id": 267,
+      "name": "Warrior Researcher",
+      "kind": "trophy"
+    },
+    {
+      "id": 305,
+      "name": "Mysticism",
+      "kind": "upgrade"
+    },
+    {
+      "id": 570,
+      "name": "Organized Crime",
+      "kind": "upgrade"
+    },
+    {
+      "id": 571,
+      "name": "Dark Elegance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 572,
+      "name": "Sorcerer's Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 573,
+      "name": "Trained Assassins",
+      "kind": "upgrade"
+    },
+    {
+      "id": 574,
+      "name": "Shadow Mirage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 550,
+      "name": "Expert Researcher",
+      "kind": "upgrade"
+    },
+    {
+      "id": 465,
+      "name": "Olympian Hall",
+      "kind": "upgrade"
+    },
+    {
+      "id": 265,
+      "name": "Research Titan Trophy2",
+      "kind": "trophy"
+    },
+    {
+      "id": 354,
+      "name": "Fairy Love",
+      "kind": "trophy"
+    },
+    {
+      "id": 311,
+      "name": "Makers Quest Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 340,
+      "name": "Grand Diplomat",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1185,
+      "name": "Backfire",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1180,
+      "name": "Taboo",
+      "kind": "upgrade"
+    },
+    {
+      "id": 831,
+      "name": "Faceless Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1058,
+      "name": "Patience",
+      "kind": "upgrade"
+    },
+    {
+      "id": 499,
+      "name": "Titan Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 862,
+      "name": "Advanced Demonic Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 120,
+      "name": "Drow Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 120,
+      "name": "Chocolate Cookie",
+      "kind": "trophy"
+    },
+    {
+      "id": 975,
+      "name": "Persistent Entropy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 698,
+      "name": "Ancient Heirloom",
+      "kind": "upgrade"
+    },
+    {
+      "id": 426,
+      "name": "Architecture",
+      "kind": "upgrade"
+    },
+    {
+      "id": 355,
+      "name": "Eggsceptional",
+      "kind": "trophy"
+    },
+    {
+      "id": 344,
+      "name": "Hell Rush",
+      "kind": "upgrade"
+    },
+    {
+      "id": 508,
+      "name": "Know Your Enemy, Part I",
+      "kind": "upgrade"
+    },
+    {
+      "id": 170,
+      "name": "%0 Artifacts",
+      "kind": "trophy"
+    },
+    {
+      "id": 841,
+      "name": "Holy Frenzy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1211,
+      "name": "Heat Core",
+      "kind": "upgrade"
+    },
+    {
+      "id": 321,
+      "name": "Swarming",
+      "kind": "upgrade"
+    },
+    {
+      "id": 830,
+      "name": "Elven Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 378,
+      "name": "Novice Combinator",
+      "kind": "trophy"
+    },
+    {
+      "id": 306,
+      "name": "Necromancy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 432,
+      "name": "Weighting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 238,
+      "name": "Autoclicker",
+      "kind": "trophy"
+    },
+    {
+      "id": 519,
+      "name": "Dwarven Forge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 50,
+      "name": "%0 Reincarnations",
+      "kind": "trophy"
+    },
+    {
+      "id": 613,
+      "name": "Dragon Tamer",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1245,
+      "name": "10 Years War",
+      "kind": "upgrade"
+    },
+    {
+      "id": 425,
+      "name": "Transfusion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 475,
+      "name": "That Excavated Quickly",
+      "kind": "upgrade"
+    },
+    {
+      "id": 335,
+      "name": "Gentle Collector",
+      "kind": "trophy"
+    },
+    {
+      "id": 313,
+      "name": "Halloween Magic",
+      "kind": "trophy"
+    },
+    {
+      "id": 156,
+      "name": "Translucent Goo",
+      "kind": "trophy"
+    },
+    {
+      "id": 650,
+      "name": "Angel Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 651,
+      "name": "Angel Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 652,
+      "name": "Angel Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 794,
+      "name": "Angel Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 941,
+      "name": "Angel Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1227,
+      "name": "Angel Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1096,
+      "name": "Revolution",
+      "kind": "upgrade"
+    },
+    {
+      "id": 322,
+      "name": "War Funds",
+      "kind": "upgrade"
+    },
+    {
+      "id": 105,
+      "name": "Speed Run",
+      "kind": "trophy"
+    },
+    {
+      "id": 180,
+      "name": "Because I Like to Grind",
+      "kind": "trophy"
+    },
+    {
+      "id": 838,
+      "name": "Undead Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 342,
+      "name": "Order Restoration",
+      "kind": "trophy"
+    },
+    {
+      "id": 932,
+      "name": "Chocolate Box",
+      "kind": "upgrade"
+    },
+    {
+      "id": 865,
+      "name": "Advanced Druid Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 303,
+      "name": "Second Crystal Fragment",
+      "kind": "trophy"
+    },
+    {
+      "id": 1031,
+      "name": "Apeiron",
+      "kind": "upgrade"
+    },
+    {
+      "id": 204,
+      "name": "Chill Out",
+      "kind": "trophy"
+    },
+    {
+      "id": 164,
+      "name": "Santa's Helpers",
+      "kind": "trophy"
+    },
+    {
+      "id": 123,
+      "name": "Ancient Stoneslab 1",
+      "kind": "trophy"
+    },
+    {
+      "id": 124,
+      "name": "Ancient Stoneslab 2",
+      "kind": "trophy"
+    },
+    {
+      "id": 934,
+      "name": "Nexus Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 330,
+      "name": "Diabolical Evil",
+      "kind": "upgrade"
+    },
+    {
+      "id": 87,
+      "name": "Mathematician",
+      "kind": "trophy"
+    },
+    {
+      "id": 752,
+      "name": "Holy Site Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 101,
+      "name": "Magician",
+      "kind": "trophy"
+    },
+    {
+      "id": 690,
+      "name": "Undead Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1175,
+      "name": "Pottery",
+      "kind": "upgrade"
+    },
+    {
+      "id": 357,
+      "name": "Premeditation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 257,
+      "name": "Excavated Mirage",
+      "kind": "trophy"
+    },
+    {
+      "id": 205,
+      "name": "Summeraan Champion",
+      "kind": "trophy"
+    },
+    {
+      "id": 754,
+      "name": "Burning Abyss Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1147,
+      "name": "Brooding Abyss",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1011,
+      "name": "Balance Remnant",
+      "kind": "upgrade"
+    },
+    {
+      "id": 348,
+      "name": "Battlefield",
+      "kind": "trophy"
+    },
+    {
+      "id": 973,
+      "name": "Future Linkin",
+      "kind": "upgrade"
+    },
+    {
+      "id": 977,
+      "name": "Chocolate Egg",
+      "kind": "upgrade"
+    },
+    {
+      "id": 3,
+      "name": "Cloaked Shady Figure's Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 935,
+      "name": "Pavilion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 649,
+      "name": "Angel Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1222,
+      "name": "Underground Snow",
+      "kind": "upgrade"
+    },
+    {
+      "id": 273,
+      "name": "Sanctification",
+      "kind": "upgrade"
+    },
+    {
+      "id": 474,
+      "name": "No Recruiting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 854,
+      "name": "Art of the Crow",
+      "kind": "upgrade"
+    },
+    {
+      "id": 396,
+      "name": "Undead Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 90,
+      "name": "Pixie Mischief",
+      "kind": "upgrade"
+    },
+    {
+      "id": 91,
+      "name": "Donations",
+      "kind": "upgrade"
+    },
+    {
+      "id": 92,
+      "name": "Enchanted Lands",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1256,
+      "name": "Nexus Descent",
+      "kind": "upgrade"
+    },
+    {
+      "id": 285,
+      "name": "Forgery",
+      "kind": "upgrade"
+    },
+    {
+      "id": 509,
+      "name": "Vanilla Flavor Juice",
+      "kind": "upgrade"
+    },
+    {
+      "id": 365,
+      "name": "Solid Cloud",
+      "kind": "trophy"
+    },
+    {
+      "id": 100,
+      "name": "Demigod",
+      "kind": "trophy"
+    },
+    {
+      "id": 281,
+      "name": "Silk Cloth",
+      "kind": "trophy"
+    },
+    {
+      "id": 1184,
+      "name": "Artillery",
+      "kind": "upgrade"
+    },
+    {
+      "id": 306,
+      "name": "Third Crystal Fragment",
+      "kind": "trophy"
+    },
+    {
+      "id": 405,
+      "name": "Heaven's Domain Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 248,
+      "name": "Transmutation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1158,
+      "name": "Enochian",
+      "kind": "upgrade"
+    },
+    {
+      "id": 339,
+      "name": "God's Rest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1055,
+      "name": "Spilling",
+      "kind": "upgrade"
+    },
+    {
+      "id": 198,
+      "name": "Iron Rush",
+      "kind": "trophy"
+    },
+    {
+      "id": 709,
+      "name": "Chemistry",
+      "kind": "upgrade"
+    },
+    {
+      "id": 630,
+      "name": "Spellstorm",
+      "kind": "upgrade"
+    },
+    {
+      "id": 121,
+      "name": "Ancient Researcher",
+      "kind": "trophy"
+    },
+    {
+      "id": 933,
+      "name": "Nexus",
+      "kind": "upgrade"
+    },
+    {
+      "id": 653,
+      "name": "Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1134,
+      "name": "Legacy Container %0",
+      "kind": "upgrade"
+    },
+    {
+      "id": 314,
+      "name": "Crusade",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1071,
+      "name": "Anima Mundi",
+      "kind": "upgrade"
+    },
+    {
+      "id": 785,
+      "name": "Building Vines",
+      "kind": "upgrade"
+    },
+    {
+      "id": 811,
+      "name": "Lunar Cycle",
+      "kind": "upgrade"
+    },
+    {
+      "id": 810,
+      "name": "Grove Farming",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1088,
+      "name": "Paradox",
+      "kind": "upgrade"
+    },
+    {
+      "id": 562,
+      "name": "Wooden Egg",
+      "kind": "upgrade"
+    },
+    {
+      "id": 135,
+      "name": "Divine Sword",
+      "kind": "trophy"
+    },
+    {
+      "id": 735,
+      "name": "Fight the Goblin Army",
+      "kind": "upgrade"
+    },
+    {
+      "id": 2,
+      "name": "Archeology",
+      "kind": "upgrade"
+    },
+    {
+      "id": 705,
+      "name": "Tyrant Garrison",
+      "kind": "upgrade"
+    },
+    {
+      "id": 434,
+      "name": "Descent",
+      "kind": "upgrade"
+    },
+    {
+      "id": 632,
+      "name": "Cataclysm",
+      "kind": "upgrade"
+    },
+    {
+      "id": 261,
+      "name": "Socketing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 412,
+      "name": "Platinum Egg",
+      "kind": "trophy"
+    },
+    {
+      "id": 1225,
+      "name": "Oil Lamp",
+      "kind": "upgrade"
+    },
+    {
+      "id": 715,
+      "name": "Estates",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1212,
+      "name": "Full-spectrum Color",
+      "kind": "upgrade"
+    },
+    {
+      "id": 406,
+      "name": "Infernal Realm",
+      "kind": "upgrade"
+    },
+    {
+      "id": 317,
+      "name": "Formation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 837,
+      "name": "Titan Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 409,
+      "name": "Underground Snow",
+      "kind": "trophy"
+    },
+    {
+      "id": 469,
+      "name": "Survey Equipment",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1176,
+      "name": "Afterlife",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1073,
+      "name": "Toxicity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 845,
+      "name": "High Bastion Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 853,
+      "name": "Spider Clerics",
+      "kind": "upgrade"
+    },
+    {
+      "id": 851,
+      "name": "Ancillae Obscurae",
+      "kind": "upgrade"
+    },
+    {
+      "id": 852,
+      "name": "Crystal Servants",
+      "kind": "upgrade"
+    },
+    {
+      "id": 47,
+      "name": "Angelic Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 714,
+      "name": "Vampirism",
+      "kind": "upgrade"
+    },
+    {
+      "id": 39,
+      "name": "Angel Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 51,
+      "name": "Holy Bells",
+      "kind": "upgrade"
+    },
+    {
+      "id": 44,
+      "name": "Angelic Determination",
+      "kind": "upgrade"
+    },
+    {
+      "id": 43,
+      "name": "Angel Feathers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 50,
+      "name": "Guardian Angels",
+      "kind": "upgrade"
+    },
+    {
+      "id": 48,
+      "name": "Angelic Wisdom",
+      "kind": "upgrade"
+    },
+    {
+      "id": 49,
+      "name": "Archangel Feathers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 52,
+      "name": "Magical Gates",
+      "kind": "upgrade"
+    },
+    {
+      "id": 45,
+      "name": "Angelic Dominance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 53,
+      "name": "Wings of Liberty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 441,
+      "name": "Investment",
+      "kind": "upgrade"
+    },
+    {
+      "id": 470,
+      "name": "Secrets of the Ancients",
+      "kind": "upgrade"
+    },
+    {
+      "id": 329,
+      "name": "Coin Pillage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 127,
+      "name": "Fossilized Piece of Bark 1",
+      "kind": "trophy"
+    },
+    {
+      "id": 128,
+      "name": "Fossilized Piece of Bark 2",
+      "kind": "trophy"
+    },
+    {
+      "id": 1077,
+      "name": "Motus Perpetuum",
+      "kind": "upgrade"
+    },
+    {
+      "id": 559,
+      "name": "Dark Egg",
+      "kind": "upgrade"
+    },
+    {
+      "id": 304,
+      "name": "Second Iron Fragment",
+      "kind": "trophy"
+    },
+    {
+      "id": 4,
+      "name": "Archeology Expedition",
+      "kind": "trophy"
+    },
+    {
+      "id": 308,
+      "name": "Third Stone Fragment",
+      "kind": "trophy"
+    },
+    {
+      "id": 793,
+      "name": "Heavy Avalanche",
+      "kind": "upgrade"
+    },
+    {
+      "id": 318,
+      "name": "Invasion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 382,
+      "name": "Titans Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 383,
+      "name": "Titans Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 384,
+      "name": "Titans Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 780,
+      "name": "Titans Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 369,
+      "name": "Sun Blessing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 832,
+      "name": "Fairy Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 463,
+      "name": "Sunken City",
+      "kind": "upgrade"
+    },
+    {
+      "id": 349,
+      "name": "Factory",
+      "kind": "trophy"
+    },
+    {
+      "id": 529,
+      "name": "Purity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 956,
+      "name": "Archon Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 957,
+      "name": "Archon Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 958,
+      "name": "Archon Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 959,
+      "name": "Archon Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 960,
+      "name": "Archon Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1228,
+      "name": "Archon Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 765,
+      "name": "Mountain Palace",
+      "kind": "upgrade"
+    },
+    {
+      "id": 968,
+      "name": "Makers Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 969,
+      "name": "Makers Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 970,
+      "name": "Makers Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 971,
+      "name": "Makers Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 972,
+      "name": "Makers Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1239,
+      "name": "Makers Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 284,
+      "name": "Diplomacy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 510,
+      "name": "Because I Like to Grind",
+      "kind": "upgrade"
+    },
+    {
+      "id": 695,
+      "name": "Dragon Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 696,
+      "name": "Dragon Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 697,
+      "name": "Dragon Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 796,
+      "name": "Dragon Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 943,
+      "name": "Dragon Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1231,
+      "name": "Dragon Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 585,
+      "name": "Spell Cataclysm",
+      "kind": "upgrade"
+    },
+    {
+      "id": 940,
+      "name": "Djinn Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 578,
+      "name": "Van!shment",
+      "kind": "upgrade"
+    },
+    {
+      "id": 188,
+      "name": "Expert Researcher",
+      "kind": "trophy"
+    },
+    {
+      "id": 421,
+      "name": "Creeping",
+      "kind": "upgrade"
+    },
+    {
+      "id": 137,
+      "name": "Fossilized Rodent",
+      "kind": "trophy"
+    },
+    {
+      "id": 863,
+      "name": "Advanced Dragon Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 132,
+      "name": "Underworld Tyranny",
+      "kind": "upgrade"
+    },
+    {
+      "id": 127,
+      "name": "Honor Among Killers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 130,
+      "name": "Shadow Advance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 128,
+      "name": "Mana Addicts",
+      "kind": "upgrade"
+    },
+    {
+      "id": 119,
+      "name": "Blood Sacrifices",
+      "kind": "upgrade"
+    },
+    {
+      "id": 117,
+      "name": "Blackmail",
+      "kind": "upgrade"
+    },
+    {
+      "id": 131,
+      "name": "Spider Gods",
+      "kind": "upgrade"
+    },
+    {
+      "id": 129,
+      "name": "Professional Assassins",
+      "kind": "upgrade"
+    },
+    {
+      "id": 118,
+      "name": "Blade Dance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1182,
+      "name": "Fantasia",
+      "kind": "upgrade"
+    },
+    {
+      "id": 12,
+      "name": "Automatic Casting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 976,
+      "name": "Reality Crater",
+      "kind": "upgrade"
+    },
+    {
+      "id": 828,
+      "name": "Druid Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 769,
+      "name": "Warrior Researcher",
+      "kind": "upgrade"
+    },
+    {
+      "id": 152,
+      "name": "Steel Plate",
+      "kind": "trophy"
+    },
+    {
+      "id": 400,
+      "name": "Golden Bones",
+      "kind": "trophy"
+    },
+    {
+      "id": 307,
+      "name": "Third Iron Fragment",
+      "kind": "trophy"
+    },
+    {
+      "id": 1251,
+      "name": "Heart Blessing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1001,
+      "name": "Stoneheart's Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 284,
+      "name": "Ancestral Hourglass",
+      "kind": "trophy"
+    },
+    {
+      "id": 647,
+      "name": "Sun Force",
+      "kind": "upgrade"
+    },
+    {
+      "id": 716,
+      "name": "Hirelings",
+      "kind": "upgrade"
+    },
+    {
+      "id": 337,
+      "name": "Fast Forward",
+      "kind": "upgrade"
+    },
+    {
+      "id": 662,
+      "name": "Druid Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 784,
+      "name": "Flesh Servants",
+      "kind": "upgrade"
+    },
+    {
+      "id": 823,
+      "name": "Eternal Servitude",
+      "kind": "upgrade"
+    },
+    {
+      "id": 822,
+      "name": "Zombie Apocalypse",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1063,
+      "name": "Unlimited Knowledge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1064,
+      "name": "The Source of Magic",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1065,
+      "name": "Men of the World",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1066,
+      "name": "Return of the King",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1067,
+      "name": "The Art of War",
+      "kind": "upgrade"
+    },
+    {
+      "id": 145,
+      "name": "Octopus-shaped Helmet",
+      "kind": "trophy"
+    },
+    {
+      "id": 370,
+      "name": "The Blackest Ink",
+      "kind": "trophy"
+    },
+    {
+      "id": 591,
+      "name": "Winterly Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 678,
+      "name": "Fairy Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 7,
+      "name": "Fragment of a Titan Statue",
+      "kind": "upgrade"
+    },
+    {
+      "id": 59,
+      "name": "Research Fairy Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 193,
+      "name": "Grey Easter",
+      "kind": "trophy"
+    },
+    {
+      "id": 286,
+      "name": "Holy Frenzy",
+      "kind": "trophy"
+    },
+    {
+      "id": 431,
+      "name": "Overload",
+      "kind": "upgrade"
+    },
+    {
+      "id": 121,
+      "name": "Drow Exchange",
+      "kind": "upgrade"
+    },
+    {
+      "id": 274,
+      "name": "Branch of the Life Tree",
+      "kind": "trophy"
+    },
+    {
+      "id": 526,
+      "name": "Mercy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 437,
+      "name": "Miracle",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1138,
+      "name": "Frenzied Army",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1035,
+      "name": "Reduction",
+      "kind": "upgrade"
+    },
+    {
+      "id": 790,
+      "name": "Fortune Teller Machine",
+      "kind": "upgrade"
+    },
+    {
+      "id": 489,
+      "name": "Druid Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 276,
+      "name": "Dusty Coffin",
+      "kind": "trophy"
+    },
+    {
+      "id": 418,
+      "name": "Yule Offering",
+      "kind": "trophy"
+    },
+    {
+      "id": 912,
+      "name": "Makers Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 913,
+      "name": "Makers Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 914,
+      "name": "Makers Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 915,
+      "name": "Makers Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 346,
+      "name": "Lightning Storm",
+      "kind": "upgrade"
+    },
+    {
+      "id": 177,
+      "name": "Wall Fragment",
+      "kind": "trophy"
+    },
+    {
+      "id": 904,
+      "name": "The Desire Within",
+      "kind": "upgrade"
+    },
+    {
+      "id": 896,
+      "name": "Forbidden Will",
+      "kind": "upgrade"
+    },
+    {
+      "id": 903,
+      "name": "Magical Circuit",
+      "kind": "upgrade"
+    },
+    {
+      "id": 897,
+      "name": "Aura of Magic",
+      "kind": "upgrade"
+    },
+    {
+      "id": 898,
+      "name": "Spiritual Bindings",
+      "kind": "upgrade"
+    },
+    {
+      "id": 899,
+      "name": "Wild Surge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 900,
+      "name": "Flashy Storm",
+      "kind": "upgrade"
+    },
+    {
+      "id": 901,
+      "name": "Wishing Well",
+      "kind": "upgrade"
+    },
+    {
+      "id": 902,
+      "name": "Mana Creatures",
+      "kind": "upgrade"
+    },
+    {
+      "id": 937,
+      "name": "Hall of Origination",
+      "kind": "upgrade"
+    },
+    {
+      "id": 542,
+      "name": "Bloodlust",
+      "kind": "upgrade"
+    },
+    {
+      "id": 617,
+      "name": "Melting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 409,
+      "name": "Training Grounds Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 65,
+      "name": "Building Hater",
+      "kind": "trophy"
+    },
+    {
+      "id": 717,
+      "name": "Manipulation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 691,
+      "name": "Undead Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 692,
+      "name": "Undead Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 693,
+      "name": "Undead Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 805,
+      "name": "Undead Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 952,
+      "name": "Undead Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1241,
+      "name": "Undead Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 106,
+      "name": "Spellfury",
+      "kind": "trophy"
+    },
+    {
+      "id": 746,
+      "name": "Wall Chunk",
+      "kind": "upgrade"
+    },
+    {
+      "id": 236,
+      "name": "Prismatic Mana",
+      "kind": "trophy"
+    },
+    {
+      "id": 583,
+      "name": "Advisor Insight",
+      "kind": "upgrade"
+    },
+    {
+      "id": 464,
+      "name": "Sunken City Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1224,
+      "name": "Lantern of Guidance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1053,
+      "name": "Leylines",
+      "kind": "upgrade"
+    },
+    {
+      "id": 356,
+      "name": "Perfectly Good",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1177,
+      "name": "Asceticism",
+      "kind": "upgrade"
+    },
+    {
+      "id": 243,
+      "name": "Asmodean Champion",
+      "kind": "trophy"
+    },
+    {
+      "id": 448,
+      "name": "Capacity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 154,
+      "name": "Stone Tankard",
+      "kind": "trophy"
+    },
+    {
+      "id": 1173,
+      "name": "Lunafaction",
+      "kind": "upgrade"
+    },
+    {
+      "id": 842,
+      "name": "Brothel",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1161,
+      "name": "Overworking",
+      "kind": "upgrade"
+    },
+    {
+      "id": 430,
+      "name": "Lightning Rod",
+      "kind": "upgrade"
+    },
+    {
+      "id": 417,
+      "name": "Mummy?",
+      "kind": "trophy"
+    },
+    {
+      "id": 683,
+      "name": "Goblin Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 684,
+      "name": "Goblin Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 685,
+      "name": "Goblin Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 803,
+      "name": "Goblin Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 950,
+      "name": "Goblin Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1238,
+      "name": "Goblin Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 429,
+      "name": "Gravitation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 305,
+      "name": "Second Stone Fragment",
+      "kind": "trophy"
+    },
+    {
+      "id": 553,
+      "name": "Ruby Bonus Reset",
+      "kind": "upgrade"
+    },
+    {
+      "id": 771,
+      "name": "Heaven's Brilliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 806,
+      "name": "Angelic Fortitude",
+      "kind": "upgrade"
+    },
+    {
+      "id": 807,
+      "name": "Seraphim Wings",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1097,
+      "name": "Vengeance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 227,
+      "name": "Eternal Researcher",
+      "kind": "trophy"
+    },
+    {
+      "id": 702,
+      "name": "Round Table",
+      "kind": "upgrade"
+    },
+    {
+      "id": 974,
+      "name": "Chrono Loading",
+      "kind": "upgrade"
+    },
+    {
+      "id": 521,
+      "name": "Elixirs",
+      "kind": "upgrade"
+    },
+    {
+      "id": 925,
+      "name": "Archon Mask",
+      "kind": "upgrade"
+    },
+    {
+      "id": 762,
+      "name": "Swarming Tower Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 439,
+      "name": "Transubstantiation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 186,
+      "name": "Horn of the Kings",
+      "kind": "trophy"
+    },
+    {
+      "id": 636,
+      "name": "Crucible Of Darkness",
+      "kind": "upgrade"
+    },
+    {
+      "id": 184,
+      "name": "Faceless Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 185,
+      "name": "Faceless Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 186,
+      "name": "Faceless Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 776,
+      "name": "Faceless Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 309,
+      "name": "Archon Quest Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 532,
+      "name": "Jewellery",
+      "kind": "upgrade"
+    },
+    {
+      "id": 269,
+      "name": "Illumination",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1023,
+      "name": "Spectral Surge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 582,
+      "name": "Tiered Autocasting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 471,
+      "name": "Ancient Researcher",
+      "kind": "upgrade"
+    },
+    {
+      "id": 228,
+      "name": "Mercenary Badge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 350,
+      "name": "Mana Loom",
+      "kind": "trophy"
+    },
+    {
+      "id": 294,
+      "name": "Spellweavery",
+      "kind": "upgrade"
+    },
+    {
+      "id": 666,
+      "name": "Demon Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 905,
+      "name": "Wishes Come True",
+      "kind": "upgrade"
+    },
+    {
+      "id": 895,
+      "name": "Blue Powder",
+      "kind": "upgrade"
+    },
+    {
+      "id": 890,
+      "name": "Academic Prodigy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 222,
+      "name": "Pumpkin Smasher",
+      "kind": "trophy"
+    },
+    {
+      "id": 288,
+      "name": "Research Dwarven Trophy2",
+      "kind": "trophy"
+    },
+    {
+      "id": 362,
+      "name": "Demigod",
+      "kind": "upgrade"
+    },
+    {
+      "id": 427,
+      "name": "Gem Duster",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1087,
+      "name": "Relativity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 333,
+      "name": "Frostmelter",
+      "kind": "trophy"
+    },
+    {
+      "id": 452,
+      "name": "Reverberation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1143,
+      "name": "Forbidden Grove",
+      "kind": "upgrade"
+    },
+    {
+      "id": 390,
+      "name": "Midsummer Night's Dream",
+      "kind": "trophy"
+    },
+    {
+      "id": 1036,
+      "name": "Discovery",
+      "kind": "upgrade"
+    },
+    {
+      "id": 419,
+      "name": "Heart Blessing",
+      "kind": "trophy"
+    },
+    {
+      "id": 235,
+      "name": "Oath of the Mercenaries",
+      "kind": "upgrade"
+    },
+    {
+      "id": 980,
+      "name": "Mercenary Duel",
+      "kind": "upgrade"
+    },
+    {
+      "id": 675,
+      "name": "Faceless Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 676,
+      "name": "Faceless Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 677,
+      "name": "Faceless Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 801,
+      "name": "Faceless Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 948,
+      "name": "Faceless Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1236,
+      "name": "Faceless Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 412,
+      "name": "Goblin Bank",
+      "kind": "upgrade"
+    },
+    {
+      "id": 459,
+      "name": "Siege",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1164,
+      "name": "Arcane Efficiency",
+      "kind": "upgrade"
+    },
+    {
+      "id": 614,
+      "name": "Wyrm's Den",
+      "kind": "upgrade"
+    },
+    {
+      "id": 354,
+      "name": "Novice Researcher",
+      "kind": "upgrade"
+    },
+    {
+      "id": 169,
+      "name": "Elven Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 170,
+      "name": "Elven Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 171,
+      "name": "Elven Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 774,
+      "name": "Elven Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 396,
+      "name": "Fields of Conflict",
+      "kind": "trophy"
+    },
+    {
+      "id": 600,
+      "name": "Dragons Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 601,
+      "name": "Dragons Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 602,
+      "name": "Dragons Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 855,
+      "name": "Dragon Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 197,
+      "name": "Prestige Challenger",
+      "kind": "trophy"
+    },
+    {
+      "id": 556,
+      "name": "Ancient Egg",
+      "kind": "upgrade"
+    },
+    {
+      "id": 989,
+      "name": "Miniature Lamps",
+      "kind": "upgrade"
+    },
+    {
+      "id": 990,
+      "name": "Ifrit Ignition",
+      "kind": "upgrade"
+    },
+    {
+      "id": 991,
+      "name": "Identity Shaper",
+      "kind": "upgrade"
+    },
+    {
+      "id": 992,
+      "name": "Worldly Desires",
+      "kind": "upgrade"
+    },
+    {
+      "id": 993,
+      "name": "Altar of Wishes",
+      "kind": "upgrade"
+    },
+    {
+      "id": 262,
+      "name": "Research Faceless Trophy2",
+      "kind": "trophy"
+    },
+    {
+      "id": 84,
+      "name": "Lucifer",
+      "kind": "trophy"
+    },
+    {
+      "id": 34,
+      "name": "Planned Autocasting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 110,
+      "name": "Unlimited Mana",
+      "kind": "trophy"
+    },
+    {
+      "id": 410,
+      "name": "Enchanted Field",
+      "kind": "upgrade"
+    },
+    {
+      "id": 143,
+      "name": "Lucky Clover",
+      "kind": "trophy"
+    },
+    {
+      "id": 537,
+      "name": "Heirlooms",
+      "kind": "upgrade"
+    },
+    {
+      "id": 722,
+      "name": "Grandmaster Researcher",
+      "kind": "upgrade"
+    },
+    {
+      "id": 413,
+      "name": "Goblin Bank Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1172,
+      "name": "Cinnabar",
+      "kind": "upgrade"
+    },
+    {
+      "id": 763,
+      "name": "Slave Market",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1217,
+      "name": "Unwanted Truce",
+      "kind": "upgrade"
+    },
+    {
+      "id": 63,
+      "name": "Beard Carpet",
+      "kind": "trophy"
+    },
+    {
+      "id": 520,
+      "name": "Dwarven Forge Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1048,
+      "name": "Corruption",
+      "kind": "upgrade"
+    },
+    {
+      "id": 663,
+      "name": "Druid Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 664,
+      "name": "Druid Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 665,
+      "name": "Druid Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 798,
+      "name": "Druid Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 945,
+      "name": "Druid Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1233,
+      "name": "Druid Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 352,
+      "name": "Minedwarf",
+      "kind": "upgrade"
+    },
+    {
+      "id": 490,
+      "name": "Recruitment",
+      "kind": "upgrade"
+    },
+    {
+      "id": 491,
+      "name": "Mystic Maze",
+      "kind": "upgrade"
+    },
+    {
+      "id": 492,
+      "name": "Cyclopean Army",
+      "kind": "upgrade"
+    },
+    {
+      "id": 493,
+      "name": "Omnipresence",
+      "kind": "upgrade"
+    },
+    {
+      "id": 199,
+      "name": "Van!shment",
+      "kind": "trophy"
+    },
+    {
+      "id": 331,
+      "name": "Obsidian Crown",
+      "kind": "trophy"
+    },
+    {
+      "id": 476,
+      "name": "Efficient Autocasting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 94,
+      "name": "Discount Season",
+      "kind": "upgrade"
+    },
+    {
+      "id": 95,
+      "name": "Elite Warriors",
+      "kind": "upgrade"
+    },
+    {
+      "id": 96,
+      "name": "Smuggled Jewels",
+      "kind": "upgrade"
+    },
+    {
+      "id": 994,
+      "name": "Djinn Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 477,
+      "name": "Ancient Device Power",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1046,
+      "name": "Prosperity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 150,
+      "name": "Rotten Organ",
+      "kind": "trophy"
+    },
+    {
+      "id": 368,
+      "name": "Stiletto Heel",
+      "kind": "trophy"
+    },
+    {
+      "id": 7,
+      "name": "Archeology Underworld Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 450,
+      "name": "Illusion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 149,
+      "name": "Dwarven Ale",
+      "kind": "upgrade"
+    },
+    {
+      "id": 157,
+      "name": "Expert Masonry",
+      "kind": "upgrade"
+    },
+    {
+      "id": 160,
+      "name": "Mining Prodigies",
+      "kind": "upgrade"
+    },
+    {
+      "id": 162,
+      "name": "Underground Citadels",
+      "kind": "upgrade"
+    },
+    {
+      "id": 158,
+      "name": "Indestructible Treasure",
+      "kind": "upgrade"
+    },
+    {
+      "id": 148,
+      "name": "Bearded Assistants",
+      "kind": "upgrade"
+    },
+    {
+      "id": 147,
+      "name": "Battlehammers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 159,
+      "name": "Magic Resistance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 161,
+      "name": "Overwatch",
+      "kind": "upgrade"
+    },
+    {
+      "id": 442,
+      "name": "Offering",
+      "kind": "upgrade"
+    },
+    {
+      "id": 227,
+      "name": "Holy Crusaders",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1024,
+      "name": "Athanor",
+      "kind": "upgrade"
+    },
+    {
+      "id": 380,
+      "name": "Titan Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 218,
+      "name": "Vampire",
+      "kind": "trophy"
+    },
+    {
+      "id": 414,
+      "name": "Bribed Army",
+      "kind": "trophy"
+    },
+    {
+      "id": 625,
+      "name": "Hoarding",
+      "kind": "upgrade"
+    },
+    {
+      "id": 342,
+      "name": "Halls of Balance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 68,
+      "name": "Equality",
+      "kind": "trophy"
+    },
+    {
+      "id": 929,
+      "name": "Djinn Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 877,
+      "name": "Archon Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 878,
+      "name": "Archon Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 879,
+      "name": "Archon Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 880,
+      "name": "Archon Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 245,
+      "name": "Sacred Holiness",
+      "kind": "trophy"
+    },
+    {
+      "id": 315,
+      "name": "Chocolate Box",
+      "kind": "trophy"
+    },
+    {
+      "id": 1021,
+      "name": "Order Remnant",
+      "kind": "upgrade"
+    },
+    {
+      "id": 299,
+      "name": "Channeling",
+      "kind": "upgrade"
+    },
+    {
+      "id": 279,
+      "name": "Poison Vial",
+      "kind": "trophy"
+    },
+    {
+      "id": 139,
+      "name": "Goblin Purse",
+      "kind": "trophy"
+    },
+    {
+      "id": 603,
+      "name": "Dragon Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 374,
+      "name": "Snowball Fight",
+      "kind": "trophy"
+    },
+    {
+      "id": 835,
+      "name": "Artifact Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 151,
+      "name": "Dwarven Exchange",
+      "kind": "upgrade"
+    },
+    {
+      "id": 343,
+      "name": "Spectral Surge",
+      "kind": "trophy"
+    },
+    {
+      "id": 548,
+      "name": "Voodoo Doll",
+      "kind": "upgrade"
+    },
+    {
+      "id": 207,
+      "name": "Winterly Champion",
+      "kind": "trophy"
+    },
+    {
+      "id": 544,
+      "name": "Stalking",
+      "kind": "upgrade"
+    },
+    {
+      "id": 447,
+      "name": "Assimilation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 236,
+      "name": "Trade Lords",
+      "kind": "upgrade"
+    },
+    {
+      "id": 324,
+      "name": "Chocolate Egg",
+      "kind": "trophy"
+    },
+    {
+      "id": 527,
+      "name": "Devotion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1183,
+      "name": "Legerdemain",
+      "kind": "upgrade"
+    },
+    {
+      "id": 856,
+      "name": "Dragon Pasture",
+      "kind": "upgrade"
+    },
+    {
+      "id": 6,
+      "name": "Archeology Titan Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 116,
+      "name": "Research Druid Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 724,
+      "name": "Broodmothers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 725,
+      "name": "Abyssal Gaze",
+      "kind": "upgrade"
+    },
+    {
+      "id": 726,
+      "name": "Legion's Limbs",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1169,
+      "name": "Bloody Crown",
+      "kind": "upgrade"
+    },
+    {
+      "id": 152,
+      "name": "Dwarven Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 153,
+      "name": "Dwarven Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 154,
+      "name": "Dwarven Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 847,
+      "name": "Dwarven Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 424,
+      "name": "Nexus Descent",
+      "kind": "trophy"
+    },
+    {
+      "id": 258,
+      "name": "Magnetism",
+      "kind": "upgrade"
+    },
+    {
+      "id": 279,
+      "name": "Bribing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 353,
+      "name": "Perfect Snowflake",
+      "kind": "trophy"
+    },
+    {
+      "id": 103,
+      "name": "Rewind",
+      "kind": "trophy"
+    },
+    {
+      "id": 275,
+      "name": "Crystallized Lava",
+      "kind": "trophy"
+    },
+    {
+      "id": 289,
+      "name": "Research Drow Trophy2",
+      "kind": "trophy"
+    },
+    {
+      "id": 287,
+      "name": "Recycling",
+      "kind": "upgrade"
+    },
+    {
+      "id": 256,
+      "name": "Wall Chunk",
+      "kind": "trophy"
+    },
+    {
+      "id": 263,
+      "name": "Woodcraft",
+      "kind": "upgrade"
+    },
+    {
+      "id": 713,
+      "name": "Intervention",
+      "kind": "upgrade"
+    },
+    {
+      "id": 233,
+      "name": "Dawnstone",
+      "kind": "trophy"
+    },
+    {
+      "id": 266,
+      "name": "Cursing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 558,
+      "name": "Crystal Egg",
+      "kind": "upgrade"
+    },
+    {
+      "id": 187,
+      "name": "Faceless Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 424,
+      "name": "Explosives",
+      "kind": "upgrade"
+    },
+    {
+      "id": 250,
+      "name": "Apprenticeship",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1003,
+      "name": "Astral Challenger",
+      "kind": "upgrade"
+    },
+    {
+      "id": 758,
+      "name": "Arboreal City Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 122,
+      "name": "Intermediate Researcher",
+      "kind": "trophy"
+    },
+    {
+      "id": 953,
+      "name": "Makers Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 458,
+      "name": "Shattering",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1054,
+      "name": "Mirrors",
+      "kind": "upgrade"
+    },
+    {
+      "id": 644,
+      "name": "Eternal Researcher",
+      "kind": "upgrade"
+    },
+    {
+      "id": 457,
+      "name": "Heroism",
+      "kind": "upgrade"
+    },
+    {
+      "id": 210,
+      "name": "Dragon Tamer",
+      "kind": "trophy"
+    },
+    {
+      "id": 350,
+      "name": "Mathematician",
+      "kind": "upgrade"
+    },
+    {
+      "id": 518,
+      "name": "Spider Sanctuary Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 226,
+      "name": "Heresiarchs",
+      "kind": "upgrade"
+    },
+    {
+      "id": 435,
+      "name": "Eternity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 216,
+      "name": "Ghost",
+      "kind": "trophy"
+    },
+    {
+      "id": 1095,
+      "name": "Pacifism",
+      "kind": "upgrade"
+    },
+    {
+      "id": 220,
+      "name": "Bonepicker",
+      "kind": "trophy"
+    },
+    {
+      "id": 298,
+      "name": "Gold Hunt",
+      "kind": "trophy"
+    },
+    {
+      "id": 240,
+      "name": "Delayed Reaction",
+      "kind": "upgrade"
+    },
+    {
+      "id": 422,
+      "name": "Underhanded Tactics",
+      "kind": "trophy"
+    },
+    {
+      "id": 483,
+      "name": "Avalanche",
+      "kind": "upgrade"
+    },
+    {
+      "id": 740,
+      "name": "Support the Goblin Army",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1016,
+      "name": "Chaos Remnant",
+      "kind": "upgrade"
+    },
+    {
+      "id": 495,
+      "name": "Rich Followers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 496,
+      "name": "Harmony of Thought",
+      "kind": "upgrade"
+    },
+    {
+      "id": 497,
+      "name": "Balanced Economy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 498,
+      "name": "Storm of Wealth",
+      "kind": "upgrade"
+    },
+    {
+      "id": 20,
+      "name": "Gem Power",
+      "kind": "upgrade"
+    },
+    {
+      "id": 345,
+      "name": "True Harlequin",
+      "kind": "trophy"
+    },
+    {
+      "id": 319,
+      "name": "Overwhelm",
+      "kind": "upgrade"
+    },
+    {
+      "id": 115,
+      "name": "Torture Chambers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 111,
+      "name": "Infernal Magic",
+      "kind": "upgrade"
+    },
+    {
+      "id": 112,
+      "name": "Burning Legion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 114,
+      "name": "Lava Pits",
+      "kind": "upgrade"
+    },
+    {
+      "id": 110,
+      "name": "Demon Overseers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 109,
+      "name": "Demonic Presence",
+      "kind": "upgrade"
+    },
+    {
+      "id": 113,
+      "name": "Devil Tyrant",
+      "kind": "upgrade"
+    },
+    {
+      "id": 102,
+      "name": "Evil Conquerors",
+      "kind": "upgrade"
+    },
+    {
+      "id": 116,
+      "name": "Very Bad Guys",
+      "kind": "upgrade"
+    },
+    {
+      "id": 160,
+      "name": "Ancient Device",
+      "kind": "trophy"
+    },
+    {
+      "id": 404,
+      "name": "Unwanted Truce",
+      "kind": "trophy"
+    },
+    {
+      "id": 454,
+      "name": "Athletics",
+      "kind": "upgrade"
+    },
+    {
+      "id": 253,
+      "name": "Goblins Everywhere!",
+      "kind": "trophy"
+    },
+    {
+      "id": 721,
+      "name": "Know Your Enemy, Part II",
+      "kind": "upgrade"
+    },
+    {
+      "id": 310,
+      "name": "Assault",
+      "kind": "upgrade"
+    },
+    {
+      "id": 667,
+      "name": "Dwarven Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 668,
+      "name": "Dwarven Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 669,
+      "name": "Dwarven Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 799,
+      "name": "Dwarven Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 946,
+      "name": "Dwarven Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1234,
+      "name": "Dwarven Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 654,
+      "name": "Dwarven Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1171,
+      "name": "Idillium Explorer",
+      "kind": "upgrade"
+    },
+    {
+      "id": 245,
+      "name": "Plague",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1154,
+      "name": "Folgoration",
+      "kind": "upgrade"
+    },
+    {
+      "id": 924,
+      "name": "Makers Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 408,
+      "name": "Ghostbuster",
+      "kind": "trophy"
+    },
+    {
+      "id": 364,
+      "name": "Glowing Wing",
+      "kind": "trophy"
+    },
+    {
+      "id": 1093,
+      "name": "Multiplication",
+      "kind": "upgrade"
+    },
+    {
+      "id": 347,
+      "name": "Lucifer",
+      "kind": "upgrade"
+    },
+    {
+      "id": 107,
+      "name": "Demonic Exchange",
+      "kind": "upgrade"
+    },
+    {
+      "id": 455,
+      "name": "Domination",
+      "kind": "upgrade"
+    },
+    {
+      "id": 197,
+      "name": "Fairies Trade Treaty",
+      "kind": "upgrade"
+    },
+    {
+      "id": 198,
+      "name": "Fairies Friendship Pact",
+      "kind": "upgrade"
+    },
+    {
+      "id": 199,
+      "name": "Fairies Alliance",
+      "kind": "upgrade"
+    },
+    {
+      "id": 778,
+      "name": "Fairies Union",
+      "kind": "upgrade"
+    },
+    {
+      "id": 91,
+      "name": "Novice Researcher",
+      "kind": "trophy"
+    },
+    {
+      "id": 246,
+      "name": "Refraction",
+      "kind": "upgrade"
+    },
+    {
+      "id": 290,
+      "name": "Laboratory",
+      "kind": "upgrade"
+    },
+    {
+      "id": 443,
+      "name": "Repurpose",
+      "kind": "upgrade"
+    },
+    {
+      "id": 843,
+      "name": "Brothel Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1163,
+      "name": "Revelations",
+      "kind": "upgrade"
+    },
+    {
+      "id": 302,
+      "name": "First Stone Fragment",
+      "kind": "trophy"
+    },
+    {
+      "id": 261,
+      "name": "Research Elven Trophy2",
+      "kind": "trophy"
+    },
+    {
+      "id": 787,
+      "name": "Giant Market",
+      "kind": "upgrade"
+    },
+    {
+      "id": 821,
+      "name": "Titanic Authority",
+      "kind": "upgrade"
+    },
+    {
+      "id": 820,
+      "name": "Colossus Kingdom",
+      "kind": "upgrade"
+    },
+    {
+      "id": 622,
+      "name": "Oblation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 274,
+      "name": "Transcendence",
+      "kind": "upgrade"
+    },
+    {
+      "id": 183,
+      "name": "Faceless Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 61,
+      "name": "Research Undead Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 406,
+      "name": "Still Lightning",
+      "kind": "trophy"
+    },
+    {
+      "id": 742,
+      "name": "Elite Goblins",
+      "kind": "upgrade"
+    },
+    {
+      "id": 743,
+      "name": "Goblin Commandos",
+      "kind": "upgrade"
+    },
+    {
+      "id": 744,
+      "name": "The Slack King",
+      "kind": "upgrade"
+    },
+    {
+      "id": 733,
+      "name": "Exchange High Lord",
+      "kind": "upgrade"
+    },
+    {
+      "id": 341,
+      "name": "Greed Drive",
+      "kind": "upgrade"
+    },
+    {
+      "id": 360,
+      "name": "Pumpkin Collector",
+      "kind": "trophy"
+    },
+    {
+      "id": 445,
+      "name": "Smuggling",
+      "kind": "upgrade"
+    },
+    {
+      "id": 189,
+      "name": "Underworld Researcher",
+      "kind": "trophy"
+    },
+    {
+      "id": 586,
+      "name": "Antipodes",
+      "kind": "upgrade"
+    },
+    {
+      "id": 512,
+      "name": "Alloys",
+      "kind": "upgrade"
+    },
+    {
+      "id": 92,
+      "name": "Perfect Combo",
+      "kind": "trophy"
+    },
+    {
+      "id": 264,
+      "name": "Research Goblin Trophy2",
+      "kind": "trophy"
+    },
+    {
+      "id": 29,
+      "name": "Masterful Autocasting",
+      "kind": "upgrade"
+    },
+    {
+      "id": 679,
+      "name": "Fairy Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 680,
+      "name": "Fairy Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 681,
+      "name": "Fairy Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 802,
+      "name": "Fairy Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 949,
+      "name": "Fairy Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1237,
+      "name": "Fairy Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1013,
+      "name": "Chaos Remnant Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1014,
+      "name": "Chaos Remnant Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1015,
+      "name": "Chaos Remnant Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 620,
+      "name": "Plasmation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 397,
+      "name": "Debt for Life",
+      "kind": "trophy"
+    },
+    {
+      "id": 504,
+      "name": "Suggestion Master",
+      "kind": "upgrade"
+    },
+    {
+      "id": 42,
+      "name": "Clouded",
+      "kind": "trophy"
+    },
+    {
+      "id": 1068,
+      "name": "Mercenary Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 336,
+      "name": "Fairy Choir",
+      "kind": "upgrade"
+    },
+    {
+      "id": 264,
+      "name": "Blessing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 926,
+      "name": "Djinn Mask",
+      "kind": "upgrade"
+    },
+    {
+      "id": 269,
+      "name": "Ancient Cocoa Bean",
+      "kind": "trophy"
+    },
+    {
+      "id": 217,
+      "name": "Skeleton",
+      "kind": "trophy"
+    },
+    {
+      "id": 501,
+      "name": "Fossilized Rodent",
+      "kind": "upgrade"
+    },
+    {
+      "id": 297,
+      "name": "Aeromancy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 376,
+      "name": "Colossal Forge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 374,
+      "name": "Charged Clicks",
+      "kind": "upgrade"
+    },
+    {
+      "id": 379,
+      "name": "Titan Obelisk",
+      "kind": "upgrade"
+    },
+    {
+      "id": 381,
+      "name": "Titan Drill",
+      "kind": "upgrade"
+    },
+    {
+      "id": 375,
+      "name": "Charged Structures",
+      "kind": "upgrade"
+    },
+    {
+      "id": 377,
+      "name": "Titan Sized Walls",
+      "kind": "upgrade"
+    },
+    {
+      "id": 387,
+      "name": "Cyclopean Strength",
+      "kind": "upgrade"
+    },
+    {
+      "id": 378,
+      "name": "Heavy Coins",
+      "kind": "upgrade"
+    },
+    {
+      "id": 386,
+      "name": "Oversized Legends",
+      "kind": "upgrade"
+    },
+    {
+      "id": 302,
+      "name": "Empowered Luck",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1140,
+      "name": "Golden Heaven",
+      "kind": "upgrade"
+    },
+    {
+      "id": 234,
+      "name": "Duskstone",
+      "kind": "trophy"
+    },
+    {
+      "id": 618,
+      "name": "Sublimation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 8,
+      "name": "Automatic Casting",
+      "kind": "trophy"
+    },
+    {
+      "id": 9,
+      "name": "Improved Autocasting",
+      "kind": "trophy"
+    },
+    {
+      "id": 10,
+      "name": "Masterful Autocasting",
+      "kind": "trophy"
+    },
+    {
+      "id": 11,
+      "name": "Priority Autocasting",
+      "kind": "trophy"
+    },
+    {
+      "id": 12,
+      "name": "Contingency Autocasting",
+      "kind": "trophy"
+    },
+    {
+      "id": 13,
+      "name": "Planned Autocasting",
+      "kind": "trophy"
+    },
+    {
+      "id": 159,
+      "name": "Efficient Autocasting",
+      "kind": "trophy"
+    },
+    {
+      "id": 326,
+      "name": "Reverse Autocasting",
+      "kind": "trophy"
+    },
+    {
+      "id": 200,
+      "name": "Tiered Autocasting",
+      "kind": "trophy"
+    },
+    {
+      "id": 164,
+      "name": "Elven Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 277,
+      "name": "Acquisition",
+      "kind": "upgrade"
+    },
+    {
+      "id": 598,
+      "name": "Dragon Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1200,
+      "name": "Golden Snowballs",
+      "kind": "upgrade"
+    },
+    {
+      "id": 515,
+      "name": "Metallurgy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 140,
+      "name": "Druid Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 297,
+      "name": "Faction Ruler",
+      "kind": "trophy"
+    },
+    {
+      "id": 868,
+      "name": "Advanced Faceless Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1083,
+      "name": "Heist",
+      "kind": "upgrade"
+    },
+    {
+      "id": 461,
+      "name": "Stonehenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1070,
+      "name": "Alkahest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 169,
+      "name": "Neutral Challenger",
+      "kind": "trophy"
+    },
+    {
+      "id": 232,
+      "name": "Mercenary Tribute",
+      "kind": "upgrade"
+    },
+    {
+      "id": 223,
+      "name": "Strong Currency",
+      "kind": "upgrade"
+    },
+    {
+      "id": 222,
+      "name": "Slave Trading",
+      "kind": "upgrade"
+    },
+    {
+      "id": 210,
+      "name": "Cheap Materials",
+      "kind": "upgrade"
+    },
+    {
+      "id": 209,
+      "name": "Fool's Gold",
+      "kind": "upgrade"
+    },
+    {
+      "id": 221,
+      "name": "Goblin Economists",
+      "kind": "upgrade"
+    },
+    {
+      "id": 214,
+      "name": "Hobgoblin Gladiators",
+      "kind": "upgrade"
+    },
+    {
+      "id": 213,
+      "name": "Goblin Central Bank",
+      "kind": "upgrade"
+    },
+    {
+      "id": 211,
+      "name": "Black Market",
+      "kind": "upgrade"
+    },
+    {
+      "id": 220,
+      "name": "Green Fingers Discount",
+      "kind": "upgrade"
+    },
+    {
+      "id": 377,
+      "name": "Frenzied Army",
+      "kind": "trophy"
+    },
+    {
+      "id": 707,
+      "name": "Freemason's Hall",
+      "kind": "upgrade"
+    },
+    {
+      "id": 246,
+      "name": "Seraphim Champion",
+      "kind": "trophy"
+    },
+    {
+      "id": 418,
+      "name": "Thanksgiving",
+      "kind": "upgrade"
+    },
+    {
+      "id": 921,
+      "name": "Valuable Antiquity",
+      "kind": "upgrade"
+    },
+    {
+      "id": 907,
+      "name": "Bedrock Foundations",
+      "kind": "upgrade"
+    },
+    {
+      "id": 917,
+      "name": "Reality Marble",
+      "kind": "upgrade"
+    },
+    {
+      "id": 357,
+      "name": "Platinum Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 66,
+      "name": "Coin Pillage",
+      "kind": "trophy"
+    },
+    {
+      "id": 371,
+      "name": "Blood Chalice",
+      "kind": "trophy"
+    },
+    {
+      "id": 394,
+      "name": "The Walking Dead",
+      "kind": "upgrade"
+    },
+    {
+      "id": 390,
+      "name": "Deadened Muscles",
+      "kind": "upgrade"
+    },
+    {
+      "id": 392,
+      "name": "Death Temples",
+      "kind": "upgrade"
+    },
+    {
+      "id": 403,
+      "name": "Undead Resilience",
+      "kind": "upgrade"
+    },
+    {
+      "id": 389,
+      "name": "Corpse Supply",
+      "kind": "upgrade"
+    },
+    {
+      "id": 393,
+      "name": "Plagued Buildings",
+      "kind": "upgrade"
+    },
+    {
+      "id": 391,
+      "name": "Dead Fields",
+      "kind": "upgrade"
+    },
+    {
+      "id": 395,
+      "name": "Tireless Workers",
+      "kind": "upgrade"
+    },
+    {
+      "id": 402,
+      "name": "Unholy Rituals",
+      "kind": "upgrade"
+    },
+    {
+      "id": 62,
+      "name": "Assistant Squasher",
+      "kind": "trophy"
+    },
+    {
+      "id": 1144,
+      "name": "Greed Factory",
+      "kind": "upgrade"
+    },
+    {
+      "id": 927,
+      "name": "Makers Mask",
+      "kind": "upgrade"
+    },
+    {
+      "id": 398,
+      "name": "Heat Core",
+      "kind": "trophy"
+    },
+    {
+      "id": 5,
+      "name": "Sturdy Bearded Man's Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 767,
+      "name": "Flesh Workshop",
+      "kind": "upgrade"
+    },
+    {
+      "id": 312,
+      "name": "MAD Masks",
+      "kind": "trophy"
+    },
+    {
+      "id": 1075,
+      "name": "Installation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 107,
+      "name": "Sun Blessing",
+      "kind": "trophy"
+    },
+    {
+      "id": 592,
+      "name": "Glaciality",
+      "kind": "upgrade"
+    },
+    {
+      "id": 593,
+      "name": "Permafrost",
+      "kind": "upgrade"
+    },
+    {
+      "id": 594,
+      "name": "Cold Blood",
+      "kind": "upgrade"
+    },
+    {
+      "id": 494,
+      "name": "Faceless Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 366,
+      "name": "Orc Fang Necklace",
+      "kind": "trophy"
+    },
+    {
+      "id": 1153,
+      "name": "Frozen Wastes",
+      "kind": "upgrade"
+    },
+    {
+      "id": 293,
+      "name": "Exchequer",
+      "kind": "upgrade"
+    },
+    {
+      "id": 401,
+      "name": "Jingle Choir",
+      "kind": "trophy"
+    },
+    {
+      "id": 291,
+      "name": "Research Dragon Trophy2",
+      "kind": "trophy"
+    },
+    {
+      "id": 734,
+      "name": "Genealogist",
+      "kind": "upgrade"
+    },
+    {
+      "id": 703,
+      "name": "Secret Exchange",
+      "kind": "upgrade"
+    },
+    {
+      "id": 270,
+      "name": "Triple Weirdness",
+      "kind": "trophy"
+    },
+    {
+      "id": 1252,
+      "name": "Heavenly Omelette",
+      "kind": "upgrade"
+    },
+    {
+      "id": 576,
+      "name": "Prestige Challenger",
+      "kind": "upgrade"
+    },
+    {
+      "id": 215,
+      "name": "Goblin Exchange",
+      "kind": "upgrade"
+    },
+    {
+      "id": 524,
+      "name": "Poisons",
+      "kind": "upgrade"
+    },
+    {
+      "id": 405,
+      "name": "Treachery",
+      "kind": "trophy"
+    },
+    {
+      "id": 1069,
+      "name": "Mercenary Union Contract 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1008,
+      "name": "Balance Remnant Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1009,
+      "name": "Balance Remnant Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1010,
+      "name": "Balance Remnant Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 397,
+      "name": "Undead Exchange",
+      "kind": "upgrade"
+    },
+    {
+      "id": 629,
+      "name": "Sequence",
+      "kind": "upgrade"
+    },
+    {
+      "id": 421,
+      "name": "Hired Champions",
+      "kind": "trophy"
+    },
+    {
+      "id": 347,
+      "name": "Athanor",
+      "kind": "trophy"
+    },
+    {
+      "id": 417,
+      "name": "Faction Run",
+      "kind": "upgrade"
+    },
+    {
+      "id": 416,
+      "name": "Stream of Dreams",
+      "kind": "trophy"
+    },
+    {
+      "id": 202,
+      "name": "Colorful Autocasting",
+      "kind": "trophy"
+    },
+    {
+      "id": 1151,
+      "name": "Corruption Zone",
+      "kind": "upgrade"
+    },
+    {
+      "id": 384,
+      "name": "Golden Snowballs",
+      "kind": "trophy"
+    },
+    {
+      "id": 395,
+      "name": "Eggsercise",
+      "kind": "trophy"
+    },
+    {
+      "id": 328,
+      "name": "Astral Challenger",
+      "kind": "trophy"
+    },
+    {
+      "id": 939,
+      "name": "Archon Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 861,
+      "name": "Advanced Angelic Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 732,
+      "name": "Combination's Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 243,
+      "name": "Gilding",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1201,
+      "name": "The Architect",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1092,
+      "name": "Encompass",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1027,
+      "name": "Vault",
+      "kind": "upgrade"
+    },
+    {
+      "id": 293,
+      "name": "Indifference",
+      "kind": "trophy"
+    },
+    {
+      "id": 153,
+      "name": "Stone of Balance",
+      "kind": "trophy"
+    },
+    {
+      "id": 74,
+      "name": "Fast Forward",
+      "kind": "trophy"
+    },
+    {
+      "id": 200,
+      "name": "Fairy Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1255,
+      "name": "General Winter",
+      "kind": "upgrade"
+    },
+    {
+      "id": 286,
+      "name": "Conversion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 109,
+      "name": "Unitary",
+      "kind": "trophy"
+    },
+    {
+      "id": 6,
+      "name": "Octopus Shaped Spine",
+      "kind": "upgrade"
+    },
+    {
+      "id": 352,
+      "name": "Vault",
+      "kind": "trophy"
+    },
+    {
+      "id": 531,
+      "name": "Inflation",
+      "kind": "upgrade"
+    },
+    {
+      "id": 786,
+      "name": "Primal Knowledge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 815,
+      "name": "Forbidden Language",
+      "kind": "upgrade"
+    },
+    {
+      "id": 814,
+      "name": "Dimension Door",
+      "kind": "upgrade"
+    },
+    {
+      "id": 182,
+      "name": "Research Drow Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 686,
+      "name": "Titan Lineage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1026,
+      "name": "Mythos",
+      "kind": "upgrade"
+    },
+    {
+      "id": 242,
+      "name": "Know Your Enemy, Part II",
+      "kind": "trophy"
+    },
+    {
+      "id": 1254,
+      "name": "Underhanded Tactics",
+      "kind": "upgrade"
+    },
+    {
+      "id": 178,
+      "name": "Know Your Enemy, Part I",
+      "kind": "trophy"
+    },
+    {
+      "id": 1141,
+      "name": "Dark Sanctum",
+      "kind": "upgrade"
+    },
+    {
+      "id": 113,
+      "name": "Vanilla Challenger",
+      "kind": "trophy"
+    },
+    {
+      "id": 184,
+      "name": "Earth Core",
+      "kind": "trophy"
+    },
+    {
+      "id": 70,
+      "name": "Exchange Master",
+      "kind": "trophy"
+    },
+    {
+      "id": 328,
+      "name": "Building Hater",
+      "kind": "upgrade"
+    },
+    {
+      "id": 480,
+      "name": "Ruby Power",
+      "kind": "upgrade"
+    },
+    {
+      "id": 369,
+      "name": "Sylvan Mirror",
+      "kind": "trophy"
+    },
+    {
+      "id": 311,
+      "name": "Berserking",
+      "kind": "upgrade"
+    },
+    {
+      "id": 239,
+      "name": "Research Mercenary Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 978,
+      "name": "World Restoration",
+      "kind": "upgrade"
+    },
+    {
+      "id": 687,
+      "name": "Titan Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 688,
+      "name": "Titan Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 689,
+      "name": "Titan Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 804,
+      "name": "Titan Perk 4",
+      "kind": "upgrade"
+    },
+    {
+      "id": 951,
+      "name": "Titan Perk 5",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1240,
+      "name": "Titan Perk 6",
+      "kind": "upgrade"
+    },
+    {
+      "id": 428,
+      "name": "Golemcraft",
+      "kind": "upgrade"
+    },
+    {
+      "id": 147,
+      "name": "Pink Carrot",
+      "kind": "trophy"
+    },
+    {
+      "id": 699,
+      "name": "Prismatic Mana",
+      "kind": "upgrade"
+    },
+    {
+      "id": 449,
+      "name": "Chain Lightning",
+      "kind": "upgrade"
+    },
+    {
+      "id": 864,
+      "name": "Advanced Drow Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 150,
+      "name": "Dwarven Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1038,
+      "name": "Manufacture",
+      "kind": "upgrade"
+    },
+    {
+      "id": 308,
+      "name": "Pyromancy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 280,
+      "name": "Coercion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 981,
+      "name": "Mercenary Building Contract",
+      "kind": "upgrade"
+    },
+    {
+      "id": 358,
+      "name": "Late Springtime",
+      "kind": "trophy"
+    },
+    {
+      "id": 366,
+      "name": "Scarab of Fortune",
+      "kind": "upgrade"
+    },
+    {
+      "id": 757,
+      "name": "Arboreal City",
+      "kind": "upgrade"
+    },
+    {
+      "id": 172,
+      "name": "Elven Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 708,
+      "name": "Mercenary Encampment Quest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 922,
+      "name": "Archon Heritage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 97,
+      "name": "Goblin Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 834,
+      "name": "Mercenary Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 190,
+      "name": "Stoic Resistance",
+      "kind": "trophy"
+    },
+    {
+      "id": 1145,
+      "name": "Swamp of Sorrows",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1018,
+      "name": "Order Remnant Perk 1",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1019,
+      "name": "Order Remnant Perk 2",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1020,
+      "name": "Order Remnant Perk 3",
+      "kind": "upgrade"
+    },
+    {
+      "id": 523,
+      "name": "Mineralogy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 340,
+      "name": "Balance Restoration",
+      "kind": "trophy"
+    },
+    {
+      "id": 423,
+      "name": "Infusion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1170,
+      "name": "Searing Summer",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1174,
+      "name": "Assembly Line",
+      "kind": "upgrade"
+    },
+    {
+      "id": 513,
+      "name": "Blacksmithing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 775,
+      "name": "Wooden Dice",
+      "kind": "upgrade"
+    },
+    {
+      "id": 812,
+      "name": "Camouflage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 813,
+      "name": "Elven Discipline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 824,
+      "name": "Angel Set",
+      "kind": "upgrade"
+    },
+    {
+      "id": 859,
+      "name": "Fang Food",
+      "kind": "upgrade"
+    },
+    {
+      "id": 860,
+      "name": "Wyrm's Rest",
+      "kind": "upgrade"
+    },
+    {
+      "id": 858,
+      "name": "Draconic Supremacy",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1091,
+      "name": "Concentration",
+      "kind": "upgrade"
+    },
+    {
+      "id": 367,
+      "name": "Speed Run",
+      "kind": "upgrade"
+    },
+    {
+      "id": 32,
+      "name": "Grinding Dedication",
+      "kind": "upgrade"
+    },
+    {
+      "id": 33,
+      "name": "True Neutrality",
+      "kind": "upgrade"
+    },
+    {
+      "id": 53,
+      "name": "Mercenary Oath Trophy",
+      "kind": "trophy"
+    },
+    {
+      "id": 551,
+      "name": "Underworld Researcher",
+      "kind": "upgrade"
+    },
+    {
+      "id": 292,
+      "name": "Pantheon",
+      "kind": "upgrade"
+    },
+    {
+      "id": 750,
+      "name": "Excavated Mirage",
+      "kind": "upgrade"
+    },
+    {
+      "id": 249,
+      "name": "Exchange High Lord",
+      "kind": "trophy"
+    },
+    {
+      "id": 393,
+      "name": "Anti-Christmas",
+      "kind": "trophy"
+    },
+    {
+      "id": 268,
+      "name": "Veteran Figurine",
+      "kind": "trophy"
+    },
+    {
+      "id": 1226,
+      "name": "Spark of Life",
+      "kind": "upgrade"
+    },
+    {
+      "id": 275,
+      "name": "Transfixion",
+      "kind": "upgrade"
+    },
+    {
+      "id": 525,
+      "name": "Waste",
+      "kind": "upgrade"
+    },
+    {
+      "id": 634,
+      "name": "Dragon's Roar",
+      "kind": "upgrade"
+    },
+    {
+      "id": 82,
+      "name": "Leet",
+      "kind": "trophy"
+    },
+    {
+      "id": 90,
+      "name": "Need a Head Start?",
+      "kind": "trophy"
+    },
+    {
+      "id": 385,
+      "name": "Burning Passion",
+      "kind": "trophy"
+    },
+    {
+      "id": 238,
+      "name": "Decay",
+      "kind": "upgrade"
+    },
+    {
+      "id": 119,
+      "name": "Scarab of Fortune",
+      "kind": "trophy"
+    },
+    {
+      "id": 533,
+      "name": "Marketing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 569,
+      "name": "Dwarven Challenge",
+      "kind": "upgrade"
+    },
+    {
+      "id": 78,
+      "name": "Efficient Magic",
+      "kind": "upgrade"
+    },
+    {
+      "id": 79,
+      "name": "Mana Crypts",
+      "kind": "upgrade"
+    },
+    {
+      "id": 80,
+      "name": "Nephilim's Blessing",
+      "kind": "upgrade"
+    },
+    {
+      "id": 179,
+      "name": "Vanilla Flavor Juice",
+      "kind": "trophy"
+    },
+    {
+      "id": 162,
+      "name": "%0 Rubies",
+      "kind": "trophy"
+    },
+    {
+      "id": 78,
+      "name": "Greed Drive",
+      "kind": "trophy"
+    },
+    {
+      "id": 172,
+      "name": "Suggestion Master",
+      "kind": "trophy"
+    },
+    {
+      "id": 1047,
+      "name": "Whipround",
+      "kind": "upgrade"
+    },
+    {
+      "id": 338,
+      "name": "For Science!",
+      "kind": "upgrade"
+    },
+    {
+      "id": 8,
+      "name": "Passage to the Underworld",
+      "kind": "upgrade"
+    },
+    {
+      "id": 247,
+      "name": "Soulweaving",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1082,
+      "name": "Gray Friday",
+      "kind": "upgrade"
+    },
+    {
+      "id": 230,
+      "name": "Dragon Soul",
+      "kind": "trophy"
+    },
+    {
+      "id": 277,
+      "name": "Fossilized Wing",
+      "kind": "trophy"
+    },
+    {
+      "id": 1045,
+      "name": "Loan Sharking",
+      "kind": "upgrade"
+    },
+    {
+      "id": 194,
+      "name": "Fairy Bloodline",
+      "kind": "upgrade"
+    },
+    {
+      "id": 4,
+      "name": "Druidic Runestone",
+      "kind": "upgrade"
+    },
+    {
+      "id": 1244,
+      "name": "Platinum Egg",
+      "kind": "upgrade"
+    },
+    {
+      "id": 420,
+      "name": "Bloodspring",
+      "kind": "upgrade"
+    },
+    {
+      "id": 85,
+      "name": "Lucky Neutral",
+      "kind": "trophy"
+    },
+    {
+      "id": 383,
+      "name": "Monstrous",
+      "kind": "trophy"
+    },
+    {
+      "id": 336,
+      "name": "Golden Age",
+      "kind": "trophy"
+    },
+    {
+      "id": 73,
+      "name": "Fairy Choir",
+      "kind": "trophy"
+    }
+  ]
+}

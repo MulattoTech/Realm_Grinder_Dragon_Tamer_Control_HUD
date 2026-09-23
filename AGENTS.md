@@ -13,3 +13,6 @@ When the user invokes **`/goal UltronBurst`** or requests **`UltronBurst`**, Ant
 - **Game Window:** Always target `ApolloRuntimeContentWindow` (`RealmGrinderDesktop.exe`). Keep minimized at all times (`IsIconic = True`). Never call `ShowWindow(SW_RESTORE)` or `SetForegroundWindow` unless explicitly requested.
 - **Save Decoding:** Always use `src.py_savecodec.decode_save_to_dict()` and `extract_save_string_from_sol()`. Never spawn `node.exe` or external CLI processes.
 - **Coordinates:** Calibrate against design base ($1280 \times 752$). "BUY ALL" is at $(924, 680)$. Modal red `[X]` is at $(1099, 253)$. Always invoke `dismiss_modals()` before and during cycle execution.
+
+## Current continuation rules (2026-09-23)
+Read `docs/CURRENT-HANDOFF.md` and the latest verification report before editing. Older prose claiming perfect background control, exact ETAs or all-game completion is not evidence. Existing configuration may explicitly permit visible-window input; never silently restore or focus the game. Keep memory reads observational and snapshots source-labelled. Source-reference coverage is distinct from executable recipe coverage. Work on this project only, preserve the user's live save and selected settings, and commit/push tested source changes without runtime secrets or save files.

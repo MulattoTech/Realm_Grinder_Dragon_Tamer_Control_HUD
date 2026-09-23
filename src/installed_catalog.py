@@ -84,11 +84,13 @@ def sprite_image(atlas,attributes):
     return frame
 
 
-def install_catalog():
+def install_catalog(game_dir=None,root_dir=None,save_version=None):
+    root=Path(root_dir or ROOT)
+    game=Path(game_dir or GAME)
     from src.save_reader import get_current_game_state
-    report=inspect_definitions();write_json(ROOT/'state/installed_definitions.json',report)
-    save_version=get_current_game_state()['raw_data']['saveVersion']
-    path=ROOT/'state/upgrade_catalog.json';catalog=json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
+    report=inspect_definitions(game/'RealmGrinderDesktop.swf');write_json(root/'state/installed_definitions.json',report)
+    if save_version is None:save_version=get_current_game_state()['raw_data']['saveVersion']
+    path=root/'state/upgrade_catalog.json';catalog=json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
     for item in report['definitions']:
         if item['kind']!='upgrade':continue
         catalog[item['name']]={'id':item['id'],'save_version':save_version,'verification':'installed_definition',
@@ -100,11 +102,11 @@ def install_catalog():
            'Hatch!','Drakeling','Dragon','Elder Dragon','Coin Pillage']
     names += [name for name in by_name if 'Mercenary' in name and 'Contract' in name or name.endswith(' Bloodline') or name.endswith('Trade Treaty')]
     images={}
-    for xml in (GAME/'images').glob('*.xml'):
+    for xml in (game/'images').glob('*.xml'):
         atlas=None
         for node in ET.parse(xml).getroot().findall('SubTexture'):
             images[node.attrib['name']]=(xml,node.attrib)
-    folder=ROOT/'assets/templates';registry_path=folder/'registry.json'
+    folder=root/'assets/templates';folder.mkdir(parents=True,exist_ok=True);registry_path=folder/'registry.json'
     registry=json.loads(registry_path.read_text(encoding='utf-8')) if registry_path.exists() else {}
     atlas_cache={}
     for name in names:

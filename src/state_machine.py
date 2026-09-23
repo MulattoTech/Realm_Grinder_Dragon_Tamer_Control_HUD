@@ -282,6 +282,11 @@ class DragonBot:
         selected_goal=cfg.get('selected_goal','Dragon Tamer')
         reached=(selected_goal=='Next reincarnation' and game_st['reincarnation']>=cfg.get('goal_target_r',game_st['reincarnation']+1))
         reached=reached or (selected_goal=='Build only' and self.state['build_verification']['build_verified'])
+        if selected_goal=='Named goal':
+            from src.knowledge_service import KnowledgeService
+            target_plan=KnowledgeService(state_dir=self.actions.state_dir).plan_target(cfg.get('named_goal','Dragon Tamer'),game_st)
+            self.state['named_goal_plan']=target_plan
+            reached=reached or target_plan['complete']
         if reached:
             from src.config import save_config
             cfg['paused']=True;save_config(cfg)
@@ -309,7 +314,7 @@ class DragonBot:
             if result.get('action')=='HATCH_PURCHASED':
                 self.state['hellfire_at_verified_hatch']=after['hellfire_active_time_total']
         if 'hellfire_at_verified_hatch' in self.state:
-            self.state['hellfire_since_hatch']=max(0,game_st['hellfire_active_time_total']-self.state['hellfire_at_verified_hatch'])
+            self.state['hellfire_since_hatch']=game_st.get('hellfire_since_hatch')
         if self.state['current_stage']=='COMPLETED':
             self.state['steam_achievement_status']='NOT_INDEPENDENTLY_VERIFIED'
         logging.info('[Verified controller] %s: %s',result.get('action'),result.get('message'))

@@ -1,5 +1,6 @@
 """Integration regressions for measured forecasts and the actual production path."""
 from types import SimpleNamespace
+from pathlib import Path
 import pytest
 
 
@@ -88,3 +89,56 @@ def test_spell_budget_respects_auto_cast_spells_switch_in_production_source():
     from pathlib import Path
     text=(Path(__file__).resolve().parents[1]/'src/route_executor.py').read_text(encoding='utf-8')
     assert 'auto_cast_spells' in text
+
+
+
+def test_named_goal_dispatches_only_a_ready_reviewed_purchase(tmp_path):
+    from types import SimpleNamespace
+    from src.progression_actions import ProgressionActions
+    actions=ProgressionActions.__new__(ProgressionActions);actions.state_dir=tmp_path
+    actions.read=lambda:{'ascension':0,'gems':1,'coins':10,'raw_data':{'upgrades':{}}}
+    calls=[]
+    actions.route=SimpleNamespace(purchase_named=lambda step:calls.append(step) or {'success':False,'status':'OBSERVING','message':'observed'})
+    assert hasattr(actions,'execute_named_goal'), 'Named goal dispatch is not integrated'
+    actions.execute_named_goal('Gem Power')
+    assert calls[0]['target']=='Gem Power'
+
+
+def test_unreviewed_named_goal_sends_no_input(tmp_path):
+    from types import SimpleNamespace
+    from src.progression_actions import ProgressionActions
+    actions=ProgressionActions.__new__(ProgressionActions);actions.state_dir=tmp_path
+    actions.read=lambda:{'raw_data':{'upgrades':{}}}
+    calls=[];actions.route=SimpleNamespace(purchase_named=lambda step:calls.append(step))
+    assert hasattr(actions,'execute_named_goal'), 'Named goal dispatch is not integrated'
+    result=actions.execute_named_goal('Imaginary technique')
+    assert not result['success'] and calls==[]
+
+
+def test_owned_named_goal_is_verified_without_input(tmp_path):
+    from src.progression_actions import ProgressionActions
+    actions=ProgressionActions.__new__(ProgressionActions);actions.state_dir=tmp_path
+    actions.read=lambda:{'ascension':0,'raw_data':{'upgrades':{'20':{'u1':True}}}}
+    assert hasattr(actions,'execute_named_goal'), 'Named goal dispatch is not integrated'
+    result=actions.execute_named_goal('Gem Power')
+    assert result['success'] and result['action']=='NAMED_GOAL_OWNED'
+
+
+def test_large_current_mana_cannot_create_a_dragon_tamer_directive():
+    from src.ai_engine import SkynetOptimizationCore
+    s={'reincarnation':46,'gems':1e90,'coins':1e200,'mana':999999,'mana_max':None,'has_egg':True,'raw_data':{'trophies':{}}}
+    result=SkynetOptimizationCore().evaluate(s,{})
+    assert result['decision']!='CLAIM_DRAGON_TAMER'
+
+
+def test_resume_button_uses_the_same_pending_action_admission_as_start():
+    import ast
+    tree=ast.parse(Path('src/monitor_window.py').read_text(encoding='utf-8'))
+    node=next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=='action_toggle_pause')
+    assert any(isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr=='start_selected_path' for n in ast.walk(node))
+
+def test_launcher_prepares_a_fresh_checkout_before_opening_hud():
+    import ast
+    tree=ast.parse(Path('launcher.py').read_text(encoding='utf-8'))
+    node=next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=='main')
+    assert any(isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id=='initialize' for n in ast.walk(node))

@@ -149,22 +149,22 @@ class ProgressionActions:
         return result
 
     def purchase_milestone(self,name):
+        from src.knowledge_service import KnowledgeService
         catalog=self.catalog();state=self.read();owned=milestone_owned(state,name,catalog)
-        if owned is None: return blocked(f'{name}: current-version upgrade/trophy identifier is not verified','CATALOG_UNVERIFIED')
+        if owned is None:return blocked(f'{name}: installed identifier is not verified','CATALOG_UNVERIFIED')
         if owned:
             return {'success':True,'status':'VERIFIED','action':name.upper()+'_OWNED',
-                    'message':name+' ownership is present in the save; this does not assert Steam achievement status'}
-        previous={'hatch':None,'drakeling':'hatch','dragon':'drakeling','elder_dragon':'dragon'}
-        if name not in previous: return blocked('Unsupported milestone purchase')
-        def ready(s):
-            if not s['has_egg'] or s['reincarnation']<46: return False
-            prerequisite=previous[name]
-            if prerequisite and milestone_owned(s,prerequisite,catalog) is not True: return False
-            if name=='dragon' and (s.get('fairy_assistants') is None or s['fairy_assistants']<3750): return False
-            if name=='elder_dragon' and (s.get('mana_max') is None or s['mana_max']<50000): return False
-            return True
-        return self._transaction(name.upper()+'_PURCHASED','buy_all_upgrades',ready,
-            lambda before,after:fresh_transition(before,after) and milestone_owned(after,name,catalog) is True)
+                    'message':name+' ownership is present in the save; Steam achievement status is separate'}
+        names={'hatch':'Hatch!','drakeling':'Drakeling','dragon':'Dragon','elder_dragon':'Elder Dragon'}
+        if name not in names:return blocked('Unsupported milestone purchase')
+        plan=KnowledgeService(state_dir=self.state_dir).plan_target(names[name],state)
+        write_json(self.state_dir/'dragon_requirements.json',plan)
+        step=plan['next_action']
+        if not step or step.get('action')!='purchase_dragon_stage' or step.get('target')!=names[name]:
+            return dict(blocked(f"{names[name]}: prerequisites or measurements are not satisfied; next requirement: {step.get('target') if step else 'unknown'}",'DRAGON_REQUIREMENTS'),requirements=step)
+        result=self.route.purchase_named({'target':names[name],'sources':step['sources']})
+        if result.get('success'):result['action']=name.upper()+'_PURCHASED'
+        return result
 
     def maintain_production(self):
         # The same executor that starts a run also maintains it; do not revive the
@@ -189,7 +189,33 @@ class ProgressionActions:
             return self.setup_build()
         return self.maintain_production()
 
+
+    def execute_named_goal(self,target):
+        from src.knowledge_service import KnowledgeService
+        if not hasattr(self,'_knowledge'):self._knowledge=KnowledgeService(state_dir=self.state_dir)
+        plan=self._knowledge.plan_target(target,self.read())
+        write_json(self.state_dir/'selected_goal_plan.json',plan)
+        if plan['complete']:
+            return {'success':True,'status':'VERIFIED','action':'NAMED_GOAL_OWNED',
+                    'message':plan['goal']+' is owned in the decoded save'}
+        step=plan['next_action'];kind=step.get('action')
+        if kind=='purchase_named':return self.route.purchase_named(step)
+        if kind in ('collect_coins','collect_resource'):return self.route.collect()
+        if kind=='reach_reincarnation':return self.advance_reincarnation()
+        if kind in ('excavate','excavate_for_egg'):
+            from src.config import load_config
+            if not load_config().get('auto_excavate',True):return blocked('Excavation is disabled by configuration')
+            return self.excavate()
+        if kind=='purchase_dragon_stage':
+            stage={'Hatch!':'hatch','Drakeling':'drakeling','Dragon':'dragon','Elder Dragon':'elder_dragon'}[step['target']]
+            return self.purchase_milestone(stage)
+        return dict(blocked(f"{step['target']}: {step['status']}; inspect the named-goal requirements and source notes",kind.upper()),requirements=step)
+
     def auto_clear(self,decision=None):
+        from src.config import load_config
+        config=load_config()
+        if config.get('selected_goal')=='Named goal':
+            return self.execute_named_goal(config.get('named_goal','Dragon Tamer'))
         stage=actual_dragon_stage(self.read(),self.catalog())
         if stage=='REACH_R46': return self.advance_reincarnation(decision)
         if stage=='ACQUIRE_EGG': return self.excavate()

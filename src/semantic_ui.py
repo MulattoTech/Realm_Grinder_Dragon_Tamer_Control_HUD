@@ -95,7 +95,11 @@ def unpurchased_collapsed(frame):
     image=cv2.cvtColor(np.asarray(frame),cv2.COLOR_RGB2GRAY)[80:115,475:510]
     scores={}
     for name in ('down','up'):
-        icon=cv2.imread(str(ROOT/f'assets/templates/unpurchased-arrow-{name}.png'),cv2.IMREAD_GRAYSCALE)
+        path=ROOT/f'assets/templates/unpurchased-arrow-{name}.png'
+        if not path.exists():raise ValueError('Missing UI calibration anchor; run tools/bootstrap.py on the supported game version')
+        icon=cv2.imread(str(path),cv2.IMREAD_GRAYSCALE)
+        if icon is None or icon.shape[0]>image.shape[0] or icon.shape[1]>image.shape[1]:
+            raise ValueError('Invalid UI calibration anchor dimensions')
         scores[name]=cv2.minMaxLoc(cv2.matchTemplate(image,icon,cv2.TM_CCOEFF_NORMED))[1]
     return bool(scores['down']>.95 and scores['down']>scores['up']+.05)
 

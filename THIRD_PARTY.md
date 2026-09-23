@@ -79,3 +79,13 @@ This project incorporates, adapts, or references the following third-party works
 * **Copyright:** (c) 2019 Systemcluster
 * **License Status:** No explicit open-source license provided on Gist.
 * **Usage in this Project:** Architectural and behavioral reference ONLY. No code copied. The coordinate normalization and button detection concepts guided our clean-room Python Win32 window interaction engine.
+
+## Source-backed progression additions (2026-09-23)
+
+`data/reference_identifiers.json` contains factual identifier mappings parsed from the attributed dox4242 RG-tools reference already listed above; its source hash and URL are retained. No retrieved wiki JavaScript is executed. `data/installed_identifiers.json` contains only literal names, IDs and kinds observed in the user's installed game, scoped by binary hash, not game bytecode.
+
+Wiki prose, templates and images retain the respective source's terms. The Fandom corpus identifies CC-BY-SA where the source does; musicfamily material is not presumed to have an open-code license. Full scraped source pages and extracted game texture atlases remain in local ignored caches. A source URL in a manifest is not a grant to redistribute its contents.
+
+Three small UI matching snippets in `data/ui_reference` are private-project calibration references, not standalone game assets or a new license grant; game UI copyright remains with its rightsholders. Their binary scope, checksums and limited purpose are recorded in that directory's manifest. Original application artwork/branding and legacy scripts are preserved as project materials. No font files are included.
+
+No application-wide license has been newly selected in this maintenance pass. Keep this repository private unless the owner reviews rights and chooses distribution terms.

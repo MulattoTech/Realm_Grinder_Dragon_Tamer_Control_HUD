@@ -1,6 +1,7 @@
 """Field-specific fusion of persistent saves and validated, read-only process telemetry."""
 from __future__ import annotations
 import copy
+import json
 import math
 from pathlib import Path
 import threading
@@ -24,6 +25,10 @@ class LiveStateProvider:
         self._lock = threading.RLock()
         self._last_health_write = 0
         self.fallback_count = 0
+        from src.quest_observer import QuestObserver
+        catalog_path=self.state_dir/'milestone_catalog.json'
+        catalog=json.loads(catalog_path.read_text(encoding='utf-8')).get('milestones',{}) if catalog_path.exists() else {}
+        self.quest_observer=QuestObserver(self.state_dir/'quest_observations.json',catalog)
 
     def get(self):
         with self._lock:
@@ -88,6 +93,7 @@ class LiveStateProvider:
                           consequential_actions_allowed=bool(save_healthy and health.get('process_connected')),
                           vision_dependency='NONE_FOR_TELEMETRY')
             state['provenance'], state['telemetry'] = provenance, health
+            state=self.quest_observer.observe(state)
             if time.time()-self._last_health_write >= 1:
                 try:
                     write_json(self.state_dir/'telemetry_health.json', health)

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "swf_sha256": "b7b299b359d9795a322caab8d4f430e2138ce0d9d7a0c91db1a66bc8da84dfac",
+  "scope": "Small UI matching snippets captured for this private project; not a game asset distribution or proof of a completed action.",
+  "copyright": "Game UI belongs to its respective rightsholders. These snippets are not relicensed as application code.",
+  "files": [
+    {
+      "file": "template-dialog-title.png",
+      "sha256": "e42d590216f4e0d85356da5b51a3a7690ae0831dff2d90e81eadb147d4d797d5",
+      "bytes": 2224
+    },
+    {
+      "file": "unpurchased-arrow-up.png",
+      "sha256": "76849af30c85a6d52982cdf7fb748a0429054685ef9957b5793422622209e237",
+      "bytes": 155
+    },
+    {
+      "file": "unpurchased-arrow-down.png",
+      "sha256": "4a379856c9697a0bf19885846fce400abe9547cb6410cb27328bd2b531b652c1",
+      "bytes": 164
+    }
+  ]
+}

@@ -371,7 +371,7 @@ class ModernDragonTrackerApp:
             relief="flat", padx=8, pady=2, cursor="hand2", command=self.action_fast_track
         )
         self.master_clear_btn.pack(side="right", padx=6, pady=4)
-        self.bind_hover(self.master_clear_btn, "Master Button: (Optional manual override) Forces immediate execution of the current bottleneck solver right now.")
+        self.bind_hover(self.master_clear_btn, "Runs the selected path through the single action owner. Unknown or unmet requirements remain visible blockers.")
 
         # The selected path is an executable preference, not just advisory text.
         path_row=tk.Frame(self.tab_quest,bg=self.c_panel)
@@ -383,11 +383,23 @@ class ModernDragonTrackerApp:
         self.path_combo.bind('<<ComboboxSelected>>',lambda event:self.save_selected_path())
         self.goal_var=tk.StringVar(value=load_config().get('selected_goal','Dragon Tamer'))
         self.goal_combo=ttk.Combobox(path_row,textvariable=self.goal_var,
-            values=('Dragon Tamer','Next reincarnation','Build only'),state='readonly',width=17)
+            values=('Dragon Tamer','Next reincarnation','Build only','Named goal'),state='readonly',width=17)
         self.goal_combo.pack(side='left',padx=3)
         self.goal_combo.bind('<<ComboboxSelected>>',lambda event:self.save_selected_path())
         tk.Button(path_row,text='Start path',command=self.start_selected_path,bg=self.c_cyan,fg=self.c_bg,
                   font=('Segoe UI',8,'bold'),relief='flat').pack(side='right',padx=4)
+
+        target_row=tk.Frame(self.tab_quest,bg=self.c_panel)
+        target_row.pack(fill='x',padx=4,pady=(0,3))
+        tk.Label(target_row,text='Named goal:',bg=self.c_panel,fg=self.c_muted,font=('Segoe UI',8)).pack(side='left',padx=4)
+        self.named_goal_var=tk.StringVar(value=load_config().get('named_goal','Dragon Tamer'))
+        from src.knowledge_service import KnowledgeService
+        known_targets=tuple(KnowledgeService().book.rules)
+        self.named_goal_combo=ttk.Combobox(target_row,textvariable=self.named_goal_var,values=known_targets,width=30)
+        self.named_goal_combo.pack(side='left',padx=3)
+        self.named_goal_combo.bind('<<ComboboxSelected>>',lambda event:self.save_selected_path())
+        tk.Button(target_row,text='Inspect requirements',command=self.inspect_named_goal,bg=self.c_panel,fg=self.c_cyan,
+                  relief='flat',font=('Segoe UI',8)).pack(side='right',padx=4)
 
         # 3. Gate 0: Reincarnation Progression to R46
         r_card = tk.LabelFrame(
@@ -601,7 +613,7 @@ class ModernDragonTrackerApp:
         self.mc_p90_lbl = tk.Label(mc_grid, text="P90 (90% Confidence): ~1,060 digs", font=("Segoe UI", 8), fg=self.c_text, bg=self.c_card)
         self.mc_p90_lbl.grid(row=1, column=1, sticky="w", padx=16, pady=1)
 
-        self.mc_p99_lbl = tk.Label(mc_grid, text="P99 (99% Guaranteed): ~1,682 digs", font=("Segoe UI", 8), fg=self.c_gold, bg=self.c_card)
+        self.mc_p99_lbl = tk.Label(mc_grid, text="P99 (conditional probability): ~1,682 digs", font=("Segoe UI", 8), fg=self.c_gold, bg=self.c_card)
         self.mc_p99_lbl.grid(row=2, column=0, sticky="w", padx=4, pady=1)
 
         self.mc_cost_lbl = tk.Label(mc_grid, text="Target Reincarnation: R46 required", font=("Segoe UI", 8), fg=self.c_muted, bg=self.c_card)
@@ -704,10 +716,30 @@ class ModernDragonTrackerApp:
         for bkey, bval in BUILDS_DATABASE.items():
             self.builds_listbox.insert("end", f"[{bkey}] {bval['name']}")
 
+
+    def inspect_named_goal(self):
+        from src.knowledge_service import KnowledgeService
+        from tkinter import messagebox
+        try:
+            service=KnowledgeService()
+            plan=service.plan_target(self.named_goal_var.get(),get_live_game_state())
+            lines=[plan['goal']+' - '+('OWNED' if plan['complete'] else 'prerequisite plan')]
+            for step in plan['steps']:
+                lines.append(f"{step['status']}: {step['name']}")
+                for cost in step.get('costs',[]):
+                    lines.append(f"  {cost['field']}: have {cost.get('actual')}, need {cost.get('amount')}")
+                for condition in step.get('conditions',[]):
+                    if condition['satisfied'] is not True:lines.append('  Missing: '+str(condition.get('field',condition.get('text','unparsed requirement'))))
+            coverage=service.coverage()
+            lines.append(f"\nKnowledge: {coverage['reference_cards']} reference cards; {coverage['reviewed_recipes']} reviewed recipes. References are not all executable.")
+            messagebox.showinfo('Source-backed goal requirements','\n'.join(lines),parent=self.root)
+        except Exception as exc:self.set_feedback(str(exc),self.c_red)
+
     def save_selected_path(self):
         config=load_config()
         config['selected_path']=self.path_var.get()
         config['selected_goal']=self.goal_var.get()
+        if hasattr(self,'named_goal_var'):config['named_goal']=self.named_goal_var.get().strip()
         if hasattr(self,'visible_input_var'):
             config['require_minimized']=not self.visible_input_var.get()
         if config['selected_goal']=='Next reincarnation' and 'goal_target_r' not in config:
@@ -1075,26 +1107,17 @@ class ModernDragonTrackerApp:
         threading.Thread(target=_snap, daemon=True).start()
 
     def action_toggle_pause(self):
-        is_paused = os.path.exists(STOP_FILE) or self.config.get("paused", False)
+        config=load_config()
+        is_paused=os.path.exists(STOP_FILE) or config.get('paused',True)
         if is_paused:
-            if os.path.exists(STOP_FILE):
-                try:
-                    os.remove(STOP_FILE)
-                except Exception:
-                    pass
-            self.config["paused"] = False
-            save_config(self.config)
-            self.pause_btn.configure(text="⏸ Pause Bot", bg="#8b2626")
-            self.worker_badge.configure(text="🤖 24/7 AUTOPILOT ACTIVE (Hands-Free)", fg=self.c_green)
-            self.set_feedback("Bot resumed and actively progressing.")
-        else:
-            with open(STOP_FILE, "w") as f:
-                f.write("STOP")
-            self.config["paused"] = True
-            save_config(self.config)
-            self.pause_btn.configure(text="▶ Resume Bot", bg="#1b6ca8")
-            self.worker_badge.configure(text="● BOT PAUSED (Idle - Standing By)", fg=self.c_amber)
-            self.set_feedback("Bot paused. Automation suspended.")
+            # Resume must pass the same connection, geometry and pending-action checks as Start.
+            self.start_selected_path()
+            return
+        with open(STOP_FILE,'w',encoding='utf-8') as output:output.write('Paused by user')
+        config['paused']=True;save_config(config);self.config=config
+        self.pause_btn.configure(text='Resume Bot',bg='#1b6ca8')
+        self.worker_badge.configure(text='Bot paused',fg=self.c_amber)
+        self.set_feedback('Bot paused. In-game autocasting is a separate game setting.')
 
     def action_force_refresh(self):
         self.update_state()
@@ -1162,7 +1185,7 @@ class ModernDragonTrackerApp:
             # Skynet AI, Guardian, and Monte Carlo evaluation
             ai_eval = self.ai.evaluate(st, cfg)
             pulse={'game_alive':st.get('telemetry',{}).get('process_connected',False),'save_hash':None,'restarts':0}
-            mc = MonteCarloArtifactForecaster.calculate_egg_probabilities(excavations)
+            mc = MonteCarloArtifactForecaster.calculate_egg_probabilities(excavations,current_r=r)
 
             # Update Quest tab Skynet AI Live Banner
             self.skynet_banner_lbl.configure(

@@ -119,6 +119,8 @@ def main():
     os.chdir(APP_DIR)
     from src.runtime_safety import require_interactive_session
     require_interactive_session()
+    from src.bootstrap import initialize
+    initialize()
 
     # 1. Check if Realm Grinder is already running; if not, trigger launch via Steam
     game_started_now = False

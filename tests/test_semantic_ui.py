@@ -100,3 +100,11 @@ def test_collapsed_unpurchased_panel_is_not_guessed():
     assert hasattr(ui,'unpurchased_collapsed')
     assert ui.unpurchased_collapsed(Image.open('screenshots/expanded-unpurchased-panel.png'))
     assert not ui.unpurchased_collapsed(Image.open('screenshots/unpurchased-scroll-diagnostic.png'))
+
+
+def test_missing_arrow_calibration_is_an_explicit_error_not_an_opencv_crash(monkeypatch,tmp_path):
+    import src.semantic_ui as ui
+    from PIL import Image
+    monkeypatch.setattr(ui,'ROOT',tmp_path)
+    with pytest.raises(ValueError,match='calibration'):
+        ui.unpurchased_collapsed(Image.new('RGB',(976,669)))

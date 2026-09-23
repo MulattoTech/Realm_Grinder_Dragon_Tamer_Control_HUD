@@ -126,11 +126,11 @@ class SkynetOptimizationCore:
         # -------------------------------------------------------------
         if has_egg and r >= 46:
             # Check dragon stages
-            if mana >= 50000 and coins >= 1e73:
-                decision = "CLAIM_DRAGON_TAMER"
+            if "210" in game_st.get("raw_data", {}).get("trophies", {}):
+                decision = "DRAGON_TAMER_OWNED"
                 priority = 100
-                action_type = "PURCHASE_ELDER_DRAGON"
-                reasoning.append("Elder Dragon requirements met! 50k Max Mana + 1e73 coins achieved.")
+                action_type = "OBSERVE_TROPHY"
+                reasoning.append("Dragon Tamer trophy is present in the save. Steam achievement status has not been independently checked.")
                 return self._package(decision, priority, action_type, reasoning, payload)
 
         # -------------------------------------------------------------
@@ -185,7 +185,7 @@ class SkynetOptimizationCore:
             if rem > 0:
                 reasoning.append(f"Excavating to 1,500 milestone ({rem} remaining to unlock Egg drops).")
             else:
-                p_drop = min(1.0, math.sqrt(max(0, excavations - 1500)) / 10000.0)
+                p_drop = 0.02  # Documented eligible-egg chance; not a seed prediction.
                 reasoning.append(f"Digging for Spiky Rough Egg artifact. Current drop probability per dig: ~{p_drop*100:.3f}%.")
             return self._package(decision, priority, action_type, reasoning, payload)
 

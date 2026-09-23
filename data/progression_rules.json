@@ -1,0 +1,1120 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "name": "Gem Power",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 20
+      },
+      "dependencies": [],
+      "conditions": [
+        {
+          "field": "gems",
+          "op": "gte",
+          "value": 1
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 1,
+          "free_from_ascension": 1
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/Upgrades/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Gem Power"
+      }
+    },
+    {
+      "name": "Stoic Resistance",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 552
+      },
+      "dependencies": [],
+      "conditions": [
+        {
+          "op": "owned_trophy",
+          "id": 190
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 1,
+          "free_from_ascension": 1
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/Upgrades/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Stoic Resistance"
+      },
+      "notes": [
+        "Installed 4.3.11 grants 1e16 ordinary coins, not faction coins. Older source descriptions differ."
+      ],
+      "cost_certainty": "HISTORICAL_SOURCE_ESTIMATE"
+    },
+    {
+      "name": "Proof of Good Deed",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 224
+      },
+      "dependencies": [],
+      "conditions": [
+        {
+          "field": "alignment",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 0,
+          "free_from_ascension": 1
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/Upgrades/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Proof of Good Deed"
+      }
+    },
+    {
+      "name": "Proof of Evil Deed",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 178
+      },
+      "dependencies": [],
+      "conditions": [
+        {
+          "field": "alignment",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 0,
+          "free_from_ascension": 1
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/Upgrades/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Proof of Evil Deed"
+      }
+    },
+    {
+      "name": "Proof of Neutrality",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 388
+      },
+      "dependencies": [],
+      "conditions": [
+        {
+          "field": "alignment",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "op": "unparsed",
+          "text": "At least one neutral faction must be unlocked; the visible game availability remains authoritative."
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 1e+16,
+          "free_from_ascension": 1
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/Upgrades/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Proof of Neutrality"
+      }
+    },
+    {
+      "name": "Mercenary First Contract",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 229
+      },
+      "dependencies": [],
+      "conditions": [
+        {
+          "field": "reincarnation",
+          "op": "gte",
+          "value": 3
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 5e+55,
+          "free_from_ascension": 1
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/MercenaryFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ],
+        "min_r": 3
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Mercenary First Contract"
+      }
+    },
+    {
+      "name": "Mercenary Second Contract",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 230
+      },
+      "dependencies": [
+        "Mercenary First Contract"
+      ],
+      "conditions": [
+        {
+          "field": "reincarnation",
+          "op": "gte",
+          "value": 3
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 2.5e+64,
+          "free_from_ascension": 1
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/MercenaryFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ],
+        "min_r": 3
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Mercenary Second Contract"
+      }
+    },
+    {
+      "name": "Mercenary Third Contract",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 231
+      },
+      "dependencies": [
+        "Mercenary Second Contract"
+      ],
+      "conditions": [
+        {
+          "field": "reincarnation",
+          "op": "gte",
+          "value": 3
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 5e+72,
+          "free_from_ascension": 1
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/MercenaryFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ],
+        "min_r": 3
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Mercenary Third Contract"
+      }
+    },
+    {
+      "name": "Mercenary Magic Contract",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 233
+      },
+      "dependencies": [
+        "Mercenary First Contract"
+      ],
+      "conditions": [
+        {
+          "op": "unparsed",
+          "text": "Per-spell faction-coin costs and allowed alignment must be resolved from the selected template."
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 5e+58,
+          "free_from_ascension": 1
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/MercenaryFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "deploy_template",
+        "target": "Selected Mercenary template"
+      },
+      "notes": [
+        "Faction-coin costs depend on the selected spell. The template executor performs and verifies the selection."
+      ]
+    },
+    {
+      "name": "Mercenary Sorcery Contract",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 234
+      },
+      "dependencies": [
+        "Mercenary First Contract"
+      ],
+      "conditions": [
+        {
+          "op": "unparsed",
+          "text": "Per-spell faction-coin costs and allowed alignment must be resolved from the selected template."
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 5e+75,
+          "free_from_ascension": 1
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/MercenaryFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "deploy_template",
+        "target": "Selected Mercenary template"
+      },
+      "notes": [
+        "Faction-coin costs depend on the selected spell. The template executor performs and verifies the selection."
+      ]
+    },
+    {
+      "name": "Fairies Trade Treaty",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 197
+      },
+      "dependencies": [],
+      "conditions": [
+        {
+          "field": "alignment",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "costs": [
+        {
+          "field": "raw_data.factionCoins.0.factionCoins",
+          "amount": 20
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/FairyFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Fairies Trade Treaty"
+      }
+    },
+    {
+      "name": "Elven Trade Treaty",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 169
+      },
+      "dependencies": [],
+      "conditions": [
+        {
+          "field": "alignment",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "costs": [
+        {
+          "field": "raw_data.factionCoins.1.factionCoins",
+          "amount": 20
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/ElfFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Elven Trade Treaty"
+      }
+    },
+    {
+      "name": "Angels Trade Treaty",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 40
+      },
+      "dependencies": [],
+      "conditions": [
+        {
+          "field": "alignment",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "costs": [
+        {
+          "field": "raw_data.factionCoins.2.factionCoins",
+          "amount": 20
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/AngelFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Angels Trade Treaty"
+      }
+    },
+    {
+      "name": "Goblins Trade Treaty",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 216
+      },
+      "dependencies": [],
+      "conditions": [
+        {
+          "field": "alignment",
+          "op": "eq",
+          "value": 2
+        }
+      ],
+      "costs": [
+        {
+          "field": "raw_data.factionCoins.3.factionCoins",
+          "amount": 20
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/GoblinFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Goblins Trade Treaty"
+      }
+    },
+    {
+      "name": "Undead Trade Treaty",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 398
+      },
+      "dependencies": [],
+      "conditions": [
+        {
+          "field": "alignment",
+          "op": "eq",
+          "value": 2
+        }
+      ],
+      "costs": [
+        {
+          "field": "raw_data.factionCoins.4.factionCoins",
+          "amount": 20
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/UndeadFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Undead Trade Treaty"
+      }
+    },
+    {
+      "name": "Demons Trade Treaty",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 104
+      },
+      "dependencies": [],
+      "conditions": [
+        {
+          "field": "alignment",
+          "op": "eq",
+          "value": 2
+        }
+      ],
+      "costs": [
+        {
+          "field": "raw_data.factionCoins.5.factionCoins",
+          "amount": 20
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/DemonFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "purchase_named",
+        "target": "Demons Trade Treaty"
+      }
+    },
+    {
+      "name": "Reach R46",
+      "ownership": {
+        "kind": "condition",
+        "condition": {
+          "field": "reincarnation",
+          "op": "gte",
+          "value": 46
+        }
+      },
+      "dependencies": [],
+      "conditions": [],
+      "costs": [],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/Reincarnation/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "reach_reincarnation",
+        "target_r": 46
+      }
+    },
+    {
+      "name": "Reach 1500 excavations",
+      "ownership": {
+        "kind": "condition",
+        "condition": {
+          "field": "excavations",
+          "op": "gte",
+          "value": 1500
+        }
+      },
+      "dependencies": [
+        "Reach R46"
+      ],
+      "conditions": [],
+      "costs": [],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "excavate",
+        "target": 1500
+      }
+    },
+    {
+      "name": "Spiky Rough Egg",
+      "ownership": {
+        "kind": "trophy",
+        "id": 211
+      },
+      "dependencies": [
+        "Reach R46",
+        "Reach 1500 excavations"
+      ],
+      "conditions": [],
+      "costs": [],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "excavate_for_egg"
+      }
+    },
+    {
+      "name": "Hatch!",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 604
+      },
+      "dependencies": [
+        "Spiky Rough Egg"
+      ],
+      "conditions": [
+        {
+          "field": "quest.egg_elapsed_seconds",
+          "op": "gte",
+          "value": 43200
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 1e+64
+        },
+        {
+          "field": "raw_data.factionCoins.0.factionCoins",
+          "amount": 10000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.1.factionCoins",
+          "amount": 10000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.2.factionCoins",
+          "amount": 10000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.3.factionCoins",
+          "amount": 10000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.4.factionCoins",
+          "amount": 10000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.5.factionCoins",
+          "amount": 10000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.9.factionCoins",
+          "amount": 10000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.10.factionCoins",
+          "amount": 10000000.0
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          1
+        ],
+        "min_r": 46
+      },
+      "action": {
+        "action": "purchase_dragon_stage",
+        "target": "Hatch!"
+      },
+      "cost_certainty": "WIKI_ESTIMATE_REQUIRES_GAME_AVAILABILITY",
+      "notes": [
+        "Wiki prices may differ from installed updates; ownership change, not the cost estimate, proves a purchase."
+      ]
+    },
+    {
+      "name": "Drakeling",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 605
+      },
+      "dependencies": [
+        "Hatch!"
+      ],
+      "conditions": [
+        {
+          "field": "hellfire_since_hatch",
+          "op": "gte",
+          "value": 43200
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 1e+67
+        },
+        {
+          "field": "raw_data.factionCoins.0.factionCoins",
+          "amount": 100000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.1.factionCoins",
+          "amount": 100000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.2.factionCoins",
+          "amount": 100000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.3.factionCoins",
+          "amount": 100000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.4.factionCoins",
+          "amount": 100000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.5.factionCoins",
+          "amount": 100000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.9.factionCoins",
+          "amount": 100000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.10.factionCoins",
+          "amount": 100000000.0
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          1
+        ],
+        "min_r": 46
+      },
+      "action": {
+        "action": "purchase_dragon_stage",
+        "target": "Drakeling"
+      },
+      "cost_certainty": "WIKI_ESTIMATE_REQUIRES_GAME_AVAILABILITY",
+      "notes": [
+        "Wiki prices may differ from installed updates; ownership change, not the cost estimate, proves a purchase."
+      ]
+    },
+    {
+      "name": "Dragon",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 606
+      },
+      "dependencies": [
+        "Drakeling"
+      ],
+      "conditions": [
+        {
+          "field": "quest.drakeling_elapsed_seconds",
+          "op": "gte",
+          "value": 43200
+        },
+        {
+          "field": "fairy_assistants",
+          "op": "gte",
+          "value": 3750
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 1e+70
+        },
+        {
+          "field": "raw_data.factionCoins.0.factionCoins",
+          "amount": 1000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.1.factionCoins",
+          "amount": 1000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.2.factionCoins",
+          "amount": 1000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.3.factionCoins",
+          "amount": 1000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.4.factionCoins",
+          "amount": 1000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.5.factionCoins",
+          "amount": 1000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.9.factionCoins",
+          "amount": 1000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.10.factionCoins",
+          "amount": 1000000000.0
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          1
+        ],
+        "min_r": 46
+      },
+      "action": {
+        "action": "purchase_dragon_stage",
+        "target": "Dragon"
+      },
+      "cost_certainty": "WIKI_ESTIMATE_REQUIRES_GAME_AVAILABILITY",
+      "notes": [
+        "Wiki prices may differ from installed updates; ownership change, not the cost estimate, proves a purchase."
+      ]
+    },
+    {
+      "name": "Elder Dragon",
+      "ownership": {
+        "kind": "upgrade",
+        "id": 607
+      },
+      "dependencies": [
+        "Dragon"
+      ],
+      "conditions": [
+        {
+          "field": "quest.dragon_elapsed_seconds",
+          "op": "gte",
+          "value": 43200
+        },
+        {
+          "field": "mana_max",
+          "op": "gte",
+          "value": 50000
+        }
+      ],
+      "costs": [
+        {
+          "field": "coins",
+          "amount": 1e+73
+        },
+        {
+          "field": "raw_data.factionCoins.0.factionCoins",
+          "amount": 10000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.1.factionCoins",
+          "amount": 10000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.2.factionCoins",
+          "amount": 10000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.3.factionCoins",
+          "amount": 10000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.4.factionCoins",
+          "amount": 10000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.5.factionCoins",
+          "amount": 10000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.9.factionCoins",
+          "amount": 10000000000.0
+        },
+        {
+          "field": "raw_data.factionCoins.10.factionCoins",
+          "amount": 10000000000.0
+        }
+      ],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          1
+        ],
+        "min_r": 46
+      },
+      "action": {
+        "action": "purchase_dragon_stage",
+        "target": "Elder Dragon"
+      },
+      "cost_certainty": "WIKI_ESTIMATE_REQUIRES_GAME_AVAILABILITY",
+      "notes": [
+        "Wiki prices may differ from installed updates; ownership change, not the cost estimate, proves a purchase."
+      ]
+    },
+    {
+      "name": "Dragon Tamer",
+      "ownership": {
+        "kind": "trophy",
+        "id": 210
+      },
+      "dependencies": [
+        "Elder Dragon"
+      ],
+      "conditions": [],
+      "costs": [],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "http://musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "action": {
+        "action": "verify_trophy",
+        "target": 210
+      }
+    }
+  ],
+  "formulas": [
+    {
+      "name": "A0/A1 research point cap",
+      "expression": "(r + 1) * r / 2",
+      "variables": {
+        "r": "reincarnation"
+      },
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ]
+      },
+      "source": "http://musicfamily.org/realm/Research/"
+    },
+    {
+      "name": "Pre-ascension next reincarnation gems",
+      "expression": "10 ^ (27 + 3 * r)",
+      "variables": {
+        "r": "reincarnation"
+      },
+      "scope": {
+        "ascensions": [
+          0
+        ],
+        "max_r": 39
+      },
+      "source": "http://musicfamily.org/realm/Reincarnation/"
+    },
+    {
+      "name": "Ruby excavation milestone",
+      "expression": "25 * n * (n + 1)",
+      "variables": {
+        "n": "ruby_number"
+      },
+      "source": "https://realm-grinder.fandom.com/wiki/Excavations"
+    }
+  ],
+  "policy": "Reviewed structural recipes, not a claim that every wiki formula or historical balance value matches the installed game."
+}

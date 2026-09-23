@@ -18,6 +18,9 @@ def named_entries(text,section):
             for identifier,name in re.findall(pattern,match.group(1))]
 
 def load_reference_ids():
+    packaged=ROOT/'data'/'reference_identifiers.json'
+    if packaged.exists():
+        return json.loads(packaged.read_text(encoding='utf-8'))
     path=ROOT/'scratch/rgtools-util.txt';text=path.read_text(encoding='utf-8')
     codes={};bloodlines={};names={}
     for identifier,name in named_entries(text,'upgradeIDs'):
@@ -63,7 +66,8 @@ def rebuild_manifests(save_version):
     path=ROOT/'state/upgrade_catalog.json'
     known=json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
     for name,identifier in reference['bloodlines'].items():
-        known[name]={'id':identifier,'save_version':save_version,'verification':'source_identifier',
-                     'source_url':SOURCE,'source_sha256':reference['sha256']}
+        if known.get(name,{}).get('verification')!='installed_definition':
+            known[name]={'id':identifier,'save_version':save_version,'verification':'source_identifier',
+                         'source_url':SOURCE,'source_sha256':reference['sha256']}
     write_json(path,known);write_json(ROOT/'state/reference_identifiers.json',reference)
     return builds

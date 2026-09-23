@@ -8,7 +8,8 @@ def api():
 
 @pytest.fixture(scope='module')
 def catalog():
-    return api().inspect_definitions(Path(r'C:\Program Files (x86)\Steam\steamapps\common\Realm Grinder\RealmGrinderDesktop.swf'))
+    from src.bootstrap import find_game_directory
+    return api().inspect_definitions(find_game_directory()/'RealmGrinderDesktop.swf')
 
 def test_installed_upgrade_and_trophy_names_are_distinct(catalog):
     upgrades=[r for r in catalog['definitions'] if r['name']=='Stoic Resistance' and r['kind']=='upgrade']

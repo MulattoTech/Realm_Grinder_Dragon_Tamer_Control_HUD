@@ -44,18 +44,24 @@ def import_existing(store):
         text=path.read_text(encoding='utf-8')
         match=re.search(r'^URL:\s*(\S+)',text,re.M)
         if match:
+            with store.connect() as db:
+                existing=db.execute('SELECT 1 FROM documents WHERE source_url=?',(canonical_url(match.group(1)),)).fetchone()
+            if existing:continue
             store.ingest(path.stem,match.group(1),text,origin='musicfamily_cached',
                          captured_at=None,license='Source attribution retained; no open-code license asserted')
+    manifest_path=ROOT/'data/source_manifest.json'
+    manifest=json.loads(manifest_path.read_text(encoding='utf-8')).get('sources',[]) if manifest_path.exists() else []
     for path in sorted((ROOT/'scraped_wiki/html').glob('*.html')):
-        if path.name.startswith('fandom-Mercenary-'):
-            original='https://realm-grinder.fandom.com/wiki/Mercenary'
-            resolved='http://web.archive.org/web/20260705213925/'+original
-            store.ingest('Mercenary',original,html_text(path.read_bytes()),origin='fandom_archived',
-                         resolved_url=resolved,captured_at='2026-07-05',license='CC-BY-SA unless otherwise noted by source')
-        elif not path.name.startswith('fandom-'):
-            original='http://musicfamily.org/realm/'+path.stem+'/'
-            store.ingest(path.stem,original,html_text(path.read_bytes()),origin='musicfamily_live',
-                         license='Source attribution retained; no open-code license asserted')
+        title=path.stem.removeprefix('fandom-')
+        candidates=[row for row in manifest if row['title']==title]
+        if len(candidates)!=1:continue  # Unnamed cache bytes do not establish a date or source URL.
+        row=candidates[0]
+        with store.connect() as db:
+            existing=db.execute('SELECT 1 FROM documents WHERE source_url=?',(row['source_url'],)).fetchone()
+        if existing:continue
+        store.ingest(row['title'],row['source_url'],html_text(path.read_bytes()),
+                     origin='local_cache',resolved_url=row.get('resolved_url'),captured_at=row.get('captured_at'),
+                     license='Source attribution retained; cached provenance is not live verification')
 
 
 def collect_page(spec):
@@ -110,7 +116,11 @@ def download_icons():
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--refresh',action='store_true')
     parser.add_argument('--icons',action='store_true');parser.add_argument('--workers',type=int,default=2)
-    args=parser.parse_args();store=KnowledgeStore();import_existing(store)
+    parser.add_argument('--manifest',type=Path,default=ROOT/'data/source_manifest.json')
+    parser.add_argument('--max-pages',type=int,default=160)
+    args=parser.parse_args()
+    (ROOT/'scraped_wiki/html').mkdir(parents=True,exist_ok=True)
+    store=KnowledgeStore();import_existing(store)
     print('IMPORTED_EXISTING',json.dumps(store.stats()),flush=True)
     if args.refresh:
         names=['MercBuilds','Mercenary','Factions','FactionUpgrades','Spells','Reincarnation','Research','ResearchList',
@@ -122,6 +132,17 @@ def main():
                 'Druid','Titan','Faceless','Challenges','Trophies','Excavation','Artifacts','Mana','Gems','Buildings','Keyboard_Shortcuts','Lineage']
         specs=[('musicfamily',name,'http://musicfamily.org/realm/'+name+'/') for name in names]
         specs += [('fandom',name,'https://realm-grinder.fandom.com/wiki/'+name) for name in fandom]
+        if args.manifest.exists():
+            known=json.loads(args.manifest.read_text(encoding='utf-8'))
+            listed=[]
+            for row in known.get('sources',[]):
+                parts=urlsplit(row['source_url'])
+                if parts.hostname in ('musicfamily.org','www.musicfamily.org') and parts.path.startswith('/realm/'):
+                    listed.append(('musicfamily',row['title'],row['source_url']))
+                elif parts.hostname=='realm-grinder.fandom.com' and parts.path.startswith('/wiki/'):
+                    listed.append(('fandom',row['title'],row['source_url']))
+            if listed:specs=listed
+        specs=list({url:(origin,title,url) for origin,title,url in specs}.values())[:max(1,min(500,args.max_pages))]
         with ThreadPoolExecutor(max_workers=max(1,min(3,args.workers))) as pool:
             futures=[pool.submit(collect_page,spec) for spec in specs]
             for future in as_completed(futures):
@@ -137,6 +158,8 @@ def main():
                 else:
                     store.log_fetch(result['url'],'FAILED',result['error']);print('SOURCE_FAILED',result['url'],result['error'],flush=True)
     if args.icons:download_icons()
+    from src.knowledge_service import KnowledgeService
+    print('STRUCTURED_COVERAGE',json.dumps(KnowledgeService().rebuild_references(store)),flush=True)
     write_json(ROOT/'state/knowledge_coverage.json',dict(store.stats(),updated_at=time.time()))
     print('FINAL_COVERAGE',json.dumps(store.stats()),flush=True)
 
