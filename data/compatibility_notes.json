@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "notes": [
+    {
+      "title": "Stoic Resistance - installed 4.3.11 development observation",
+      "source_url": "local://installed-game/stoic-resistance-4.3.11",
+      "text": "Stoic Resistance: installed Realm Grinder 4.3.11 development observation. The ordinary-coin reward observed in the installed definition and prior normal UI purchase was 1e16 coins, not 1e16 faction coins. Older wiki effect descriptions differ. Trophy ID 190 and purchasable upgrade ID 552 are distinct. This packaged note records earlier development evidence; it is not a fresh observation of a new machine or a blanket version guarantee.",
+      "swf_sha256": "b7b299b359d9795a322caab8d4f430e2138ce0d9d7a0c91db1a66bc8da84dfac",
+      "origin": "bundled_development_observation",
+      "captured_at": "2026-09-23"
+    }
+  ]
+}

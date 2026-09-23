@@ -92,6 +92,15 @@ def initialize(root=ROOT,game_dir=None,refresh_installed=False):
                     raise ValueError('UI reference checksum mismatch: '+item['file'])
                 target=root/'assets/templates'/item['file']
                 if not target.exists():target.write_bytes(data)
+    from src.source_knowledge import KnowledgeStore
+    knowledge=KnowledgeStore(root/'scraped_wiki/knowledge.sqlite3')
+    notes=json.loads((ROOT/'data/compatibility_notes.json').read_text(encoding='utf-8'))
+    for note in notes['notes']:
+        with knowledge.connect() as database:
+            existing=database.execute('SELECT 1 FROM documents WHERE source_url=?',(note['source_url'],)).fetchone()
+        if not existing:
+            knowledge.ingest(note['title'],note['source_url'],note['text'],origin=note['origin'],
+                             captured_at=note['captured_at'],license='Project development observation; game facts retain their original attribution')
     report={'game_metadata':status,'game_dir':str(game),'installed_sha256':digest,
             'network_requests':0,'game_input_sent':False,
             'prepared_build_manifests':len(manifests),'configuration_preserved':True,
