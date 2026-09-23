@@ -56,3 +56,8 @@ An autonomous Windows-native desktop automation system engineered to progress yo
 
 ## Licenses & Third-Party Credits
 See [`THIRD_PARTY.md`](file:///C:/Tools/Dev/RealmGrinder/THIRD_PARTY.md) for full licensing details and notices.
+
+## Repository origin
+
+# Realm_Grinder_Dragon_Tamer_Control_HUD
+M-Tech Labs AI Created Realm Grinder Bot to obtain the Dragons Steam Achivement
