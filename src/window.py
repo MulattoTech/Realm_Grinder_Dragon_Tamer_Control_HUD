@@ -73,7 +73,10 @@ class RealmGrinderWindow:
                     matches.append((hwnd, win32process.GetWindowThreadProcessId(hwnd)[1]))
             except Exception:
                 pass
-        win32gui.EnumWindows(visit, None)
+        try:
+            win32gui.EnumWindows(visit, None)
+        except Exception:
+            pass
         if len(matches) != 1:
             self.hwnd, self.pid = None, None
             return False

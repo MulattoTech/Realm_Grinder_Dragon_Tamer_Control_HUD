@@ -25,5 +25,6 @@ __pycache__/
 /*.jpg
 /*.json
 /*.txt
+/*.zip
 !requirements.txt
 !requirements-dev.txt
