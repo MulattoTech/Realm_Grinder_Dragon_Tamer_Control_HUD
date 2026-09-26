@@ -84,3 +84,21 @@ def test_prior_excavations_do_not_bypass_the_r46_egg_requirement(tmp_path):
     plan=KnowledgeService(state_dir=tmp_path).plan_target('Dragon Tamer',state)
     assert plan['next_action']['action']=='reach_reincarnation'
     assert plan['next_action']['target_r']==46
+
+@pytest.mark.parametrize(('target','owned_upgrades'),[
+    ('Hatch!',{'604':{'u1':False}}),
+    ('Drakeling',{'604':{'u1':True},'605':{'u1':False}}),
+    ('Dragon',{'604':{'u1':True},'605':{'u1':True},'606':{'u1':False}}),
+    ('Elder Dragon',{'604':{'u1':True},'605':{'u1':True},'606':{'u1':True},'607':{'u1':False}}),
+])
+def test_r46_dragon_stages_are_available_in_pre_ascension_save(tmp_path,target,owned_upgrades):
+    from src.knowledge_service import KnowledgeService
+    state={'reincarnation':46,'ascension':0,'excavations':1500,'has_egg':True,
+        'coins':1e100,'mana_max':50000,'fairy_assistants':3750,
+        'hellfire_since_hatch':43200,
+        'quest':{'egg_elapsed_seconds':43200,'drakeling_elapsed_seconds':43200,'dragon_elapsed_seconds':43200},
+        'raw_data':{'saveVersion':58,'upgrades':owned_upgrades,
+            'trophies':{'211':{}},'factionCoins':[{'factionCoins':1e12} for _ in range(11)]}}
+    plan=KnowledgeService(state_dir=tmp_path).plan_target(target,state)
+    stage=next(step for step in plan['steps'] if step['name']==target)
+    assert stage['status']!='UNSUPPORTED_STAGE'

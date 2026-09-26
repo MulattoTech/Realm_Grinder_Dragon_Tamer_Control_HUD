@@ -87,6 +87,156 @@ def test_template_dialog_is_identified_before_typing():
     assert abs(found['import'][1]-585)<3
     assert ui.template_dialog(Image.open('screenshots/route-calibration-current.png')) is None
 
+
+def test_offline_production_close_requires_title_and_close_icon_pair():
+    from PIL import Image
+    import src.semantic_ui as ui
+    assert hasattr(ui,'locate_offline_production_dialog'), 'Offline Production dialog recognition missing'
+    title_path=Path('assets/modal-calibration/offline-production-title.png')
+    close_path=Path('assets/modal-calibration/offline-production-close.png')
+    assert title_path.exists() and close_path.exists(), 'Offline Production calibration anchors missing'
+    title=Image.open(title_path).convert('RGB')
+    close=Image.open(close_path).convert('RGB')
+    frame=Image.new('RGB',(1180,810),(30,45,55))
+    frame.paste(title,(448,280))
+    frame.paste(close,(737,254))
+    found=ui.locate_offline_production_dialog(frame)
+    assert found and found['close']==(753,270)
+
+
+def test_offline_production_title_without_close_icon_is_not_dismissed():
+    from PIL import Image
+    import src.semantic_ui as ui
+    assert hasattr(ui,'locate_offline_production_dialog'), 'Offline Production dialog recognition missing'
+    title=Image.open('assets/modal-calibration/offline-production-title.png').convert('RGB')
+    frame=Image.new('RGB',(1180,810),(30,45,55))
+    frame.paste(title,(448,280))
+    assert ui.locate_offline_production_dialog(frame) is None
+
+
+def test_offline_production_dialog_recognition_scales_with_window():
+    from PIL import Image
+    import src.semantic_ui as ui
+    title=Image.open('assets/modal-calibration/offline-production-title.png').convert('RGB')
+    close=Image.open('assets/modal-calibration/offline-production-close.png').convert('RGB')
+    scale=0.8
+    title=title.resize((round(title.width*scale),round(title.height*scale)),Image.Resampling.NEAREST)
+    close=close.resize((round(close.width*scale),round(close.height*scale)),Image.Resampling.NEAREST)
+    frame=Image.new('RGB',(640,480),(30,45,55))
+    title_origin=(200,200)
+    close_origin=(title_origin[0]+round(289*scale),title_origin[1]-round(26*scale))
+    frame.paste(title,title_origin)
+    frame.paste(close,close_origin)
+    found=ui.locate_offline_production_dialog(frame)
+    assert found and found['close']==(close_origin[0]+close.width//2,close_origin[1]+close.height//2)
+
+def test_abdication_dialog_requires_title_close_and_confirm_button():
+    from PIL import Image
+    import src.semantic_ui as ui
+    assert hasattr(ui,'locate_abdication_dialog'), 'Abdication dialog recognizer missing'
+    root=Path('assets/modal-calibration')
+    title=Image.open(root/'abdication-title.png').convert('RGB')
+    close=Image.open(root/'abdication-close.png').convert('RGB')
+    confirm=Image.open(root/'abdication-confirm.png').convert('RGB')
+    frame=Image.new('RGB',(1280,752),(22,22,24))
+    title_origin=(574,260)
+    frame.paste(title,title_origin)
+    frame.paste(close,(title_origin[0]+513,title_origin[1]-30))
+    frame.paste(confirm,(title_origin[0]-67,title_origin[1]+172))
+    found=ui.locate_abdication_dialog(frame)
+    assert found and found['close']==(1103,247) and found['confirm']==(572,459)
+
+def test_abdication_dialog_does_not_match_without_confirm_control():
+    from PIL import Image
+    import src.semantic_ui as ui
+    title=Image.open('assets/modal-calibration/abdication-title.png').convert('RGB')
+    close=Image.open('assets/modal-calibration/abdication-close.png').convert('RGB')
+    frame=Image.new('RGB',(1280,752),(22,22,24))
+    frame.paste(title,(574,260));frame.paste(close,(1087,230))
+    assert ui.locate_abdication_dialog(frame) is None
+
+def test_abdication_dialog_controls_follow_centered_modal_in_live_client_geometry():
+    from PIL import Image
+    import src.semantic_ui as ui
+    root=Path('assets/modal-calibration')
+    title=Image.open(root/'abdication-title.png').convert('RGB')
+    close=Image.open(root/'abdication-close.png').convert('RGB')
+    confirm=Image.open(root/'abdication-confirm.png').convert('RGB')
+    frame=Image.new('RGB',(1180,810),(22,22,24))
+    origin=(524,289)
+    frame.paste(title,origin)
+    frame.paste(close,(origin[0]+513,origin[1]-30))
+    frame.paste(confirm,(origin[0]-67,origin[1]+172))
+    found=ui.locate_abdication_dialog(frame)
+    assert found and found['close']==(1053,276) and found['confirm']==(522,488)
+
+@pytest.mark.parametrize(('operation','filename','origin','expected'),[
+    ('abdication','abdication-control.png',(100,20),(155,31)),
+    ('reincarnation','reincarnation-control.png',(300,20),(360,31)),
+])
+def test_reset_control_requires_live_button_label(operation,filename,origin,expected):
+    from PIL import Image
+    import src.semantic_ui as ui
+    path=Path('assets/modal-calibration')/filename
+    assert hasattr(ui,'locate_reset_control') and path.exists()
+    anchor=Image.open(path).convert('RGB')
+    frame=Image.new('RGB',(800,300),(18,20,26));frame.paste(anchor,origin)
+    found=ui.locate_reset_control(frame,operation)
+    assert found and found['point']==expected
+
+def test_reset_control_locator_rejects_unknown_controls():
+    from PIL import Image
+    import src.semantic_ui as ui
+    with pytest.raises(ValueError,match='Unknown reset control'):
+        ui.locate_reset_control(Image.new('RGB',(1180,810)),'fast_forward')
+
+def test_semantic_reset_click_needs_pixels_and_live_input_gate():
+    from PIL import Image
+    from src.semantic_ui import SemanticUI
+    anchor=Image.open('assets/modal-calibration/abdication-control.png').convert('RGB')
+    frame=Image.new('RGB',(1180,810),(18,20,26));frame.paste(anchor,(160,9))
+    class Window:
+        def __init__(self):self.clicks=[]
+        def find_window(self):return True
+        def is_minimized(self):return False
+        def get_client_size(self):return (1180,810)
+        def capture(self):return frame
+        def click(self,*point,**kwargs):self.clicks.append((point,kwargs))
+    window=Window();ui=SemanticUI(window,lambda:False)
+    target=ui.click_reset_control('abdication')
+    assert target['point']==(215,20)
+    assert window.clicks==[((215,20),{'delay_after':0.2,'auto_scale':False})]
+    guarded=Window();cancelled=SemanticUI(guarded,lambda:True)
+    with pytest.raises(RuntimeError,match='paused or the target is absent'):
+        cancelled.click_reset_control('abdication')
+    assert guarded.clicks==[]
+
+def test_abdication_confirm_requires_full_dialog_pixel_match():
+    from PIL import Image
+    from src.semantic_ui import SemanticUI
+    root=Path('assets/modal-calibration')
+    frame=Image.new('RGB',(1280,752),(22,22,24));origin=(574,260)
+    frame.paste(Image.open(root/'abdication-title.png').convert('RGB'),origin)
+    frame.paste(Image.open(root/'abdication-close.png').convert('RGB'),(origin[0]+513,origin[1]-30))
+    frame.paste(Image.open(root/'abdication-confirm.png').convert('RGB'),(origin[0]-67,origin[1]+172))
+    class Window:
+        def __init__(self,im):self.frame=im;self.clicks=[]
+        def find_window(self):return True
+        def is_minimized(self):return False
+        def get_client_size(self):return self.frame.size
+        def capture(self):return self.frame
+        def click(self,*point,**kwargs):self.clicks.append((point,kwargs))
+    window=Window(frame);ui=SemanticUI(window,lambda:False)
+    dialog=ui.confirm_abdication()
+    assert dialog['confirm']==(572,459)
+    assert window.clicks==[((572,459),{'delay_after':0.3,'auto_scale':False})]
+    missing=Image.new('RGB',(1280,752),(22,22,24));missing.paste(
+        Image.open(root/'abdication-title.png').convert('RGB'),origin)
+    guarded=Window(missing)
+    with pytest.raises(RuntimeError,match='confirmation dialog was not verified'):
+        SemanticUI(guarded,lambda:False).confirm_abdication()
+    assert guarded.clicks==[]
+
 def test_full_frame_bloodline_choice_recognition():
     from PIL import Image
     from src.semantic_ui import locate_icon

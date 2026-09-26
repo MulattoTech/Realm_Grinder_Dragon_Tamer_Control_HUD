@@ -55,6 +55,21 @@ from src.guardian import ProcessGuardian
 from src.forecaster import MonteCarloArtifactForecaster, MilestoneForecaster
 from src.state_machine import DragonBot
 
+
+def pending_action_summary(pending):
+    """Format the persisted evidence needed to investigate a blocked resume."""
+    action=str(pending.get('action','unknown action'))
+    action_id=str(pending.get('id','unknown id'))
+    status=str(pending.get('status','unknown status'))
+    error=str(pending.get('error','No failure detail was recorded.'))
+    backup=str(pending.get('backup','No transaction backup was recorded.'))
+    before=pending.get('before') or {}
+    state=(f"Before action: R{before.get('reincarnation','?')}, faction {before.get('faction','?')}, "
+           f"alignment {before.get('alignment','?')}, save {before.get('save_fingerprint','unknown')}.")
+    return (f"Action: {action}\nID: {action_id}\nStatus: {status}\n{state}\n"
+            f"Recorded result: {error}\nBackup: {backup}\n\n"
+            "The action remains unresolved. No retry was sent; inspect the current game and backup before reconciling.")
+
 NOTATIONS = [
     (1e99, "Dtg (1e99)"),
     (1e96, "Utg (1e96)"),
@@ -764,14 +779,34 @@ class ModernDragonTrackerApp:
         if os.path.exists(pending_path):
             pending=json.load(open(pending_path,encoding='utf-8'))
             if pending.get('status') in ('UNCERTAIN','DISPATCHED'):
-                self.set_feedback('An unresolved action needs reconciliation before resuming.',self.c_amber)
-                return
+                from src.action_verification import reconcile_known_template_no_text
+                if reconcile_known_template_no_text(pending_path,state):
+                    self.set_feedback('Recorded the old template attempt as no text sent. Review goal settings, then click Start again.',self.c_amber)
+                    messagebox.showinfo('Template attempt reconciled',
+                        'The recorded error occurred before the template text field was clicked or any characters were typed. '
+                        'The original transaction and backup were retained. The bot is still paused; review the selected goal, then click Start again.',
+                        parent=self.root)
+                    return
+                pending=json.load(open(pending_path,encoding='utf-8'))
+                if pending.get('status') not in ('UNCERTAIN','DISPATCHED'):
+                    # Another process reconciled it while this handler was running.
+                    pass
+                else:
+                    self.set_feedback(f"Reconciliation required: {pending.get('action','unknown action')} ({pending.get('status')}).",self.c_amber)
+                    messagebox.showwarning('Resume blocked: unresolved action',pending_action_summary(pending),parent=self.root)
+                    return
+        if config.get('selected_goal')=='Build only' and config.get('named_goal') in ('Reach R46','Dragon Tamer'):
+            self.set_feedback('Build only pauses after the current build is verified; explicit target tracking is available under Named goal.',self.c_amber)
         config['paused']=False
         if config.get('selected_goal')=='Next reincarnation':config['goal_target_r']=state['reincarnation']+1
         save_config(config)
         if os.path.exists(STOP_FILE):os.remove(STOP_FILE)
         self.config=config
-        self.set_feedback('Selected path started. The existing worker will execute one verified prerequisite at a time.',self.c_cyan)
+        message='Selected path started. The existing worker will execute one verified prerequisite at a time.'
+        if config.get('selected_goal')=='Build only' and config.get('named_goal') in ('Reach R46','Dragon Tamer'):
+            message+=' Build only pauses if the active build becomes verified; select Named goal for explicit '+config['named_goal']+' tracking.'
+            self.set_feedback(message,self.c_amber)
+        else:self.set_feedback(message,self.c_cyan)
         self.update_state()
 
     def on_build_selected(self, event):
@@ -1362,5 +1397,3 @@ def launch_monitor():
 
 if __name__ == "__main__":
     launch_monitor()
-
-

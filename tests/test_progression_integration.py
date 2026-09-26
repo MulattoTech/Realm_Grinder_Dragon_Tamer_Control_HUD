@@ -67,6 +67,49 @@ def test_normal_production_calls_the_working_route_executor():
     result=actions.maintain_production()
     assert calls==['collect'] and result['action']=='COLLECT_RESOURCES'
 
+def test_abdication_transaction_requires_live_button_and_confirm_dialog(tmp_path,monkeypatch):
+    from PIL import Image
+    from src.progression_actions import ProgressionActions
+    from src.action_verification import TransactionRunner
+    import src.progression_actions as module
+    root=Path('assets/modal-calibration')
+    before={'reincarnation':24,'gems':10.0,'potential_gems':30.0,'faction':0,'alignment':1,
+        'coins_this_game':100.0,'save_fingerprint':'before','save_timestamp':10.0,
+        'raw_data':{'saveVersion':58},
+        'telemetry':{'consequential_actions_allowed':True,'pid':17,'process_start_time':123}}
+    after={**before,'gems':40.0,'faction':-1,'alignment':0,'coins_this_game':0.0,
+        'save_fingerprint':'after','save_timestamp':11.0}
+    control=Image.new('RGB',(1180,810),(18,20,26))
+    control.paste(Image.open(root/'abdication-control.png').convert('RGB'),(160,9))
+    modal=Image.new('RGB',(1180,810),(22,22,24));origin=(524,289)
+    modal.paste(Image.open(root/'abdication-title.png').convert('RGB'),origin)
+    modal.paste(Image.open(root/'abdication-close.png').convert('RGB'),(origin[0]+513,origin[1]-30))
+    modal.paste(Image.open(root/'abdication-confirm.png').convert('RGB'),(origin[0]-67,origin[1]+172))
+    current={'value':before}
+    class Window:
+        pid=17
+        def __init__(self):self.clicks=[];self.frame=control
+        def find_window(self):return True
+        def is_minimized(self):return False
+        def get_client_size(self):return (1180,810)
+        def capture(self):return self.frame
+        def click(self,x,y,**kwargs):
+            self.clicks.append((x,y,kwargs))
+            if len(self.clicks)==1:self.frame=modal
+            elif len(self.clicks)==2:
+                self.frame=control;current['value']=after
+    window=Window()
+    monkeypatch.setattr(module,'input_allowed',lambda _window:True)
+    actions=ProgressionActions.__new__(ProgressionActions)
+    actions.window=window;actions.read=lambda:current['value'];actions.state_dir=tmp_path
+    actions.backup=lambda:'transaction.sol'
+    actions.runner=TransactionRunner(actions.read,tmp_path,cancelled=lambda:False,backup=actions.backup,
+        sleep=lambda _:current.update(value=after))
+    result=actions.abdicate()
+    assert result['success'] and result['status']=='VERIFIED'
+    assert [(x,y) for x,y,_ in window.clicks]==[(215,20),(522,488)]
+    assert len(window.clicks)==2
+
 
 def test_complete_build_route_advances_to_production(tmp_path,monkeypatch):
     import src.config as config

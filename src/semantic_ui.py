@@ -90,6 +90,99 @@ def template_dialog(frame):
             'close':(left+440,top-1),'bounds':(left,top,left+440,top+592),'score':score}
 
 
+def locate_offline_production_dialog(frame):
+    """Return the close-button center only when both calibrated modal anchors agree."""
+    if frame.info.get('capture_kind') == 'SYNTHETIC_STATUS':
+        return None
+    image = cv2.cvtColor(np.asarray(frame), cv2.COLOR_RGB2GRAY)
+    title_path = ROOT/'assets/modal-calibration/offline-production-title.png'
+    close_path = ROOT/'assets/modal-calibration/offline-production-close.png'
+    title = cv2.imread(str(title_path), cv2.IMREAD_GRAYSCALE)
+    close = cv2.imread(str(close_path), cv2.IMREAD_GRAYSCALE)
+    if title is None or close is None:
+        return None
+    # The dialog capture was made at 1180x810. Search modest size variation for DPI scaling.
+    for scale in (0.75, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3):
+        tw, th = round(title.shape[1]*scale), round(title.shape[0]*scale)
+        cw, ch = round(close.shape[1]*scale), round(close.shape[0]*scale)
+        if min(tw, th, cw, ch) < 8 or tw > image.shape[1] or th > image.shape[0]:
+            continue
+        scaled_title = cv2.resize(title, (tw, th), interpolation=cv2.INTER_AREA if scale < 1 else cv2.INTER_CUBIC)
+        response = cv2.matchTemplate(image, scaled_title, cv2.TM_CCOEFF_NORMED)
+        _, title_score, _, point = cv2.minMaxLoc(response)
+        if title_score < 0.91:
+            continue
+        # The red close box sits 289x-26y from the title crop origin at calibration scale.
+        left, top = point[0] + round(289*scale), point[1] - round(26*scale)
+        if left < 0 or top < 0 or left+cw > image.shape[1] or top+ch > image.shape[0]:
+            continue
+        scaled_close = cv2.resize(close, (cw, ch), interpolation=cv2.INTER_AREA if scale < 1 else cv2.INTER_CUBIC)
+        area = image[top:top+ch, left:left+cw]
+        score = cv2.matchTemplate(area, scaled_close, cv2.TM_CCOEFF_NORMED)[0, 0]
+        if math.isfinite(float(score)) and score >= 0.88:
+            return {'close': (left+cw//2, top+ch//2), 'title_score': float(title_score), 'close_score': float(score)}
+    return None
+
+
+def locate_abdication_dialog(frame):
+    """Find an Abdicate confirmation only when title, close and confirm controls agree."""
+    if frame.info.get('capture_kind') == 'SYNTHETIC_STATUS':
+        return None
+    image=cv2.cvtColor(np.asarray(frame),cv2.COLOR_RGB2GRAY)
+    root=ROOT/'assets/modal-calibration'
+    anchors={name:cv2.imread(str(root/f'abdication-{name}.png'),cv2.IMREAD_GRAYSCALE)
+             for name in ('title','close','confirm')}
+    if any(anchor is None for anchor in anchors.values()):
+        return None
+    offsets={'close':(513,-30),'confirm':(-67,172)}
+    for scale in (0.8,0.9,1.0,1.1,1.2):
+        title=anchors['title'];tw,th=round(title.shape[1]*scale),round(title.shape[0]*scale)
+        if tw>image.shape[1] or th>image.shape[0]:continue
+        title=cv2.resize(title,(tw,th),interpolation=cv2.INTER_AREA if scale<1 else cv2.INTER_CUBIC)
+        response=cv2.matchTemplate(image,title,cv2.TM_CCOEFF_NORMED)
+        _,title_score,_,point=cv2.minMaxLoc(response)
+        if title_score<0.92:continue
+        found={}
+        for name,(dx,dy) in offsets.items():
+            anchor=anchors[name];w,h=round(anchor.shape[1]*scale),round(anchor.shape[0]*scale)
+            left,top=point[0]+round(dx*scale),point[1]+round(dy*scale)
+            if left<0 or top<0 or left+w>image.shape[1] or top+h>image.shape[0]:break
+            template=cv2.resize(anchor,(w,h),interpolation=cv2.INTER_AREA if scale<1 else cv2.INTER_CUBIC)
+            score=float(cv2.matchTemplate(image[top:top+h,left:left+w],template,cv2.TM_CCOEFF_NORMED)[0,0])
+            if not math.isfinite(score) or score < (0.90 if name=='close' else 0.87):break
+            found[name]=((left+w//2,top+h//2),score)
+        if len(found)==2:
+            return {'close':found['close'][0],'confirm':found['confirm'][0],
+                    'title_score':float(title_score),'close_score':found['close'][1],
+                    'confirm_score':found['confirm'][1]}
+    return None
+
+
+def locate_reset_control(frame,operation):
+    """Find a reset button label in captured pixels; never authorize a click by itself."""
+    anchors={'abdication':'abdication-control.png','reincarnation':'reincarnation-control.png'}
+    if operation not in anchors:
+        raise ValueError('Unknown reset control: '+str(operation))
+    if frame.info.get('capture_kind')=='SYNTHETIC_STATUS':return None
+    image=cv2.cvtColor(np.asarray(frame),cv2.COLOR_RGB2GRAY)
+    anchor=cv2.imread(str(ROOT/'assets/modal-calibration'/anchors[operation]),cv2.IMREAD_GRAYSCALE)
+    if anchor is None:return None
+    for scale in (0.9,0.95,1.0,1.05,1.1):
+        width,height=round(anchor.shape[1]*scale),round(anchor.shape[0]*scale)
+        if width>image.shape[1] or height>image.shape[0]:continue
+        template=cv2.resize(anchor,(width,height),interpolation=cv2.INTER_AREA if scale<1 else cv2.INTER_CUBIC)
+        response=cv2.matchTemplate(image,template,cv2.TM_CCOEFF_NORMED)
+        _,score,_,point=cv2.minMaxLoc(response)
+        if not math.isfinite(score) or score<0.92:continue
+        suppressed=response.copy();x,y=point
+        suppressed[max(0,y-20):y+21,max(0,x-40):x+41]=-1
+        margin=float(score-suppressed.max())
+        if margin<0.04:continue
+        return {'point':(x+width//2,y+height//2),'score':float(score),'margin':margin,
+                'client_size':frame.size}
+    return None
+
+
 def unpurchased_collapsed(frame):
     if frame.info.get('capture_kind')=='SYNTHETIC_STATUS' or frame.width<760:return False
     image=cv2.cvtColor(np.asarray(frame),cv2.COLOR_RGB2GRAY)[80:115,475:510]
@@ -109,7 +202,11 @@ class SemanticUI:
         self.window = window
         self.cancelled = cancelled
         self.icon_dir = ROOT/'assets/templates'
-        self.registry = json.loads((self.icon_dir/'registry.json').read_text(encoding='utf-8'))
+        registry_path = self.icon_dir/'registry.json'
+        # Clean source checkouts intentionally omit generated/private icon caches.
+        # Reset/modal operations do not require that registry; named-icon methods fail
+        # explicitly when an attributed cache entry is unavailable.
+        self.registry = json.loads(registry_path.read_text(encoding='utf-8')) if registry_path.exists() else {}
 
     def require_ready(self):
         if self.cancelled() or not self.window.find_window():
@@ -157,6 +254,32 @@ class SemanticUI:
         if list(self.window.get_client_size()) != list(target['client_size']):
             raise RuntimeError('Window resized since target discovery')
         self.window.click(target['x'], target['y'], delay_after=0.2, auto_scale=False)
+
+    def click_reset_control(self,operation):
+        """Open a reset confirmation only from a matched live reset-button label."""
+        self.require_ready()
+        if self.window.is_minimized():raise RuntimeError('Reset confirmation requires real game pixels')
+        frame=self.window.capture();target=locate_reset_control(frame,operation)
+        if target is None:raise RuntimeError(f'{operation} button label was not verified; no input was sent')
+        if list(self.window.get_client_size())!=list(target['client_size']):
+            raise RuntimeError('Window resized since reset-button discovery')
+        self.require_ready()
+        self.window.click(*target['point'],delay_after=0.2,auto_scale=False)
+        return target
+
+    def confirm_abdication(self):
+        """Click Abdicate only after matching the live modal title, close and button."""
+        self.require_ready()
+        if self.window.is_minimized():raise RuntimeError('Abdication confirmation requires real game pixels')
+        frame=self.window.capture();dialog=locate_abdication_dialog(frame)
+        if dialog is None:
+            raise RuntimeError('Abdication confirmation dialog was not verified; no confirmation was sent')
+        size=list(frame.size)
+        if list(self.window.get_client_size())!=size:
+            raise RuntimeError('Window resized since Abdication dialog recognition')
+        self.require_ready()
+        self.window.click(*dialog['confirm'],delay_after=0.3,auto_scale=False)
+        return dialog
 
     def click_control(self,name):
         self.require_ready()

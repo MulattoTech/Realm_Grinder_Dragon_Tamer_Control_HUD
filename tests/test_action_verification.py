@@ -112,6 +112,41 @@ def test_backup_failure_prevents_input(tmp_path):
     result=runner(tmp_path,Feed(state()),backup=broken).run('TEST',lambda s:True,lambda:calls.append(1),a.reincarnation_verified)
     assert not result['success'] and calls==[]
 
+def test_known_template_failure_before_text_can_be_reconciled_without_retry(tmp_path):
+    a=api();path=tmp_path/'pending_action.json'
+    before=state(faction=11,token='before')
+    pending={'id':'abc123','action':'MERCENARY_TEMPLATE','status':'UNCERTAIN',
+             'error':'Template Import dialog was not verified; no text was sent',
+             'backup':'transaction.sol','before':a.state_summary(before)}
+    a.write_json(path,pending)
+    observed=state(faction=0,token='later')
+    resolved=a.reconcile_known_template_no_text(path,observed,now=lambda:1234)
+    saved=__import__('json').loads(path.read_text())
+    assert resolved and saved['status']=='RECONCILED_NO_TEMPLATE_TEXT'
+    assert saved['backup']=='transaction.sol' and saved['id']=='abc123'
+    assert saved['reconciliation']['observed_after']['save_fingerprint']=='later'
+
+@pytest.mark.parametrize('action,error',[
+    ('REINCARNATE','Template Import dialog was not verified; no text was sent'),
+    ('MERCENARY_TEMPLATE','No verified state transition before the observation timeout'),
+])
+def test_other_uncertain_transactions_are_never_auto_reconciled(tmp_path,action,error):
+    a=api();path=tmp_path/'pending_action.json'
+    a.write_json(path,{'id':'not-safe','action':action,'status':'UNCERTAIN','error':error,
+                       'before':a.state_summary(state(faction=11))})
+    assert not a.reconcile_known_template_no_text(path,state(token='later'))
+    assert __import__('json').loads(path.read_text())['status']=='UNCERTAIN'
+
+def test_known_template_reconciliation_requires_fresh_healthy_same_r_save(tmp_path):
+    a=api();path=tmp_path/'pending_action.json';before=state(faction=11,token='before')
+    a.write_json(path,{'id':'same-r','action':'MERCENARY_TEMPLATE','status':'UNCERTAIN',
+        'error':'Template Import dialog was not verified; no text was sent','before':a.state_summary(before)})
+    stale=state(token='later');stale['telemetry']['consequential_actions_allowed']=False
+    assert not a.reconcile_known_template_no_text(path,stale)
+    stale=state(r=25,token='later')
+    assert not a.reconcile_known_template_no_text(path,stale)
+    assert __import__('json').loads(path.read_text())['status']=='UNCERTAIN'
+
 
 def test_process_restart_during_transaction_is_uncertain(tmp_path):
     a=api(); after=state(r=25,token='new'); after['telemetry']['process_start_time']=124
