@@ -26,7 +26,7 @@ from src.window import RealmGrinderWindow
 from src.save_reader import extract_save_string_from_sol
 from src.live_state import get_live_game_state
 from src.progression_actions import ProgressionActions
-from src.runtime_safety import input_allowed
+from src.runtime_safety import input_allowed, modal_dismissal_allowed
 from src.config import load_config
 from src.wiki_data import (
     DRAGON_UNLOCK_STAGES,
@@ -78,14 +78,18 @@ class GateClearer:
         return self.actions.purchase_all('buildings')
 
     def dismiss_modals(self, force: bool = False):
-        """Safely dismisses any stray modal dialogs without closing user tabs with blind ESC."""
-        import win32con
-        if force:
-            self.window.press_key(win32con.VK_ESCAPE, delay_after=0.03)
-        self.send_hover_click(955, 97, delay_after=0.02)
-        self.send_hover_click(1099, 253, delay_after=0.02)
-        self.send_hover_click(850, 270, delay_after=0.02)
-        self.send_hover_click(671, 105, delay_after=0.02)
+        """Close only a pixel-verified Offline Production dialog; never guess at modal controls."""
+        if not modal_dismissal_allowed(self.window):
+            return False
+        from src.semantic_ui import locate_offline_production_dialog
+        frame = self.window.capture()
+        target = locate_offline_production_dialog(frame)
+        if not target:
+            return False
+        self.window.click(*target['close'], delay_after=0.15, auto_scale=False)
+        # Verify the specific modal disappeared; do not send another input on uncertainty.
+        remaining = locate_offline_production_dialog(self.window.capture())
+        return remaining is None
 
     def backup_save(self) -> str:
         """Creates an immediate verified safe backup of the live save."""

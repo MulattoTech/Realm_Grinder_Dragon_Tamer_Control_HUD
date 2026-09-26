@@ -52,9 +52,11 @@ class ProgressionActions:
     def diagnose_build(self,state=None):
         from src.config import load_config
         state=state or self.read()
-        selection,rec=selected_route(state,load_config().get('selected_path','Automatic'))
+        configured_path=load_config().get('selected_path','Automatic')
+        selection,rec=selected_route(state,configured_path)
         result=verify_build(state,rec,self.manifest(rec))
-        result.update(reincarnation=state['reincarnation'],gems=state['gems'],selected_path=selection,
+        result.update(reincarnation=state['reincarnation'],gems=state['gems'],selected_path=configured_path,
+                      active_path=selection,next_run_recommendation=rec.get('next_run_recommendation'),
                       observed_at=time.time(),save_fingerprint=state.get('save_fingerprint'))
         write_json(self.state_dir/'build_verification.json',result)
         return result
@@ -107,9 +109,28 @@ class ProgressionActions:
         return result
 
     def abdicate(self,allow_no_gain=False):
-        return self._transaction('ABDICATED','abdication',
-            lambda s:s.get('faction',-1)!=-1 and (allow_no_gain or s.get('potential_gems',0)>s['gems']),
+        from src.semantic_ui import SemanticUI,locate_reset_control
+        holder={}
+        def ready(state):
+            if state.get('faction',-1)==-1 or not (allow_no_gain or state.get('potential_gems',0)>state.get('gems',0)):
+                return False
+            if state.get('raw_data',{}).get('saveVersion')!=58:return False
+            target=locate_reset_control(self.window.capture(),'abdication')
+            if target is None or target['client_size']!=self.window.get_client_size():return False
+            holder['target']=target
+            return True
+        def dispatch():
+            ui=SemanticUI(self.window,lambda:not input_allowed(self.window))
+            target=ui.click_reset_control('abdication')
+            if target['client_size']!=holder['target']['client_size']:
+                raise RuntimeError('Window resized before Abdication confirmation')
+            time.sleep(.25)
+            ui.confirm_abdication()
+        result=self.runner.run('ABDICATED',ready,dispatch,
             lambda before,after:abdication_verified(before,after,allow_no_gain))
+        if result['status']=='UNCERTAIN':
+            (self.state_dir/'STOP').write_text('Unresolved action: '+result['message'],encoding='utf-8')
+        return result
 
     def reincarnate(self):
         def ready(state):

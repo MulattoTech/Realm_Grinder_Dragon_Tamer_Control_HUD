@@ -131,6 +131,38 @@ def state_summary(state):
     return {key:state.get(key) for key in ('reincarnation','gems','faction','alignment',
              'coins_this_game','save_fingerprint','save_timestamp','telemetry')}
 
+def reconcile_known_template_no_text(pending_path,observed_state,now=time.time):
+    """Reconcile one precisely identified template failure that occurs before typing.
+
+    The exception is raised after trying to open the template dialog but before the
+    input click or character loop. It is therefore safe to release the transaction
+    lock while retaining an auditable record. No game input is sent here.
+    """
+    path=Path(pending_path)
+    try:
+        with ActionLock(path.parent):
+            pending=json.loads(path.read_text(encoding='utf-8'))
+            before=pending.get('before') or {}
+            before_fingerprint=before.get('save_fingerprint')
+            after_fingerprint=observed_state.get('save_fingerprint')
+            telemetry=observed_state.get('telemetry') or {}
+            if not (pending.get('action')=='MERCENARY_TEMPLATE' and
+                    pending.get('status')=='UNCERTAIN' and
+                    pending.get('error')=='Template Import dialog was not verified; no text was sent' and
+                    before.get('reincarnation')==observed_state.get('reincarnation') and
+                    isinstance(before_fingerprint,str) and before_fingerprint and
+                    isinstance(after_fingerprint,str) and after_fingerprint!=before_fingerprint and
+                    telemetry.get('consequential_actions_allowed') is True):
+                return False
+            pending.update(status='RECONCILED_NO_TEMPLATE_TEXT',reconciled_at=now(),
+                reconciliation={'kind':'known_pretyping_template_failure',
+                    'proof':'The import dialog check raises before clicking its input field or typing any template characters.',
+                    'observed_after':state_summary(observed_state)})
+            write_json(path,pending)
+            return True
+    except (OSError,ValueError,RuntimeError):
+        return False
+
 class TransactionRunner:
     def __init__(self,state_reader,state_dir,cancelled,backup,clock=time.monotonic,
                  sleep=time.sleep,timeout=45.0,poll_interval=0.25):

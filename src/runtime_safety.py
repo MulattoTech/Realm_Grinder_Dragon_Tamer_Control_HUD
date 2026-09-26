@@ -30,6 +30,15 @@ def input_allowed(window):
     except (OSError,RuntimeError):
         return False
 
+def modal_dismissal_allowed(window):
+    """Permit a recognized modal close while paused, within the current live session only."""
+    try:
+        own=session_id()
+        return bool(own not in (None,0) and window.find_window() and
+                    session_id(window.pid)==own and not window.is_minimized())
+    except (OSError,RuntimeError,AttributeError):
+        return False
+
 
 class WorkerLease:
     def __init__(self,state_dir=STATE_DIR):

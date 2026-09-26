@@ -181,11 +181,8 @@ class DragonBot:
         return self.actions.purchase_all('buildings')
 
     def dismiss_modals(self, force: bool = False):
-        """Safely dismisses any stray modal dialogs without closing user tabs with blind ESC."""
-        if force:
-            self.window.press_key(win32con.VK_ESCAPE, delay_after=0.03)
-        # Calibrated close [X] buttons for modals
-        self.click_post(1099, 253, delay_after=0.02) # Generic confirmation close [X]
+        """Delegate to the pixel-verified, narrowly scoped modal handler."""
+        return self.clearer.dismiss_modals(force=force)
 
     def cast_spells_combo(self):
         """Casts higher tier spells (6 through 2) in descending order."""
@@ -257,6 +254,10 @@ class DragonBot:
     def step(self):
         """Observe first; select exactly one decision path; commit only state-proven progress."""
         game_st=self.sync_game_state()
+        try:
+            self.dismiss_modals()
+        except Exception:
+            logging.exception('Offline Production modal recognition/dismissal failed safely')
         self.state['telemetry']=game_st.get('telemetry',{})
         self.state['build_verification']=self.actions.diagnose_build(game_st)
         self.state['selected_route']=self.actions.route.plan(game_st)
