@@ -202,7 +202,11 @@ class SemanticUI:
         self.window = window
         self.cancelled = cancelled
         self.icon_dir = ROOT/'assets/templates'
-        self.registry = json.loads((self.icon_dir/'registry.json').read_text(encoding='utf-8'))
+        registry_path = self.icon_dir/'registry.json'
+        # Clean source checkouts intentionally omit generated/private icon caches.
+        # Reset/modal operations do not require that registry; named-icon methods fail
+        # explicitly when an attributed cache entry is unavailable.
+        self.registry = json.loads(registry_path.read_text(encoding='utf-8')) if registry_path.exists() else {}
 
     def require_ready(self):
         if self.cancelled() or not self.window.find_window():
