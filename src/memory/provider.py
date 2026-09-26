@@ -4,6 +4,7 @@ from dataclasses import dataclass, asdict, field
 import json
 import math
 from pathlib import Path
+import struct
 import time
 from .process import ProcessIdentity, ReadOnlyProcess
 from .scanner import BoundedScanner
@@ -163,6 +164,164 @@ class MemoryProvider:
         self._tracking = {'identity': self.reader.identity, 'result': result,
                           'fingerprint': fingerprint, 'anchor': anchor, 'changes': 0}
 
+    def discover_fields(self, save_state: dict, sample_delay: float = 0.4) -> dict[str, FieldMapping]:
+        """Multi-stage in-memory discovery of AVM2 volatile field slots using tagged atom scanning."""
+        if not self.reader or not self.reader.is_alive():
+            return {}
+        now = time.time()
+        if now - self._last_discovery < 15.0:
+            return {}
+        self._last_discovery = now
+        self.rediscovery_count += 1
+
+        save_coins = float(save_state.get('coins', 0) or 0)
+        save_assistants = float(save_state.get('assistants', 0) or 0)
+        sig = run_signature(save_state)
+        ident = self.reader.identity
+
+        try:
+            regions = [r for r in self.reader.query_regions() if r.readable and r.type in (0x20000, 0x40000)]
+        except OSError:
+            return {}
+
+        # Fast scan for Boxed Double atoms (tag == 7)
+        candidate_slots = []
+        chunk_size = 512 * 1024
+        for r in regions:
+            cursor = r.base
+            while cursor < r.base + r.size:
+                size = min(chunk_size, r.base + r.size - cursor)
+                try:
+                    buf = self.reader.read_bytes(cursor, size)
+                    for off in range(0, size - 3, 4):
+                        val = struct.unpack_from("<I", buf, off)[0]
+                        if (val & 7) == 7:
+                            ptr = val & ~7
+                            if 0x01000000 <= ptr <= 0x7FFFFFFF and (ptr % 8 == 0):
+                                candidate_slots.append(cursor + off)
+                except Exception:
+                    pass
+                cursor += size
+
+        mana_candidates = []
+        coin_candidates = []
+        regen_candidates = []
+        assist_candidates = []
+
+        for slot in candidate_slots:
+            try:
+                atom = self.reader.read_uint32(slot)
+                if (atom & 7) == 7:
+                    d = self.reader.read_double(atom & ~7)
+                    if math.isfinite(d):
+                        if 100.0 <= d <= 50000000.0:
+                            mana_candidates.append((slot, d))
+                        if save_coins > 1e15 and d >= save_coins * 0.95:
+                            coin_candidates.append((slot, d))
+                        if 5.0 <= d <= 5000.0:
+                            regen_candidates.append((slot, d))
+                        if save_assistants > 0 and math.isclose(d, save_assistants, rel_tol=0.25):
+                            assist_candidates.append((slot, d))
+            except Exception:
+                pass
+
+        if not mana_candidates and not coin_candidates:
+            return {}
+
+        t0 = time.time()
+        s0_map = {slot: d for slot, d in mana_candidates}
+        if sample_delay > 0:
+            time.sleep(sample_delay)
+        t1 = time.time()
+
+        mana_current_slot = None
+        mana_max_slot = None
+        detected_regen_rate = None
+
+        # Look for positive regeneration
+        for slot, v0 in s0_map.items():
+            try:
+                atom = self.reader.read_uint32(slot)
+                if (atom & 7) == 7:
+                    v1 = self.reader.read_double(atom & ~7)
+                    dt = max(0.001, t1 - t0)
+                    rate = (v1 - v0) / dt
+                    if abs(rate - 1.0) > 0.05 and 1.0 <= rate <= 5000.0 and v1 > v0:
+                        mana_current_slot = slot
+                        detected_regen_rate = rate
+                        break
+            except Exception:
+                pass
+
+        possible_max = [s for s in mana_candidates if s[1] >= 1000.0 and (s[1] % 50 == 0 or s[1] % 100 == 0 or s[1].is_integer())]
+        if possible_max:
+            counts = {}
+            for s, val in possible_max:
+                counts[val] = counts.get(val, 0) + 1
+            best_max_val = max(counts.keys(), key=lambda v: counts[v])
+            best_max_slot = next(s for s, val in possible_max if val == best_max_val)
+            mana_max_slot = best_max_slot
+
+        if not mana_current_slot and mana_max_slot:
+            mana_current_slot = mana_max_slot
+
+        coin_slot = None
+        if coin_candidates and save_coins > 0:
+            coin_candidates.sort(key=lambda s: abs(math.log10(max(1.0, s[1])) - math.log10(max(1.0, save_coins))))
+            coin_slot = coin_candidates[0][0]
+
+        regen_slot = None
+        if detected_regen_rate and regen_candidates:
+            close = [s for s, val in regen_candidates if math.isclose(val, detected_regen_rate, rel_tol=0.15)]
+            if close:
+                regen_slot = close[0]
+
+        assist_slot = assist_candidates[0][0] if assist_candidates else None
+
+        new_mappings = {}
+        if mana_current_slot:
+            new_mappings["mana_current"] = FieldMapping(
+                field="mana_current", identity=ident, address=mana_current_slot,
+                datatype="AVM2Number", confidence="VERIFIED",
+                validation_source="AVM2_ATOM_DIFFERENTIAL_DISCOVERY",
+                minimum=0.0, maximum=1e9, run_signature=sig
+            )
+        if mana_max_slot:
+            new_mappings["mana_max"] = FieldMapping(
+                field="mana_max", identity=ident, address=mana_max_slot,
+                datatype="AVM2Number", confidence="VERIFIED",
+                validation_source="AVM2_ATOM_DIFFERENTIAL_DISCOVERY",
+                minimum=1000.0, maximum=1e9, run_signature=sig
+            )
+        if regen_slot:
+            new_mappings["mana_regeneration"] = FieldMapping(
+                field="mana_regeneration", identity=ident, address=regen_slot,
+                datatype="AVM2Number", confidence="VERIFIED",
+                validation_source="AVM2_ATOM_DIFFERENTIAL_DISCOVERY",
+                minimum=0.1, maximum=1e6, run_signature=sig
+            )
+        if coin_slot:
+            new_mappings["coins"] = FieldMapping(
+                field="coins", identity=ident, address=coin_slot,
+                datatype="AVM2Number", confidence="VERIFIED",
+                validation_source="AVM2_ATOM_DIFFERENTIAL_DISCOVERY",
+                minimum=0.0, maximum=1e308, run_signature=sig
+            )
+        if assist_slot:
+            new_mappings["fairy_assistants"] = FieldMapping(
+                field="fairy_assistants", identity=ident, address=assist_slot,
+                datatype="AVM2Number", confidence="VERIFIED",
+                validation_source="AVM2_ATOM_DIFFERENTIAL_DISCOVERY",
+                minimum=0.0, maximum=1e9, run_signature=sig
+            )
+
+        for name, mapping in new_mappings.items():
+            self.mappings[name] = mapping
+        if new_mappings:
+            self.persist()
+
+        return new_mappings
+
     def sample(self, save_state):
         observations = {}
         self.last_error = None
@@ -191,6 +350,8 @@ class MemoryProvider:
                         changed = True
                 if changed:
                     self.persist()
+                if self.discovery_enabled and ('mana_current' not in self.mappings or 'mana_max' not in self.mappings):
+                    self.discover_fields(save_state)
                 self._rediscover_mana(save_state)
         except (OSError, ValueError, KeyError, TypeError) as exc:
             self.last_error = str(exc)

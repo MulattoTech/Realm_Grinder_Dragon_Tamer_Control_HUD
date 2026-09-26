@@ -19,7 +19,7 @@ class LiveStateProvider:
                  max_save_age=90.0, max_memory_age=2.0):
         self.save_reader = save_reader
         self.state_dir = Path(state_dir)
-        self.memory = memory if memory is not None else MemoryProvider(self.state_dir)
+        self.memory = memory if memory is not None else MemoryProvider(self.state_dir, discovery_enabled=True)
         self.max_save_age, self.max_memory_age = max_save_age, max_memory_age
         self._last_good = None
         self._lock = threading.RLock()

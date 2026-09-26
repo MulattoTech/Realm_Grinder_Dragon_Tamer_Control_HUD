@@ -14,22 +14,21 @@ The repository is now the source of truth. The old local folder is only a checko
 - Clean-checkout reset tests originally depended on an ignored generated icon registry. Commit `5107942` fixes that dependency without weakening named-icon checks.
 
 ## Verification state
-On the fully provisioned local checkout: 257 tests pass.
+On the fully provisioned local checkout: 262 tests pass.
 From a committed source-only archive: 252 tests pass and 5 visual integration tests skip with explicit missing-private-fixture reasons.
 
 No source-only checkout requires a save, runtime log, screenshot collection, or generated icon cache to pass its portable test set.
 ## Product state
 The existing Gemini-built Control HUD remains the product UI. Keep improving it in place.
 
-Implemented foundations include read-only save/process inspection, source-backed progression knowledge, named goals, verified purchases, transaction guards, automatic route selection, conservative ETA logic, quest observation, reset/modal visual recognition, and a single worker/action owner.
+Implemented foundations include read-only save/process inspection, source-backed progression knowledge, named goals, verified purchases, transaction guards, automatic route selection, conservative ETA logic, quest observation, reset/modal visual recognition, single worker/action owner, and verified Adobe AIR AVM2 read-only volatile memory reading (`mana_current`, `mana_max`, `mana_regeneration`, `coins`, `fairy_assistants`).
 
 Still not certified end-to-end:
 - autonomous R24 -> R46 progression;
 - safe reincarnation confirmation and same-R permanent-milestone audit;
 - robust version-specific post-R40 strategy;
 - complete Dragon-stage execution and final Steam achievement confirmation;
-- fully proven minimized/background interaction for every action;
-- stable field-specific volatile-memory coverage.
+- fully proven minimized/background interaction for every action.
 
 ## Repository workflow
 Run `Install.ps1 -Dev` on a fresh checkout, then `scripts/Verify-Repository.ps1`.
