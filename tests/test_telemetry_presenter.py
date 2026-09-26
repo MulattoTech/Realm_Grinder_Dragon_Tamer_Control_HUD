@@ -64,3 +64,48 @@ def test_uncatalogued_legacy_id_is_not_ownership_proof():
 def test_unknown_number_formats_without_crashing():
     a=api();assert a.measured(None)=='Unknown'
     assert a.measured(1234)=='1,234'
+
+
+# --- mana_bar() helper tests ---
+
+def test_mana_bar_unknown_when_max_is_none():
+    a=api();s=state()  # mana_max=None
+    bar=a.mana_bar(s)
+    assert bar['fill_pct'] is None
+    assert bar['maximum'] is None
+
+def test_mana_bar_fill_pct_computed_from_live_values():
+    a=api();s=state();s['mana_current']=500.0;s['mana_max']=1000.0
+    bar=a.mana_bar(s)
+    assert bar['fill_pct']==50.0
+
+def test_mana_bar_fill_capped_at_100():
+    a=api();s=state();s['mana_current']=1200.0;s['mana_max']=1000.0
+    bar=a.mana_bar(s)
+    assert bar['fill_pct']==100.0
+
+def test_mana_bar_source_badge_is_mem_for_process_memory():
+    a=api();s=state()
+    s['provenance']['mana_current']={'source':'PROCESS_MEMORY','confidence':'VERIFIED'}
+    bar=a.mana_bar(s)
+    assert bar['source_badge']=='MEM' and bar['is_live'] is True
+
+def test_mana_bar_source_badge_is_save_for_sharedobject():
+    a=api();s=state()  # default source is AIR_SHAREDOBJECT
+    bar=a.mana_bar(s)
+    assert bar['source_badge']=='SAVE' and bar['is_live'] is False
+
+def test_mana_bar_regen_unknown_when_not_in_state():
+    a=api();s=state();s.pop('mana_regeneration',None)
+    bar=a.mana_bar(s)
+    assert bar['regen_str']=='Unknown'
+
+def test_mana_bar_regen_formatted_when_present():
+    a=api();s=state();s['mana_regeneration']=22.5
+    bar=a.mana_bar(s)
+    assert bar['regen_str']=='+22.5'
+
+def test_banner_includes_regen_rate():
+    a=api();s=state();s['mana_regeneration']=15.3
+    text=a.telemetry_banner(s,{'build_verified':False})
+    assert '+15.3' in text or '15.3' in text

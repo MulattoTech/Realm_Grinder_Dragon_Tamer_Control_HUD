@@ -21,6 +21,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
 import win32gui
+import win32con
 
 WORKSPACE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 STATE_FILE = os.path.join(WORKSPACE_DIR, "state", "dragon_tamer_state.json")
@@ -44,7 +45,7 @@ from src.wiki_data import (
 )
 from src.save_reader import extract_save_string_from_sol
 from src.live_state import get_live_game_state
-from src.telemetry_presenter import telemetry_banner,dragon_stage_views
+from src.telemetry_presenter import telemetry_banner,dragon_stage_views,mana_bar
 from src.runtime_safety import input_allowed,require_interactive_session
 from src.strategy_rules import PATH_CHOICES,selected_route
 from src.source_knowledge import KnowledgeStore
@@ -170,6 +171,8 @@ class ModernDragonTrackerApp:
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.root.after(100, self.update_loop)
+        self.root.after(250, self.update_mana_bar)
+
 
     def on_close(self):
         try:
@@ -232,6 +235,30 @@ class ModernDragonTrackerApp:
         handsfree_bar.pack(fill="x", padx=4, pady=(1, 3))
         self.hf_lbl = tk.Label(handsfree_bar, wraplength=590, anchor="w", text="💡 24/7 Background Autopilot active.", font=("Segoe UI", 7), fg=self.c_muted, bg="#131722", justify="left")
         self.hf_lbl.pack(fill="x", padx=6, pady=2)
+
+        # Live volatile mana bar row
+        mana_row = tk.Frame(header, bg="#0e1520", highlightbackground="#00555a", highlightthickness=1)
+        mana_row.pack(fill="x", padx=4, pady=(0, 3))
+
+        self.mem_badge = tk.Label(mana_row, text="[MEM]", font=("Consolas", 7, "bold"),
+                                  fg="#00e5c0", bg="#0e1520", padx=4, pady=1)
+        self.mem_badge.pack(side="left")
+
+        mana_inner = tk.Frame(mana_row, bg="#0e1520")
+        mana_inner.pack(side="left", fill="x", expand=True, padx=4)
+
+        self.mana_label = tk.Label(mana_inner, text="Mana: — / — | Regen: —/s",
+                                   font=("Segoe UI", 7, "bold"), fg=self.c_cyan, bg="#0e1520", anchor="w")
+        self.mana_label.pack(fill="x")
+
+        self.mana_bar_prog = ttk.Progressbar(mana_inner, style="Cyan.Horizontal.TProgressbar",
+                                              length=100, mode="determinate")
+        self.mana_bar_prog.pack(fill="x", pady=(1, 0))
+
+        self.mem_source_lbl = tk.Label(mana_row, text="SAVE", font=("Segoe UI", 7),
+                                       fg=self.c_muted, bg="#0e1520", padx=4)
+        self.mem_source_lbl.pack(side="right")
+
 
         # 2. Segmented Navigation Tabs
         tab_bar = tk.Frame(self.root, bg=self.c_bg)
@@ -367,9 +394,39 @@ class ModernDragonTrackerApp:
         )
         self.skynet_banner_lbl.pack(fill="x")
 
+        # PRIMARY 1-CLICK GOAL BUTTON — Automate Straight to Goal
+        goal_btn_frame = tk.Frame(self.tab_quest, bg="#0d1520",
+                                  highlightbackground=self.c_gold, highlightthickness=1)
+        goal_btn_frame.pack(fill="x", padx=4, pady=(2, 2))
+
+        self.automate_btn = tk.Button(
+            goal_btn_frame,
+            text="⚡ Automate Straight to Goal",
+            font=("Segoe UI", 11, "bold"),
+            bg="#1c2a10", fg=self.c_gold,
+            activebackground="#2e4418", activeforeground="#ffe680",
+            relief="flat", padx=12, pady=6, cursor="hand2",
+            command=self.action_automate_straight_to_goal
+        )
+        self.automate_btn.pack(side="left", padx=8, pady=6)
+
+        self.automate_status_lbl = tk.Label(
+            goal_btn_frame,
+            text="Configure path & goal above, then click to start full autonomous progression.",
+            font=("Segoe UI", 8), fg=self.c_muted, bg="#0d1520",
+            wraplength=380, justify="left", anchor="w"
+        )
+        self.automate_status_lbl.pack(side="left", fill="x", expand=True, padx=6)
+
+        self.bind_hover(self.automate_btn,
+            "⚡ Automate Straight to Goal: Sets game to non-intrusive background mode, unpauses the worker, "
+            "and runs full autonomous progression — build setup, spell casting, abdications, reincarnations — "
+            "until the selected goal is reached. One worker owner; no focus theft.")
+
         # 1. Master Auto-Clear Header Banner
         banner = tk.Frame(self.tab_quest, bg="#1a2234", highlightbackground=self.c_cyan, highlightthickness=1)
         banner.pack(fill="x", padx=4, pady=(2, 2))
+
 
         b_info = tk.Frame(banner, bg="#1a2234")
         b_info.pack(side="left", fill="both", expand=True, padx=8, pady=4)
@@ -1154,9 +1211,110 @@ class ModernDragonTrackerApp:
         self.worker_badge.configure(text='Bot paused',fg=self.c_amber)
         self.set_feedback('Bot paused. In-game autocasting is a separate game setting.')
 
+    def action_automate_straight_to_goal(self):
+        """1-Click 'Automate Straight to Goal' handler.
+
+        1. Verifies runtime eligibility (interactive session).
+        2. Sets the game window to non-intrusive background mode (SW_SHOWNOACTIVATE=4)
+           so Adobe AIR event loop runs at full speed without stealing focus.
+        3. Reads current goal from config (Dragon Tamer / Named goal / etc.).
+        4. Removes STOP file and unpauses the bot worker.
+        5. Updates feedback banner with the active objective.
+
+        Safety constraints: READ-ONLY memory only; one worker owner (WorkerLease);
+        never steals focus or restores minimized state.
+        """
+        try:
+            require_interactive_session()
+        except Exception as exc:
+            self.set_feedback(f'Automate blocked: {exc}', self.c_red)
+            return
+
+        # Show game window in background (non-intrusive) if it is findable
+        try:
+            hwnd = self.clearer.window.hwnd
+            if not hwnd or not win32gui.IsWindow(hwnd):
+                self.clearer.window.find_window()
+                hwnd = self.clearer.window.hwnd
+            if hwnd and win32gui.IsWindow(hwnd) and win32gui.IsIconic(hwnd):
+                # SW_SHOWNOACTIVATE = 4: shows without taking focus or un-minimizing
+                # Only show if already minimized; do NOT restore a user-minimized window.
+                pass  # respect current minimized state; AIR still runs at full speed
+            elif hwnd and win32gui.IsWindow(hwnd):
+                # Window is visible — ensure it stays in background, no focus theft
+                win32gui.ShowWindow(hwnd, win32con.SW_SHOWNOACTIVATE)
+        except Exception:
+            pass  # window state management is best-effort; never block automation for it
+
+        # Load config, set goal and unpause
+        config = load_config()
+        goal = config.get('selected_goal', 'Dragon Tamer')
+        named = config.get('named_goal', 'Dragon Tamer')
+        goal_display = named if goal == 'Named goal' else goal
+
+        config['paused'] = False
+        save_config(config)
+        self.config = config
+        if os.path.exists(STOP_FILE):
+            try:
+                os.remove(STOP_FILE)
+            except Exception:
+                pass
+
+        # Update feedback and automate button label
+        msg = f'🚀 Automating straight to {goal_display}: Autonomous progression active.'
+        self.set_feedback(msg, self.c_gold)
+        if hasattr(self, 'automate_status_lbl'):
+            self.automate_status_lbl.configure(
+                text=f'🚀 Active → {goal_display} | Worker running. Pause Bot to stop.',
+                fg=self.c_green
+            )
+        self.update_state()
+
+    def update_mana_bar(self):
+        """Refresh the live volatile mana bar at 250ms intervals without blocking the UI thread."""
+        try:
+            if self.root.winfo_exists():
+                st = get_live_game_state()
+                bar = mana_bar(st)
+                health = st.get('telemetry', {}).get('memory_provider_health', 'UNKNOWN')
+                is_live = bar['is_live'] and health == 'HEALTHY'
+
+                # [MEM] badge color: cyan-glow when live memory active, muted otherwise
+                badge_color = '#00e5c0' if is_live else self.c_muted
+                badge_bg = '#0a2020' if is_live else '#0e1520'
+                badge_text = '[MEM]' if is_live else '[SAV]'
+                self.mem_badge.configure(text=badge_text, fg=badge_color, bg=badge_bg)
+
+                # Mana label and progress bar
+                cur = bar['current_str']
+                mx = bar['maximum_str']
+                regen = bar['regen_str']
+                saturating = (bar.get('fill_pct') or 0) >= 95.0
+                label_color = '#ff8c42' if saturating else (self.c_cyan if is_live else self.c_muted)
+                self.mana_label.configure(
+                    text=f'Mana: {cur} / {mx} | Regen: {regen}/s',
+                    fg=label_color
+                )
+                fill = bar['fill_pct'] if bar['fill_pct'] is not None else 0
+                self.mana_bar_prog['value'] = fill
+
+                # Source badge on right
+                self.mem_source_lbl.configure(text=bar['source_badge'], fg=badge_color)
+        except Exception:
+            pass
+        finally:
+            try:
+                if self.root.winfo_exists():
+                    self.root.after(250, self.update_mana_bar)
+            except Exception:
+                pass
+
     def action_force_refresh(self):
         self.update_state()
         self.set_feedback("Live save state refreshed from disk.")
+
+
 
     def update_state(self):
         try:

@@ -27,10 +27,34 @@ def spell_slots(state):
 
 
 def plan_spells(state):
+    """Plan spells with volatile mana saturation detection.
+
+    Uses live memory fields (mana_current, mana_max, mana_regeneration) to
+    detect saturation and aggressively schedule Tax Collection bursts when
+    mana_current >= mana_max - 50 or mana_current / mana_max >= 0.95.
+    """
     mana=state.get('mana_current');slots=spell_slots(state);raw=state.get('raw_data',{}).get('spells',{})
+    mana_max=state.get('mana_max')
+    # mana_regeneration is available from the AVM2 volatile memory engine but not
+    # yet used for burst size estimation beyond basic saturation detection.
     result={'casts':[],'mana_committed':0,'source':'http://musicfamily.org/realm/Spells/',
-            'cost_model':'conservative base costs; upgrades may reduce actual costs'}
+            'cost_model':'conservative base costs; upgrades may reduce actual costs',
+            'mana_saturation_pct':None,'headroom':None,'saturating':False}
     if mana is None or not isinstance(mana,(float,int)) or not math.isfinite(mana) or mana<0:return result
+
+    # --- Saturation detection using live volatile mana fields ---
+    saturating=False
+    headroom=None
+    if isinstance(mana_max,(float,int)) and math.isfinite(mana_max) and mana_max>0:
+        headroom=mana_max-mana
+        sat_pct=mana/mana_max
+        result['headroom']=headroom
+        result['mana_saturation_pct']=round(sat_pct*100,1)
+        # Saturating: within 5% of max OR within 50 raw mana of max
+        saturating=(headroom<=50.0 or sat_pct>=0.95)
+        result['saturating']=saturating
+
+    # --- Priority spell casting (descending priority order) ---
     inactive=[]
     for identifier in PRIORITY:
         if identifier not in slots:continue
@@ -41,8 +65,19 @@ def plan_spells(state):
         if cost<=mana-result['mana_committed']:
             result['casts'].append({'spell_id':identifier,'key':slots[identifier],'budget_cost':cost})
             result['mana_committed']+=cost
-    if not inactive:
-        for _ in range(min(3,max(0,int((mana-500)//200)))):
-            result['casts'].append({'spell_id':18,'key':'1','budget_cost':200})
-            result['mana_committed']+=200
+
+    # --- Saturating mana dump: burst Tax Collections to drain wasted regen ---
+    # When saturating, fill available headroom; otherwise only use spare mana.
+    if not inactive or saturating:
+        available_for_tax=mana-result['mana_committed']
+        if saturating and headroom is not None:
+            # Aggressively dump: cast enough Tax Collections to consume saturated mana
+            cap=max(1,int(headroom//COSTS[18])+1)
+        else:
+            # Normal fallback: spare mana above 500 floor, max 3 casts
+            cap=min(3,max(0,int((available_for_tax-500)//COSTS[18])))
+        for _ in range(cap):
+            if COSTS[18]<=mana-result['mana_committed']:
+                result['casts'].append({'spell_id':18,'key':'1','budget_cost':COSTS[18]})
+                result['mana_committed']+=COSTS[18]
     return result
