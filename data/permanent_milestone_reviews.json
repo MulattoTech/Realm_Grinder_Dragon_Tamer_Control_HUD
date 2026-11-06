@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "policy": "Only source-reviewed exact checklist coverage bound to a supported game hash, game version, and save version may authorize a reset. Mutable state checklists and their reviewed flags are not approval evidence. No permanent-milestone checklist is currently approved; reset admission remains blocked.",
+  "approved_reviews": []
+}
