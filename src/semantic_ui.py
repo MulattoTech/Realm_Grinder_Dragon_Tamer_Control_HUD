@@ -85,7 +85,7 @@ def control_point(name, width, height, faction=None):
             height < round(_ICON_REFERENCE_SIZE[1] * _MIN_VIEWPORT_SCALE):
         raise ValueError('Client is too small for the calibrated layout')
     building_buy_all_bottom = round((669 - 580) * width / 976)
-    points = {'buy_all_upgrades': (157 if faction==11 else 297,59), 'load_template':(297,59), 'buy_all_buildings': (width-361,height-building_buy_all_bottom),
+    points = {'buy_all_upgrades': (157 if faction==11 else 297,59), 'load_template':(297,59), 'research_load_template':(round(398*width/1433),round(18*height/822)), 'buy_all_research': (round(305*width/1433),round(47*height/822)), 'research_tab': (round(40*width/1433),round(300*height/822)), 'buy_all_buildings': (width-361,height-building_buy_all_bottom),
               'realm': (min(560,width-410),min(340,height-170)),
               'abdication': (215,25), 'reincarnation': (390,25), 'upgrades_tab': (40,110)}
     if name not in points:
@@ -120,13 +120,22 @@ def template_dialog(frame):
     image=cv2.cvtColor(np.asarray(frame),cv2.COLOR_RGB2GRAY)
     title=cv2.imread(str(ROOT/'assets/templates/template-dialog-title.png'),cv2.IMREAD_GRAYSCALE)
     if title is None:return None
-    response=cv2.matchTemplate(image[:image.shape[0]//2],title,cv2.TM_CCOEFF_NORMED)
-    _,score,_,point=cv2.minMaxLoc(response)
-    if score<.92:return None
-    left,top=point[0]-98,point[1]-17
-    if left<0 or top<0 or left+440>frame.width or top+592>frame.height:return None
-    return {'input':(left+220,top+123),'import':(left+220,top+548),
-            'close':(left+440,top-1),'bounds':(left,top,left+440,top+592),'score':score}
+    best=None
+    for scale in (frame.width/1433,):
+        tw,th=round(title.shape[1]*scale),round(title.shape[0]*scale)
+        if tw<8 or th<8 or tw>frame.width or th>frame.height//2:continue
+        candidate=cv2.resize(title,(tw,th)) if scale!=1 else title
+        response=cv2.matchTemplate(image[:image.shape[0]//2],candidate,cv2.TM_CCOEFF_NORMED)
+        _,score,_,point=cv2.minMaxLoc(response)
+        if best is None or score>best[0]:best=(score,point,scale)
+    if best is None or best[0]<.92:return None
+    score,point,scale=best
+    left,top=point[0]-round(98*scale),point[1]-round(17*scale)
+    width,height=round(440*scale),round(592*scale)
+    if left<0 or top<0 or left+width>frame.width or top+height>frame.height:return None
+    return {'input':(left+round(220*scale),top+round(123*scale)),
+            'import':(left+round(220*scale),top+round(548*scale)),
+            'close':(left+width,top-round(1*scale)),'bounds':(left,top,left+width,top+height),'score':score}
 
 
 def locate_offline_production_dialog(frame):
@@ -377,3 +386,35 @@ class SemanticUI:
         frame=self.window.capture();remaining=template_dialog(frame)
         if remaining:self._click_at_size(remaining['close'],frame.size,.2)
         return {'dialog':dialog,'normal_ui_import':True}
+
+    def enter_research_template(self,template):
+        """Import a supported non-Mercenary build through the visible Research UI."""
+        self.require_ready()
+        if self.window.is_minimized():raise RuntimeError('Research template entry requires real game pixels')
+        if not template or len(template)>4096 or any(ord(ch)<32 for ch in template):raise ValueError('Invalid template string')
+        from src.save_reader import get_current_game_state
+        state=get_current_game_state()
+        if state.get('faction') in (None,11):raise RuntimeError('Research template requested outside a verified non-Mercenary faction')
+        frame=self.window.capture()
+        if frame.info.get('capture_kind')=='SYNTHETIC_STATUS':raise RuntimeError('Research template entry requires real game pixels')
+        if template_dialog(frame):raise RuntimeError('An unrelated template dialog is already open')
+        size=frame.size
+        point=control_point('research_tab',*size,faction=state['faction'])
+        self._click_at_size(point,size,.3)
+        frame=self.window.capture()
+        if frame.size!=size:raise RuntimeError('Game viewport changed while opening Research')
+        point=control_point('research_load_template',*size,faction=state['faction'])
+        self._click_at_size(point,size,.3)
+        frame=self.window.capture();dialog=template_dialog(frame)
+        if dialog is None:raise RuntimeError('Research Template Import dialog was not verified; no text was sent')
+        self._click_at_size(dialog['input'],frame.size,.1)
+        for character in template:
+            self.require_ready();self.window.type_text(character,delay_between=.003)
+        time.sleep(.15)
+        frame=self.window.capture();dialog=template_dialog(frame)
+        if dialog is None:raise RuntimeError('Research template dialog changed before import; no input was sent')
+        self._click_at_size(dialog['import'],frame.size,.3)
+        frame=self.window.capture()
+        if template_dialog(frame):raise RuntimeError('Research template dialog remained open after import')
+        self._click_at_size(control_point('buy_all_research',*frame.size,faction=state['faction']),frame.size,.3)
+        return {'normal_ui_import':True,'client_size':frame.size}

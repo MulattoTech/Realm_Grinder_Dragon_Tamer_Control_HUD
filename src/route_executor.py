@@ -10,7 +10,7 @@ from src.runtime_safety import input_allowed
 ALIASES={'Fairy Trade Treaty':'Fairies Trade Treaty','Goblin Trade Treaty':'Goblins Trade Treaty',
          'Druid Trade Treaty':'Druids Trade Treaty','Demon Trade Treaty':'Demons Trade Treaty',
          'Angel Trade Treaty':'Angels Trade Treaty','Titan Trade Treaty':'Titans Trade Treaty'}
-RESEARCH_FACILITY_ID=295
+GOBLIN_BANK_ID=412
 SUPPORTED_4322_SWF='7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'
 
 def catalog_entry(catalog,name):
@@ -156,31 +156,30 @@ class RouteExecutor:
                 if (faction==3 and identity.get('supported') is True and
                         identity.get('swf_sha256')==SUPPORTED_4322_SWF and
                         identity.get('save_version')==58 and current.get('raw_data',{}).get('saveVersion')==58 and
-                        not upgrade_owned(current,RESEARCH_FACILITY_ID)):
+                        not upgrade_owned(current,GOBLIN_BANK_ID)):
                     result=self.collect(step)
                     after=self.actions.read()
                     old_process=tuple(current.get('telemetry',{}).get(k) for k in ('pid','process_start_time'))
                     new_process=tuple(after.get('telemetry',{}).get(k) for k in ('pid','process_start_time'))
                     same_process=all(value is not None for value in old_process) and old_process==new_process
-                    if upgrade_owned(after,RESEARCH_FACILITY_ID):
+                    if upgrade_owned(after,GOBLIN_BANK_ID):
                         if not same_process or not fresh_transition(current,after):
                             (self.actions.state_dir/'STOP').write_text(
-                                'Research Facility ownership observed without a fresh same-process transition',
+                                'Goblin Bank ownership observed without a fresh same-process transition',
                                 encoding='utf-8')
-                            return {'success':False,'status':'UNCERTAIN','action':'RESEARCH_FACILITY_OWNERSHIP_UNCERTAIN',
-                                    'message':'Research Facility ID 295 is present, but its fresh same-process ownership transition is unproven'}
-                        return {'success':True,'status':'VERIFIED','action':'RESEARCH_FACILITY_PURCHASED',
-                                'upgrade_id':RESEARCH_FACILITY_ID,'before_fingerprint':current.get('save_fingerprint'),
+                            return {'success':False,'status':'UNCERTAIN','action':'GOBLIN_BANK_OWNERSHIP_UNCERTAIN',
+                                    'message':'Goblin Bank ID 412 is present, but its fresh same-process ownership transition is unproven'}
+                        return {'success':True,'status':'VERIFIED','action':'GOBLIN_BANK_PURCHASED',
+                                'upgrade_id':GOBLIN_BANK_ID,'before_fingerprint':current.get('save_fingerprint'),
                                 'after_fingerprint':after.get('save_fingerprint'),
-                                'message':'Research Facility ID 295 became owned in a fresh save from the same game process'}
+                                'message':'Goblin Bank ID 412 became owned in a fresh save from the same game process'}
                     if result.get('status') in ('BLOCKED','UNCERTAIN'):
                         return result
-                    result.update(action='PREPARE_RESEARCH_FACILITY',upgrade_id=RESEARCH_FACILITY_ID,
-                        message='Research Facility ID 295 is not owned; continue ordinary production and purchases until the save confirms it')
+                    result.update(action='PREPARE_GOBLIN_BANK',upgrade_id=GOBLIN_BANK_ID,
+                        message='Goblin Bank ID 412 is not owned; continue ordinary production until the save confirms it')
                     return result
-                # The import dialog is calibrated only for Mercenary builds.
-                # Surface the explicit Research UI blocker instead of repeating
-                # generic collection while the requested selections stay missing.
+                # Non-Mercenary template deployment uses its Research UI path;
+                # unsupported factions remain explicitly blocked there.
                 return self.deploy_template(step['template'])
             result=self.actions.deploy_template(step['template'])
             # A partial build can still make ordinary production progress.
@@ -203,8 +202,28 @@ class RouteExecutor:
             return {'success':True,'status':'VERIFIED','action':'BUILD_SELECTIONS_OWNED',
                     'message':'All requested upgrade and spell selections are already owned','build_verified':True}
         if state['faction']!=11:
-            return {'success':False,'status':'BLOCKED','action':'RESEARCH_UI_NOT_CALIBRATED',
-                    'message':'Research selections are known, but this faction needs its Research interface calibrated'}
+            if state['faction']!=3 or state.get('game_identity',{}).get('swf_sha256')!=SUPPORTED_4322_SWF:
+                return {'success':False,'status':'BLOCKED','action':'RESEARCH_UI_NOT_CALIBRATED',
+                        'message':'Research selections are known, but this faction needs its Research interface calibrated'}
+            ui=SemanticUI(self.actions.window,lambda:not input_allowed(self.actions.window))
+            observed={}
+            def dispatch():ui.enter_research_template(template)
+            def verify(before,after):
+                progress=template_progress(before,after,manifest);observed.update(progress)
+                return fresh_transition(before,after) and progress['progressed']
+            result=self.actions.runner.run('GOBLIN_RESEARCH_TEMPLATE',
+                lambda current:current.get('faction')==3 and
+                    current.get('game_identity',{}).get('swf_sha256')==manifest['swf_sha256'] and
+                    current['raw_data'].get('saveVersion')==manifest['save_version'] and
+                    upgrade_owned(current,GOBLIN_BANK_ID),dispatch,verify,allow_no_effect=True)
+            result['build_verified']=bool(observed.get('complete'))
+            if result['success']:
+                result.update(action='BUILD_COMPLETE' if observed['complete'] else 'BUILD_PARTIAL',
+                    message=f"Verified research selections: {observed['upgrades_owned']}/{observed['upgrade_total']}; " +
+                        ('selections complete' if observed['complete'] else 'continuing prerequisites and resource production'),
+                    progress=observed)
+            write_json(self.actions.state_dir/'template_application.json',dict(result,template=template,manifest=manifest,timestamp=time.time()))
+            return result
         ui=SemanticUI(self.actions.window,lambda:not input_allowed(self.actions.window))
         observed={}
         def verify(before,after):

@@ -22,7 +22,7 @@ def test_already_owned_stoic_does_not_search_or_click(tmp_path):
     assert result['success'] and result['action']=='ALREADY_OWNED'
 
 
-def test_non_mercenary_template_reports_uncalibrated_research_without_collecting(tmp_path,monkeypatch):
+def test_goblin_template_dispatches_after_bank_even_without_research_facility(tmp_path,monkeypatch):
     from types import SimpleNamespace
     import src.config as config
 
@@ -34,7 +34,7 @@ def test_non_mercenary_template_reports_uncalibrated_research_without_collecting
             return {'reincarnation':24,'faction':3,'alignment':2,'gems':1e72,
                     'game_identity':{'supported':True,'save_version':58,
                         'swf_sha256':'7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'},
-                    'raw_data':{'saveVersion':58,'upgrades':{'295':{'u1':True}},'buildings':{}}}
+                    'raw_data':{'saveVersion':58,'upgrades':{'412':{'u1':True}},'buildings':{}}}
         def load(self,_name):return {}
         def manifest(self,_recommendation):return {'verified':True,'required_upgrade_ids':[1],'merc_spells':[]}
         def deploy_template(self,_template):raise AssertionError('Mercenary template UI must not be used for Goblin')
@@ -53,7 +53,7 @@ def test_non_mercenary_template_reports_uncalibrated_research_without_collecting
     assert result['template']=='S50,S105'
 
 
-def test_goblin_route_collects_until_research_facility_is_owned(tmp_path,monkeypatch):
+def test_goblin_route_collects_until_bank_is_owned(tmp_path,monkeypatch):
     from types import SimpleNamespace
     import src.config as config
 
@@ -74,16 +74,16 @@ def test_goblin_route_collects_until_research_facility_is_owned(tmp_path,monkeyp
     executor.planner=SimpleNamespace(next_step=lambda *_args:{'action':'deploy_build','target':'Goblin build',
         'template':'S50,S105','recommendation':{'name':'Goblin build'}})
     executor.collect=lambda step:{'success':False,'status':'OBSERVING','action':'COLLECT_RESOURCES','step':step}
-    executor.deploy_template=lambda _template:pytest.fail('Do not attempt research before facility 295 is owned')
+    executor.deploy_template=lambda _template:pytest.fail('Do not attempt research before Goblin Bank 412 is owned')
 
     result=executor.run_once()
 
-    assert result['action']=='PREPARE_RESEARCH_FACILITY'
+    assert result['action']=='PREPARE_GOBLIN_BANK'
     assert result['status']=='OBSERVING'
     assert result['step']['target']=='Goblin build'
 
 
-def test_goblin_research_facility_purchase_requires_fresh_same_process_save(tmp_path,monkeypatch):
+def test_goblin_bank_purchase_requires_fresh_same_process_save(tmp_path,monkeypatch):
     from types import SimpleNamespace
     import src.config as config
 
@@ -95,7 +95,7 @@ def test_goblin_research_facility_purchase_requires_fresh_same_process_save(tmp_
         'raw_data':{'saveVersion':58,'upgrades':{},'buildings':{}},
         'save_fingerprint':'before','telemetry':identity}
     after={**base,'save_fingerprint':'after','raw_data':{'saveVersion':58,
-        'upgrades':{'295':{'u1':True}},'buildings':{}}}
+        'upgrades':{'412':{'u1':True}},'buildings':{}}}
     states=iter((base,base,after))
     class Actions:
         state_dir=tmp_path
@@ -112,11 +112,11 @@ def test_goblin_research_facility_purchase_requires_fresh_same_process_save(tmp_
     result=executor.run_once()
 
     assert result['success'] and result['status']=='VERIFIED'
-    assert result['action']=='RESEARCH_FACILITY_PURCHASED'
-    assert result['upgrade_id']==295
+    assert result['action']=='GOBLIN_BANK_PURCHASED'
+    assert result['upgrade_id']==412
 
 
-def test_goblin_facility_transition_without_process_identity_stops_uncertain(tmp_path,monkeypatch):
+def test_goblin_bank_transition_without_process_identity_stops_uncertain(tmp_path,monkeypatch):
     from types import SimpleNamespace
     import src.config as config
 
@@ -127,7 +127,7 @@ def test_goblin_facility_transition_without_process_identity_stops_uncertain(tmp
         'raw_data':{'saveVersion':58,'upgrades':{},'buildings':{}},
         'save_fingerprint':'before','telemetry':{'consequential_actions_allowed':True}}
     after={**base,'save_fingerprint':'after','raw_data':{'saveVersion':58,
-        'upgrades':{'295':{'u1':True}},'buildings':{}}}
+        'upgrades':{'412':{'u1':True}},'buildings':{}}}
     states=iter((base,base,after))
     class Actions:
         state_dir=tmp_path
@@ -143,7 +143,7 @@ def test_goblin_facility_transition_without_process_identity_stops_uncertain(tmp
     result=executor.run_once()
 
     assert not result['success'] and result['status']=='UNCERTAIN'
-    assert result['action']=='RESEARCH_FACILITY_OWNERSHIP_UNCERTAIN'
+    assert result['action']=='GOBLIN_BANK_OWNERSHIP_UNCERTAIN'
     assert (tmp_path/'STOP').exists()
 
 

@@ -56,6 +56,11 @@ def test_basic_ui_controls_anchor_to_correct_panes():
     x, y = coords('buy_all_buildings',1433,822)
     assert x == 1072
     assert 673 <= y <= 717
+    assert coords('research_tab',1433,822)==(40,300)
+    assert coords('research_load_template',1433,822)==(398,18)
+    assert coords('buy_all_research',1433,822)==(305,47)
+    assert coords('research_tab',716,411)==(20,150)
+    assert coords('buy_all_research',716,411)==(152,24)
 
 
 def test_single_target_purchase_proof_rejects_unrelated_many_upgrades():
@@ -91,6 +96,30 @@ def test_template_dialog_is_identified_before_typing():
     assert found and abs(found['input'][0]-488)<3 and abs(found['input'][1]-160)<3
     assert abs(found['import'][1]-585)<3
     assert ui.template_dialog(Image.open('screenshots/route-calibration-current.png')) is None
+
+
+def test_research_template_uses_visible_dialog_and_scaled_control_path(monkeypatch):
+    from PIL import Image
+    import src.semantic_ui as ui
+    import src.save_reader as save_reader
+    frame=Image.new('RGB',(1433,822));frame.info['capture_kind']='LIVE'
+    dialog={'input':(717,238),'import':(717,663),'close':(937,114),'bounds':(497,115,937,707),'score':.99}
+    recognitions=iter((None,dialog,dialog,None))
+    monkeypatch.setattr(ui,'template_dialog',lambda _frame:next(recognitions))
+    monkeypatch.setattr(save_reader,'get_current_game_state',lambda:{'faction':3})
+    class Window:
+        def __init__(self):self.clicks=[];self.typed=''
+        def find_window(self):return True
+        def is_minimized(self):return False
+        def capture(self):return frame.copy()
+        def get_client_size(self):return frame.size
+        def click(self,*point,**_kwargs):self.clicks.append(point)
+        def type_text(self,value,**_kwargs):self.typed+=value
+    window=Window();semantic=ui.SemanticUI(window,lambda:False)
+    result=semantic.enter_research_template('S50,S105')
+    assert result['normal_ui_import'] is True
+    assert window.clicks==[(40,300),(398,18),(717,238),(717,663),(305,47)]
+    assert window.typed=='S50,S105'
 
 
 def test_offline_production_close_requires_title_and_close_icon_pair():
