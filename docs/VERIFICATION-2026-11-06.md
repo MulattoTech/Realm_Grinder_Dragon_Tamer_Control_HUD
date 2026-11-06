@@ -1,5 +1,22 @@
 # Verification report - 2026-11-06
 
+## Isolated save preparation — 18:50 UTC
+
+Code commit `26bbb95d000c158b98336196c6149774821963a9` adds the
+private file-only save lab utility. Full `scripts/Verify-Repository.ps1` passed:
+**434 passed, 5 skipped** in the worktree; **433 passed, 6 skipped** in the
+clean source archive. Skips require private visual fixtures. Bootstrap sent
+zero game input and made zero network requests. Four focused tests prove
+source preservation, separate unique snapshots, corrupted-backup rejection,
+and manifest path confinement. A live read-only R24/schema-58 save capture
+was copied and decoded successfully, with matching original/baseline SHA-256.
+Private locations and hashes are in the local lab manifest.
+
+This verifies backup preparation only. A separately isolated game runtime,
+edited-save import, restoring a running game, and late-stage progression were
+NOT_RUN. No production save, game process memory, or Steam achievement state
+was modified. No external repository implementation was copied in this slice.
+
 Checked at 2026-11-06 12:07 UTC. The scoped source change is commit `68ce7b1275d3c5956064a0e8dddd9f2e76d1c1ac`, based on `main` at `6a748707f9af7c60e85ea010c97ef3e157425048`, on branch `codex/plain-hud-controls`.
 
 ## Changes covered
