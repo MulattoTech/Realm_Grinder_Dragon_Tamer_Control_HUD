@@ -251,7 +251,8 @@ def test_partial_template_changes_are_not_full_build_success():
 
 def test_research_template_no_effect_writes_stop_instead_of_retrying(tmp_path,monkeypatch):
     import src.route_executor as module
-    state={'faction':3,'raw_data':{'saveVersion':58,'upgrades':{'412':{'u1':True}}},
+    state={'faction':3,'raw_data':{'saveVersion':58,'upgrades':{'412':{'u1':True},
+            '130002':{'id':130002,'u1':False,'u3':True}}},
         'game_identity':{'supported':True,'save_version':58,
             'swf_sha256':'7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'},
         'save_fingerprint':'before'}
@@ -276,3 +277,32 @@ def test_research_template_no_effect_writes_stop_instead_of_retrying(tmp_path,mo
     result=module.RouteExecutor(Actions()).deploy_template('S50')
     assert result['status']=='NO_EFFECT'
     assert (tmp_path/'STOP').exists()
+
+
+def test_goblin_s50_unlock_blocker_prevents_invalid_research_dispatch(tmp_path,monkeypatch):
+    import src.route_executor as module
+    state={'faction':3,'reincarnation':24,'raw_data':{'saveVersion':58,'upgrades':{'412':{'u1':True}}},
+        'game_identity':{'supported':True,'save_version':58,
+            'swf_sha256':'7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'},
+        'save_fingerprint':'before'}
+    manifest={'verified':True,'template':'S50,S105','required_upgrade_ids':[130002,130504],
+        'merc_spells':[],'save_version':58,
+        'swf_sha256':'7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'}
+    monkeypatch.setattr('src.build_catalog.compile_template',lambda *_args:manifest)
+    monkeypatch.setattr('src.build_catalog.load_reference_ids',lambda:{})
+    monkeypatch.setattr(module,'SemanticUI',lambda *_args:pytest.fail('locked template must not open or click Research UI'))
+    class Runner:
+        def run(self,*_args,**_kwargs):pytest.fail('locked template must be rejected before dispatch')
+    class Actions:
+        state_dir=tmp_path
+        window=object()
+        runner=Runner()
+        def read(self):return state
+    result=module.RouteExecutor(Actions()).deploy_template('S50,S105')
+    assert result['success'] is False
+    assert result['status']=='BLOCKED'
+    assert result['action']=='RESEARCH_UNLOCK_REQUIRED'
+    assert result['requirement']['research_id']==130002
+    assert result['requirement']['faction']=='Fairy'
+    assert result['requirement']['mana']>=6000
+    assert not (tmp_path/'pending_action.json').exists()

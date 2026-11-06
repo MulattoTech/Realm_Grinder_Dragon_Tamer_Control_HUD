@@ -12,6 +12,14 @@ ALIASES={'Fairy Trade Treaty':'Fairies Trade Treaty','Goblin Trade Treaty':'Gobl
          'Angel Trade Treaty':'Angels Trade Treaty','Titan Trade Treaty':'Titans Trade Treaty'}
 GOBLIN_BANK_ID=412
 SUPPORTED_4322_SWF='7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'
+KNOWN_RESEARCH_UNLOCKS={
+    # Community reference says this must be unlocked as Fairy with 6000 Mana.
+    # The installed Goblin UI independently confirms S50 is faction-locked;
+    # the exact Fairy condition remains pending live validation.
+    130002:{'code':'S50','name':'Conjuration','faction':'Fairy','mana':6000,
+        'source':'https://realm-grinder.fandom.com/wiki/Research',
+        'verification':'COMMUNITY_REFERENCE_PENDING_LIVE_VALIDATION'}
+}
 
 def catalog_entry(catalog,name):
     return catalog.get(name) or catalog.get(ALIASES.get(name,''),{})
@@ -205,6 +213,19 @@ class RouteExecutor:
             if state['faction']!=3 or state.get('game_identity',{}).get('swf_sha256')!=SUPPORTED_4322_SWF:
                 return {'success':False,'status':'BLOCKED','action':'RESEARCH_UI_NOT_CALIBRATED',
                         'message':'Research selections are known, but this faction needs its Research interface calibrated'}
+            upgrades=state.get('raw_data',{}).get('upgrades',{})
+            identity=state.get('game_identity',{})
+            for identifier in manifest.get('required_upgrade_ids',[]):
+                requirement=KNOWN_RESEARCH_UNLOCKS.get(identifier)
+                if (requirement and identity.get('save_version')==58 and
+                        state.get('raw_data',{}).get('saveVersion')==58 and
+                        not upgrade_owned(state,identifier) and str(identifier) not in upgrades):
+                    return {'success':False,'status':'BLOCKED','action':'RESEARCH_UNLOCK_REQUIRED',
+                        'message':(f"{requirement['code']} {requirement['name']} is locked for Goblin; "
+                            f"the referenced unlock is {requirement['faction']} with {requirement['mana']} Mana. "
+                            'No template input was sent; this unlock condition needs live confirmation.'),
+                        'requirement':dict(requirement,research_id=identifier),
+                        'game_evidence':'The current 4.3.22 Goblin Research tooltip says this faction cannot unlock S50.'}
             ui=SemanticUI(self.actions.window,lambda:not input_allowed(self.actions.window))
             observed={}
             def dispatch():ui.enter_research_template(template)
