@@ -1,5 +1,19 @@
 # Verification report - 2026-11-06
 
+## Scalar fixture export validation
+
+`scripts/Verify-Repository.ps1` passed on executable commit
+`18dbd618957feeb02d6c89abe9bb113269881390`: **441 passed, 5 skipped**
+in the source worktree and **440 passed, 6 skipped** in the clean archive.
+Bootstrap made zero network requests and sent no game input. The skips require
+private visual fixtures. The eleven save-lab tests include invalid checksum,
+nonfinite/negative/boolean/fractional values, unknown fields, and opaque-byte
+preservation. A fresh readback with the normal production decoder confirmed the
+generated isolated import string is schema 58, R48, gems 1e100. The protected
+original and baseline both still pass their recorded hashes. No test fixture was
+imported into the live game. Actual game acceptance of edited exports and runtime
+isolation are NOT_RUN; minimized operation remains unverified.
+
 ## Isolated save preparation — 18:50 UTC
 
 Code commit `26bbb95d000c158b98336196c6149774821963a9` adds the
