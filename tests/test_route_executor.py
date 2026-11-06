@@ -32,7 +32,9 @@ def test_non_mercenary_template_reports_uncalibrated_research_without_collecting
         window=None
         def read(self):
             return {'reincarnation':24,'faction':3,'alignment':2,'gems':1e72,
-                    'raw_data':{'saveVersion':58,'upgrades':{},'buildings':{}}}
+                    'game_identity':{'supported':True,'save_version':58,
+                        'swf_sha256':'7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'},
+                    'raw_data':{'saveVersion':58,'upgrades':{'295':{'u1':True}},'buildings':{}}}
         def load(self,_name):return {}
         def manifest(self,_recommendation):return {'verified':True,'required_upgrade_ids':[1],'merc_spells':[]}
         def deploy_template(self,_template):raise AssertionError('Mercenary template UI must not be used for Goblin')
@@ -49,6 +51,100 @@ def test_non_mercenary_template_reports_uncalibrated_research_without_collecting
     assert result['status']=='BLOCKED'
     assert result['action']=='RESEARCH_UI_NOT_CALIBRATED'
     assert result['template']=='S50,S105'
+
+
+def test_goblin_route_collects_until_research_facility_is_owned(tmp_path,monkeypatch):
+    from types import SimpleNamespace
+    import src.config as config
+
+    monkeypatch.setattr(config,'load_config',lambda:{'selected_path':'Automatic'})
+    before={'reincarnation':24,'faction':3,'alignment':2,'gems':1e72,
+        'game_identity':{'supported':True,'save_version':58,
+            'swf_sha256':'7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'},
+        'raw_data':{'saveVersion':58,'upgrades':{},'buildings':{}},
+        'save_fingerprint':'before','telemetry':{'pid':11,'process_start_time':22,
+            'consequential_actions_allowed':True}}
+    class Actions:
+        state_dir=tmp_path
+        window=None
+        def read(self):return before
+        def load(self,_name):return {}
+        def manifest(self,_recommendation):return {'verified':True,'required_upgrade_ids':[1],'merc_spells':[]}
+    executor=api().RouteExecutor(Actions())
+    executor.planner=SimpleNamespace(next_step=lambda *_args:{'action':'deploy_build','target':'Goblin build',
+        'template':'S50,S105','recommendation':{'name':'Goblin build'}})
+    executor.collect=lambda step:{'success':False,'status':'OBSERVING','action':'COLLECT_RESOURCES','step':step}
+    executor.deploy_template=lambda _template:pytest.fail('Do not attempt research before facility 295 is owned')
+
+    result=executor.run_once()
+
+    assert result['action']=='PREPARE_RESEARCH_FACILITY'
+    assert result['status']=='OBSERVING'
+    assert result['step']['target']=='Goblin build'
+
+
+def test_goblin_research_facility_purchase_requires_fresh_same_process_save(tmp_path,monkeypatch):
+    from types import SimpleNamespace
+    import src.config as config
+
+    monkeypatch.setattr(config,'load_config',lambda:{'selected_path':'Automatic'})
+    identity={'pid':11,'process_start_time':22,'consequential_actions_allowed':True}
+    base={'reincarnation':24,'faction':3,'alignment':2,'gems':1e72,
+        'game_identity':{'supported':True,'save_version':58,
+            'swf_sha256':'7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'},
+        'raw_data':{'saveVersion':58,'upgrades':{},'buildings':{}},
+        'save_fingerprint':'before','telemetry':identity}
+    after={**base,'save_fingerprint':'after','raw_data':{'saveVersion':58,
+        'upgrades':{'295':{'u1':True}},'buildings':{}}}
+    states=iter((base,base,after))
+    class Actions:
+        state_dir=tmp_path
+        window=None
+        def read(self):return next(states)
+        def load(self,_name):return {}
+        def manifest(self,_recommendation):return {'verified':True,'required_upgrade_ids':[1],'merc_spells':[]}
+    executor=api().RouteExecutor(Actions())
+    executor.planner=SimpleNamespace(next_step=lambda *_args:{'action':'deploy_build','target':'Goblin build',
+        'template':'S50,S105','recommendation':{'name':'Goblin build'}})
+    executor.collect=lambda _step:{'success':False,'status':'OBSERVING','action':'COLLECT_RESOURCES'}
+    executor.deploy_template=lambda _template:pytest.fail('Facility purchase must be proven before research dispatch')
+
+    result=executor.run_once()
+
+    assert result['success'] and result['status']=='VERIFIED'
+    assert result['action']=='RESEARCH_FACILITY_PURCHASED'
+    assert result['upgrade_id']==295
+
+
+def test_goblin_facility_transition_without_process_identity_stops_uncertain(tmp_path,monkeypatch):
+    from types import SimpleNamespace
+    import src.config as config
+
+    monkeypatch.setattr(config,'load_config',lambda:{'selected_path':'Automatic'})
+    base={'reincarnation':24,'faction':3,'alignment':2,'gems':1e72,
+        'game_identity':{'supported':True,'save_version':58,
+            'swf_sha256':'7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'},
+        'raw_data':{'saveVersion':58,'upgrades':{},'buildings':{}},
+        'save_fingerprint':'before','telemetry':{'consequential_actions_allowed':True}}
+    after={**base,'save_fingerprint':'after','raw_data':{'saveVersion':58,
+        'upgrades':{'295':{'u1':True}},'buildings':{}}}
+    states=iter((base,base,after))
+    class Actions:
+        state_dir=tmp_path
+        window=None
+        def read(self):return next(states)
+        def load(self,_name):return {}
+        def manifest(self,_recommendation):return {'verified':True,'required_upgrade_ids':[1],'merc_spells':[]}
+    executor=api().RouteExecutor(Actions())
+    executor.planner=SimpleNamespace(next_step=lambda *_args:{'action':'deploy_build','target':'Goblin build',
+        'template':'S50,S105','recommendation':{'name':'Goblin build'}})
+    executor.collect=lambda _step:{'success':False,'status':'OBSERVING','action':'COLLECT_RESOURCES'}
+
+    result=executor.run_once()
+
+    assert not result['success'] and result['status']=='UNCERTAIN'
+    assert result['action']=='RESEARCH_FACILITY_OWNERSHIP_UNCERTAIN'
+    assert (tmp_path/'STOP').exists()
 
 
 def test_unverified_faction_template_stays_fail_closed(tmp_path,monkeypatch):

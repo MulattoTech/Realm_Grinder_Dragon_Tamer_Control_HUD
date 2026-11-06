@@ -10,6 +10,8 @@ from src.runtime_safety import input_allowed
 ALIASES={'Fairy Trade Treaty':'Fairies Trade Treaty','Goblin Trade Treaty':'Goblins Trade Treaty',
          'Druid Trade Treaty':'Druids Trade Treaty','Demon Trade Treaty':'Demons Trade Treaty',
          'Angel Trade Treaty':'Angels Trade Treaty','Titan Trade Treaty':'Titans Trade Treaty'}
+RESEARCH_FACILITY_ID=295
+SUPPORTED_4322_SWF='7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'
 
 def catalog_entry(catalog,name):
     return catalog.get(name) or catalog.get(ALIASES.get(name,''),{})
@@ -150,6 +152,32 @@ class RouteExecutor:
                 return {'success':False,'status':'BLOCKED','action':'FACTION_UNVERIFIED',
                         'message':'Faction is not verified; no build or collection input sent'}
             if faction!=11:
+                identity=current.get('game_identity',{})
+                if (faction==3 and identity.get('supported') is True and
+                        identity.get('swf_sha256')==SUPPORTED_4322_SWF and
+                        identity.get('save_version')==58 and current.get('raw_data',{}).get('saveVersion')==58 and
+                        not upgrade_owned(current,RESEARCH_FACILITY_ID)):
+                    result=self.collect(step)
+                    after=self.actions.read()
+                    old_process=tuple(current.get('telemetry',{}).get(k) for k in ('pid','process_start_time'))
+                    new_process=tuple(after.get('telemetry',{}).get(k) for k in ('pid','process_start_time'))
+                    same_process=all(value is not None for value in old_process) and old_process==new_process
+                    if upgrade_owned(after,RESEARCH_FACILITY_ID):
+                        if not same_process or not fresh_transition(current,after):
+                            (self.actions.state_dir/'STOP').write_text(
+                                'Research Facility ownership observed without a fresh same-process transition',
+                                encoding='utf-8')
+                            return {'success':False,'status':'UNCERTAIN','action':'RESEARCH_FACILITY_OWNERSHIP_UNCERTAIN',
+                                    'message':'Research Facility ID 295 is present, but its fresh same-process ownership transition is unproven'}
+                        return {'success':True,'status':'VERIFIED','action':'RESEARCH_FACILITY_PURCHASED',
+                                'upgrade_id':RESEARCH_FACILITY_ID,'before_fingerprint':current.get('save_fingerprint'),
+                                'after_fingerprint':after.get('save_fingerprint'),
+                                'message':'Research Facility ID 295 became owned in a fresh save from the same game process'}
+                    if result.get('status') in ('BLOCKED','UNCERTAIN'):
+                        return result
+                    result.update(action='PREPARE_RESEARCH_FACILITY',upgrade_id=RESEARCH_FACILITY_ID,
+                        message='Research Facility ID 295 is not owned; continue ordinary production and purchases until the save confirms it')
+                    return result
                 # The import dialog is calibrated only for Mercenary builds.
                 # Surface the explicit Research UI blocker instead of repeating
                 # generic collection while the requested selections stay missing.
