@@ -6,15 +6,90 @@ change Steam state, or claim that edited fixtures were earned in gameplay.
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
+import math
 from pathlib import Path
 import sys
 import time
 import uuid
+import struct
+import zlib
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.save_reader import SOL_PATH, _extract_save_string, decode_save
+from src.py_savecodec import PythonSaveDecoder, SCHEMA_FILE, TYPE_MAP, VIGENERE_KEY
+
+
+def edit_export(export: str, changes: dict):
+    """Patch selected scalar fields, retaining unknown bytes and array contents.
+
+    Wire format reference: dox4242/RG-tools lib/savecodec2.js (MIT).
+    Independent implementation using Python's standard CRC32 and zlib APIs.
+    Returns an import string only; it never accesses the live save location.
+    """
+    allowed = {'reincarnation', 'gems', 'coins', 'mana', 'excavations'}
+    if not changes or not set(changes) <= allowed:
+        raise ValueError('Only explicit supported fixture scalar fields may be changed')
+    if not export.startswith('$00s') or not export.endswith('$e'):
+        raise ValueError('Only format-00 binary exports are supported')
+    compressed = base64.b64decode(export[4:-2], validate=True)
+    encrypted = zlib.decompress(compressed)
+    raw = bytearray(v ^ VIGENERE_KEY[i % len(VIGENERE_KEY)] for i, v in enumerate(encrypted))
+    if len(raw) < 6 or struct.unpack_from('>I', raw, len(raw)-4)[0] != zlib.crc32(raw[:-4]):
+        raise ValueError('Input save checksum is invalid')
+
+    class Offsets(PythonSaveDecoder):
+        def __init__(self):
+            super().__init__(SCHEMA_FILE)
+            self.offsets = {}
+
+        def _parse_item(self, parent, item):
+            start = self.position
+            super()._parse_item(parent, item)
+            key, fmt = item.get('key'), item.get('format')
+            if parent is self.save and isinstance(key, str) and key in allowed and fmt in TYPE_MAP:
+                if self.position-start == TYPE_MAP[fmt][1]:
+                    self.offsets[key] = (start, TYPE_MAP[fmt][0])
+
+    reader = Offsets()
+    before = reader.decode_struct(bytes(raw))
+    if before.get('saveVersion') != 58:
+        raise ValueError('Fixture editing requires reviewed save schema 58')
+    for key, value in changes.items():
+        if isinstance(value, bool) or not isinstance(value, (float, int)) or not math.isfinite(value) or value < 0:
+            raise ValueError('Fixture values must be finite nonnegative numbers')
+        if key not in reader.offsets:
+            raise ValueError(f'No verified scalar offset for {key}')
+        offset, fmt = reader.offsets[key]
+        if fmt != '>d' and (not isinstance(value, int)):
+            raise ValueError(f'{key} requires an integer')
+        struct.pack_into(fmt, raw, offset, value)
+    struct.pack_into('>I', raw, len(raw)-4, zlib.crc32(raw[:-4]))
+    expected = dict(before, **changes)
+    if Offsets().decode_struct(bytes(raw)) != expected:
+        raise ValueError('Edited save changed fields outside the requested patch')
+    encrypted = bytes(v ^ VIGENERE_KEY[i % len(VIGENERE_KEY)] for i, v in enumerate(raw))
+    return '$00s' + base64.b64encode(zlib.compress(encrypted)).decode('ascii') + '$e'
+
+
+def create_fixture(lab: Path, changes: dict):
+    manifest = verify_lab(lab)
+    baseline = (lab / manifest['baseline']).read_bytes()
+    export = edit_export(_extract_save_string(baseline), changes)
+    output = lab / 'test-saves' / ('fixture-' + uuid.uuid4().hex)
+    output = output.resolve()
+    if lab.resolve() not in output.parents:
+        raise ValueError('Fixture output escapes the lab')
+    output.mkdir(exist_ok=False)
+    (output / 'import.txt').write_text(export, encoding='ascii')
+    receipt = {'kind': 'MODIFIED_TEST_SAVE', 'changes': changes,
+               'baseline_sha256': manifest['sha256'], 'export_sha256': digest(export.encode('ascii')),
+               'imported_into_game': False, 'earned_progression': False}
+    (output / 'receipt.json').write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+    verify_lab(lab)
+    return output
 
 
 def digest(data):
@@ -76,9 +151,17 @@ def verify_lab(lab: Path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--verify', type=Path)
+    parser.add_argument('--fixture-from', type=Path)
+    parser.add_argument('--set', action='append', default=[], metavar='FIELD=NUMBER')
     parser.add_argument('--source', type=Path, default=Path(SOL_PATH))
     parser.add_argument('--root', type=Path, default=Path(__file__).resolve().parents[1] / 'state/test-lab')
     args = parser.parse_args()
+    if args.fixture_from:
+        changes = dict(item.split('=', 1) for item in args.set)
+        print(create_fixture(args.fixture_from, {key: json.loads(value) for key, value in changes.items()}))
+        return
+    if args.set:
+        parser.error('--set requires --fixture-from')
     lab = args.verify or create_lab(args.source, args.root)
     print(json.dumps({'lab': str(lab), 'verification': verify_lab(lab)}, indent=2))
 

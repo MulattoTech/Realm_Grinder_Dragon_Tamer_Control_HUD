@@ -33,6 +33,33 @@ round-trip a version-bound test-save encoder, then exercise researched progressi
 routes in the isolated runtime. Keep synthetic, modified-save, and legitimately
 earned gameplay evidence distinguishable. End-to-end completion remains PARTIAL.
 
+### Fixture editor and reference intake follow-up
+
+The reference import completed: 100 live Musicfamily pages and 19 archived
+supplemental pages, 4,545 records and 364 templates. This is reference coverage,
+not validation of every mechanic. The source root's uncovered links were four
+plot images, GuestBook and WallofShame; image-contained information is not yet
+ingested. The catalog reports 442 conflicting reference cards for reconciliation.
+
+`tools/save_lab.py --fixture-from LAB --set reincarnation=48 --set gems=1e100`
+now creates an explicitly labelled modified import string in a unique directory
+within an existing verified lab. Only selected scalar fields in schema 58 are
+editable. It checks the original CRC32, uses observed parser offsets, preserves
+uninterpreted bytes, updates CRC32, and checks decoded fields against exactly the
+requested changes. The current real backup has 52 uninterpreted bytes before its
+checksum; a full reconstruction from the current schema would lose those bytes.
+Eleven focused tests pass, including opaque-byte preservation and invalid-value
+and checksum rejection. One R48/gem fixture was generated from the protected R24
+baseline. This does not create valid completed prerequisites or prove game import;
+it is a fixture for boundary testing. Original and baseline hashes remain valid.
+
+Runtime isolation is still pending. The native game uses an AIR application ID
+for storage and includes a native extension. Merely copying the executable or
+changing APPDATA is not established isolation. No second game instance was started.
+Minimized input is an early priority, but the current semantic input path still
+requires visible pixels and unobscured controls. Keep those guards until an
+isolated-runtime experiment establishes a working alternative.
+
 ## Current source and release state
 
 Canonical repository: `MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD` (public). The published `0.1.0-alpha.2` source is commit `ebd43d7df16db422f60cbff2554c7298d5998679`; this handoff also records the later installation smoke check. It is a development prerelease, not an end-to-end Dragon Tamer release. The release is [v0.1.0-alpha.2](https://github.com/MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD/releases/tag/v0.1.0-alpha.2).
