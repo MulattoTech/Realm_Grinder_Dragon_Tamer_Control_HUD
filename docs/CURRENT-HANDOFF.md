@@ -4,7 +4,7 @@ Date: 2026-11-06
 
 ## Current source and release state
 
-Canonical repository: `MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD` (public). This handoff describes `main` at `ebd43d7df16db422f60cbff2554c7298d5998679`. It is a published development prerelease, not an end-to-end Dragon Tamer release. `VERSION` is `0.1.0-alpha.2`; the release is [v0.1.0-alpha.2](https://github.com/MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD/releases/tag/v0.1.0-alpha.2).
+Canonical repository: `MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD` (public). The published `0.1.0-alpha.2` source is commit `ebd43d7df16db422f60cbff2554c7298d5998679`; this handoff also records the later installation smoke check. It is a development prerelease, not an end-to-end Dragon Tamer release. The release is [v0.1.0-alpha.2](https://github.com/MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD/releases/tag/v0.1.0-alpha.2).
 
 The original desktop shortcut still targets `C:\Tools\Dev\RealmGrinder\launcher.py`. The verified commit is pushed to `main` and installed in that folder; the shortcut did not need to change.
 
