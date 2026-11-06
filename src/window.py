@@ -148,6 +148,26 @@ class RealmGrinderWindow:
             raise ValueError('Click point is outside the current client')
         return x, y
 
+    def point_is_visible(self, cx: int, cy: int) -> bool:
+        """Return whether this point is unobscured by another top-level window.
+
+        Foreground focus is deliberately not required: an unfocused game window
+        is safe to target when it is the topmost window at the intended point.
+        PrintWindow can capture covered content, so pixels alone do not establish
+        that a posted action can reach the game.
+        """
+        try:
+            if not self.is_valid() or self.is_minimized():
+                return False
+            screen_point = win32gui.ClientToScreen(self.hwnd, (int(cx), int(cy)))
+            top = win32gui.WindowFromPoint(screen_point)
+            if not top:
+                return False
+            root = win32gui.GetAncestor(top, win32con.GA_ROOT)
+            return top == self.hwnd or root == self.hwnd
+        except Exception:
+            return False
+
     def click(self, cx: int, cy: int, delay_after: float = 0.04, auto_scale: bool = True,
               expected_client_size: Optional[Tuple[int, int]] = None):
         """
@@ -161,6 +181,8 @@ class RealmGrinderWindow:
         if not self.hwnd:
             return
         target_x, target_y = self._resolve_click_point(cx, cy, auto_scale, expected_client_size)
+        if not self.point_is_visible(target_x, target_y):
+            raise RuntimeError('Click point is covered by another window or not visible')
         InputController.post_click(self.hwnd, target_x, target_y, delay_after)
 
     def ctrl_click(self, cx: int, cy: int, delay_after: float = 0.04, auto_scale: bool = True,
@@ -171,6 +193,8 @@ class RealmGrinderWindow:
         if not self.hwnd:
             return
         target_x, target_y = self._resolve_click_point(cx, cy, auto_scale, expected_client_size)
+        if not self.point_is_visible(target_x, target_y):
+            raise RuntimeError('Click point is covered by another window or not visible')
         InputController.post_ctrl_click(self.hwnd, target_x, target_y, delay_after)
 
     def right_click(self, cx: int, cy: int, delay_after: float = 0.04, auto_scale: bool = True,
@@ -181,6 +205,8 @@ class RealmGrinderWindow:
         if not self.hwnd:
             return
         target_x, target_y = self._resolve_click_point(cx, cy, auto_scale, expected_client_size)
+        if not self.point_is_visible(target_x, target_y):
+            raise RuntimeError('Click point is covered by another window or not visible')
         InputController.post_right_click(self.hwnd, target_x, target_y, delay_after)
 
     def press_key(self, key: str, delay_after: float = 0.015):

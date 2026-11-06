@@ -34,7 +34,7 @@ Bootstrap creates a paused configuration, leaves reset actions disabled, reconst
 
 ## Operate the HUD
 
-Keep the game visible for semantic actions. Minimized/background semantic input is not supported. Window coordinates and icon matching scale with the visible client area; if the window changes size between recognition and dispatch, the click is canceled. Start with **Build only** to check basic connection and profile behavior. The helper buys one verified prerequisite at a time and uses the shared production executor for ordinary purchases and budgeted spells.
+Keep the game visible and unobscured at the intended action point for semantic actions. The window may be out of focus when it is topmost there; a point covered by another window is rejected even when `PrintWindow` can capture the game behind it. Minimized semantic input is not supported. Window coordinates and icon matching scale with the visible client area; if the window changes size between recognition and dispatch, the click is canceled. Start with **Build only** to check basic connection and profile behavior. The helper buys one verified prerequisite at a time and uses the shared production executor for ordinary purchases and budgeted spells.
 
 Select **Named goal**, choose a reviewed target, and use **Inspect requirements** to see dependencies, missing measurements, and separate currency budgets. Unknown recipes remain reference-only. Resume and Start share the same admission checks; an unresolved action cannot be silently discarded by the Resume button.
 

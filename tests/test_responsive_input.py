@@ -97,6 +97,7 @@ def test_window_click_refuses_viewport_changed_since_visual_authorization(monkey
     monkeypatch.setattr(RealmGrinderWindow, "is_valid", lambda _self: True)
     monkeypatch.setattr(RealmGrinderWindow, "is_minimized", lambda _self: False)
     monkeypatch.setattr(RealmGrinderWindow, "get_client_size", lambda _self: (1180, 810))
+    monkeypatch.setattr(RealmGrinderWindow, "point_is_visible", lambda _self, *_point: True)
     monkeypatch.setattr(
         "src.window.InputController.post_click",
         lambda *args: calls.append(args),
@@ -117,6 +118,8 @@ def test_window_click_can_bind_to_matching_captured_viewport(monkeypatch):
     monkeypatch.setattr(RealmGrinderWindow, "is_valid", lambda _self: True)
     monkeypatch.setattr(RealmGrinderWindow, "is_minimized", lambda _self: False)
     monkeypatch.setattr(RealmGrinderWindow, "get_client_size", lambda _self: (976, 669))
+    monkeypatch.setattr(RealmGrinderWindow, "point_is_visible", lambda _self, *_point: True)
+    monkeypatch.setattr(RealmGrinderWindow, "point_is_visible", lambda _self, *_point: True)
     monkeypatch.setattr(
         "src.window.InputController.post_click",
         lambda *args: calls.append(args),
@@ -127,6 +130,53 @@ def test_window_click_can_bind_to_matching_captured_viewport(monkeypatch):
     window.click(215, 20, auto_scale=False, expected_client_size=(976, 669))
 
     assert calls == [(7, 215, 20, 0.04)]
+
+
+def test_window_click_refuses_point_occluded_by_another_window(monkeypatch):
+    from src.window import RealmGrinderWindow
+
+    calls = []
+    monkeypatch.setattr(RealmGrinderWindow, "is_valid", lambda _self: True)
+    monkeypatch.setattr(RealmGrinderWindow, "is_minimized", lambda _self: False)
+    monkeypatch.setattr(RealmGrinderWindow, "get_client_size", lambda _self: (976, 669))
+    monkeypatch.setattr(RealmGrinderWindow, "point_is_visible", lambda _self, *_point: True)
+    monkeypatch.setattr(RealmGrinderWindow, "point_is_visible", lambda _self, *_point: False)
+    monkeypatch.setattr("src.window.InputController.post_click", lambda *args: calls.append(args))
+    window = RealmGrinderWindow.__new__(RealmGrinderWindow)
+    window.hwnd = 7
+
+    with pytest.raises(RuntimeError, match="covered by another window"):
+        window.click(215, 20, auto_scale=False, expected_client_size=(976, 669))
+    assert calls == []
+
+
+def test_point_visibility_accepts_visible_unfocused_game_and_child(monkeypatch):
+    from src.window import RealmGrinderWindow
+
+    window = RealmGrinderWindow.__new__(RealmGrinderWindow)
+    window.hwnd = 7
+    monkeypatch.setattr(RealmGrinderWindow, "is_valid", lambda _self: True)
+    monkeypatch.setattr(RealmGrinderWindow, "is_minimized", lambda _self: False)
+    monkeypatch.setattr("src.window.win32gui.ClientToScreen", lambda hwnd, point: (110, 220))
+    monkeypatch.setattr("src.window.win32gui.WindowFromPoint", lambda point: 8)
+    monkeypatch.setattr("src.window.win32gui.GetAncestor", lambda hwnd, flag: 7)
+
+    assert window.point_is_visible(10, 20)
+
+
+def test_point_visibility_rejects_occluding_window_and_fails_closed(monkeypatch):
+    from src.window import RealmGrinderWindow
+
+    window = RealmGrinderWindow.__new__(RealmGrinderWindow)
+    window.hwnd = 7
+    monkeypatch.setattr(RealmGrinderWindow, "is_valid", lambda _self: True)
+    monkeypatch.setattr(RealmGrinderWindow, "is_minimized", lambda _self: False)
+    monkeypatch.setattr("src.window.win32gui.ClientToScreen", lambda hwnd, point: (110, 220))
+    monkeypatch.setattr("src.window.win32gui.WindowFromPoint", lambda point: 9)
+    monkeypatch.setattr("src.window.win32gui.GetAncestor", lambda hwnd, flag: 9)
+    assert not window.point_is_visible(10, 20)
+    monkeypatch.setattr("src.window.win32gui.WindowFromPoint", lambda point: 0)
+    assert not window.point_is_visible(10, 20)
 
 
 def test_window_click_rejects_point_outside_current_client(monkeypatch):
@@ -161,6 +211,7 @@ def test_window_coordinate_scaling_tracks_current_viewport(monkeypatch, size, po
     monkeypatch.setattr(RealmGrinderWindow, "is_valid", lambda _self: True)
     monkeypatch.setattr(RealmGrinderWindow, "is_minimized", lambda _self: False)
     monkeypatch.setattr(RealmGrinderWindow, "get_client_size", lambda _self: size)
+    monkeypatch.setattr(RealmGrinderWindow, "point_is_visible", lambda _self, *_point: True)
     monkeypatch.setattr(
         "src.window.InputController.post_click",
         lambda *args: calls.append(args),
