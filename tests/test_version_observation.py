@@ -1,0 +1,34 @@
+import time
+
+from src.action_verification import ui_action_verified
+from src.live_state import LiveStateProvider
+
+
+class NoMemory:
+    def sample(self, saved):
+        return {}, {'process_connected': True}
+
+
+def test_observation_carries_current_binary_identity(tmp_path):
+    identity = {'supported': True, 'swf_sha256': 'a'*64, 'game_version': '4.3.22', 'save_version': 58}
+    saved = {'reincarnation': 24, 'save_timestamp': time.time(),
+             'save_fingerprint': 'snapshot', 'raw_data': {'saveVersion': 58}}
+    provider = LiveStateProvider(lambda: saved, NoMemory(), tmp_path,
+                                 identity_reader=lambda: dict(identity))
+    assert provider.get()['game_identity'] == identity
+    identity.update(supported=False, swf_sha256='b'*64)
+    assert provider.get()['game_identity'] == identity
+
+
+def test_ui_calibration_is_bound_to_installed_binary():
+    profile = {'save_version': 58, 'swf_sha256': 'a'*64,
+               'verified_actions': ['reincarnation'], 'actions': {'reincarnation': [[10, 10]]}}
+    state = {'raw_data': {'saveVersion': 58},
+             'game_identity': {'supported': True, 'swf_sha256': 'b'*64}}
+    assert not ui_action_verified(profile, 'reincarnation', state)
+    state['game_identity']['swf_sha256'] = 'a'*64
+    assert ui_action_verified(profile, 'reincarnation', state)
+    state['game_identity']['supported'] = False
+    assert not ui_action_verified(profile, 'reincarnation', state)
+    state.pop('game_identity')
+    assert not ui_action_verified(profile, 'reincarnation', state)

@@ -16,8 +16,10 @@ UNKNOWN_FIELDS = {'mana_max', 'mana_regeneration', 'assistants_total', 'assistan
 
 class LiveStateProvider:
     def __init__(self, save_reader=get_current_game_state, memory=None, state_dir=STATE_DIR,
-                 max_save_age=90.0, max_memory_age=2.0):
+                 max_save_age=90.0, max_memory_age=2.0, identity_reader=None):
         self.save_reader = save_reader
+        from src.game_identity import get_game_identity
+        self.identity_reader = identity_reader or get_game_identity
         self.state_dir = Path(state_dir)
         self.memory = memory if memory is not None else MemoryProvider(self.state_dir, discovery_enabled=True)
         self.max_save_age, self.max_memory_age = max_save_age, max_memory_age
@@ -42,6 +44,7 @@ class LiveStateProvider:
                 save_error = str(exc)
                 saved = copy.deepcopy(self._last_good)
             state = copy.deepcopy(saved)
+            state['game_identity'] = self.identity_reader()
             timestamp = saved.get('save_timestamp', now-saved.get('save_age_seconds', 0))
             age = max(0.0, now-timestamp)
             save_healthy = save_error is None and age <= self.max_save_age

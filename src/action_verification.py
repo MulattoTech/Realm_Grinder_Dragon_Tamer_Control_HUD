@@ -84,7 +84,11 @@ def verify_build(state, recommendation, manifest=None):
 
 def ui_action_verified(profile, operation, state):
     sequence=profile.get('actions',{}).get(operation)
-    return bool(profile.get('save_version') == state.get('raw_data',{}).get('saveVersion') and
+    identity=state.get('game_identity',{})
+    digest=identity.get('swf_sha256')
+    return bool(identity.get('supported') is True and isinstance(digest,str) and len(digest)==64 and
+                profile.get('swf_sha256') == digest and
+                profile.get('save_version') == state.get('raw_data',{}).get('saveVersion') and
                 operation in profile.get('verified_actions',[]) and isinstance(sequence,list) and sequence)
 
 class ActionLock:

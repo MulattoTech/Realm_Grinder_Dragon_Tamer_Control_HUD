@@ -197,7 +197,8 @@ def test_milestone_requires_verified_catalog_and_actual_ownership():
 
 def test_ui_profile_requires_verified_action_and_matching_game_version():
     a=api();s=state()
-    profile={'save_version':58,'verified_actions':[],'actions':{'abdication':[[200,25],[572,460]]}}
+    s['game_identity']={'supported':True,'swf_sha256':'a'*64}
+    profile={'save_version':58,'swf_sha256':'a'*64,'verified_actions':[],'actions':{'abdication':[[200,25],[572,460]]}}
     assert not a.ui_action_verified(profile,'abdication',s)
     profile['verified_actions']=['abdication']
     assert a.ui_action_verified(profile,'abdication',s)
