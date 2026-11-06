@@ -1,5 +1,32 @@
 # Verification report - 2026-11-06
 
+## Native minimized Call to Arms
+
+Code `336ae55821e3f16ce512a48e2b4ca4cf6f319ff5` passed
+`scripts/Verify-Repository.ps1`: source **455 passed, 5 skipped**; clean archive
+**454 passed, 6 skipped**; compile and diff checks passed; bootstrap made zero
+network requests and sent zero game input. Skips require private visual fixtures.
+New regressions cover one-key dispatch without visual input, inactive/autocast/
+mana/version/config gates, process changes, stale saves, passive coin changes,
+multiple casts, missing active timer, and STOP on uncertain or ineffective input.
+Existing visible-collection mocks now explicitly report non-minimized windows.
+
+A live single-action test of this exact committed code used the shared action
+lock and TransactionRunner, with the real HUD paused and a temporary source-only
+configuration. Spell 3 cast count rose **15 -> 16**, active timer was **127**,
+and the fresh save identified unchanged process PID 45836/start-time
+134384336213352291. The window was minimized at dispatch and verification;
+no focus/restore call occurred. Runtime configuration and STOP were restored
+after the one-shot test. The normal backup guard ran before key dispatch.
+Receipt: ignored `state/test-lab/committed-minimized-spell-336ae55.json`.
+
+Earlier diagnostic and integrated-path tests showed 13 -> 14 and 14 -> 15.
+No-input controls showed Tax Collection rising passively, so that spell is
+excluded from this proof. This is **PASS for the tested minimized Call to Arms
+action only**. Minimized purchases/resets, S50 unlock progression, and Dragon
+Tamer completion remain PARTIAL/unverified. No save bytes or game memory were
+edited by these tests; ordinary game-side spell/save activity occurred.
+
 ## Official browser build startup probe
 
 At source `3ad22cc`, `python tools/probe_offline_runtime.py --assets

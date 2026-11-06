@@ -17,8 +17,12 @@ existing transaction runner, with backup, supported-version, inactive-spell,
 autocast-off and preliminary mana checks. It requires a fresh same-process
 cast-count increase of exactly one and an active timer. Failed or uncertain
 verification creates STOP. All visual purchases and reset guards remain intact.
-The timer requirement was added after the second live test and still needs a
-final committed-code check. Targeted regressions: 34 passed. Full verifier pending.
+Committed-code check at `336ae55821e3f16ce512a48e2b4ca4cf6f319ff5` passed:
+15 -> 16 casts, active timer 127, fresh same-process save, minimized at dispatch
+and verification. Full verifier passed: source 455 passed / 5 skipped, clean
+archive 454 passed / 6 skipped. Bootstrap made zero network requests and sent
+zero game input. Skips require private visual fixtures. The live receipt is
+`state/test-lab/committed-minimized-spell-336ae55.json` (ignored/private).
 
 Tax Collection is excluded: a no-input control showed its count rising by ten
 between fresh saves despite autocast=false. Passive coin growth and that counter
