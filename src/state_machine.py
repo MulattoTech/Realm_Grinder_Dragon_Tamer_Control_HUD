@@ -32,7 +32,9 @@ from src.live_state import get_live_game_state
 from src.progression_actions import ProgressionActions, actual_dragon_stage
 from src.runtime_safety import input_allowed, require_interactive_session, WorkerLease
 from src.atomic_store import write_json
-from src.config import load_config
+from src.config import CONFIG_FILE, load_config
+from src.save_reader import SOL_PATH
+from src.idle_scheduler import IdleScheduler
 from src.telemetry import ProgressionTracker
 from src.ai_engine import SkynetOptimizationCore
 from src.guardian import ProcessGuardian
@@ -321,21 +323,37 @@ class DragonBot:
         logging.info('[Verified controller] %s: %s',result.get('action'),result.get('message'))
         self.save_state()
 
-    def run_loop(self):
+    def run_loop(self, stop_event=None):
         require_interactive_session()
         try:
             with WorkerLease():
                 logging.info('Starting the sole DragonBot worker for this project.')
-                while True:
+                scheduler=IdleScheduler(CONFIG_FILE,STOP_FILE,SOL_PATH)
+                while stop_event is None or not stop_event.is_set():
+                    watched=scheduler.snapshot()
+                    outcome={"kind":"cycle","status":"WAITING","action":"PAUSED","message":"Paused by config or STOP file"}
                     try:
-                        self.step()
+                        # Pause is a cheap config/STOP read and must gate every cycle
+                        # before state observation or an action can be dispatched.
+                        if not self.is_paused():
+                            self.step()
+                            result=self.state.get('last_action_result') or {}
+                            if result.get('status') in ('BLOCKED','UNCERTAIN'):
+                                outcome={"kind":"blocked",**result}
+                            elif not self.state.get('is_running',False):
+                                outcome={"kind":"waiting","status":"WAITING","action":"NO_DISPATCH",
+                                         "message":self.state.get('next_expected_action','Waiting for game state')}
+                            else:
+                                outcome=result or {"kind":"cycle","status":"ACTIVE","action":"PROGRESS"}
                     except Exception as exc:
                         logging.error('Worker observation/action failed: %s',exc,exc_info=True)
                         self.state['is_running']=False
                         self.state['retry_count']=self.state.get('retry_count',0)+1
                         self.state['next_expected_action']=str(exc)
                         self.save_state()
-                    time.sleep(max(1.0,float(load_config().get('cycle_delay_sec',3.0))))
+                        outcome={"kind":"error","status":"ERROR","action":"WORKER_CYCLE","message":str(exc)}
+                    delay=scheduler.delay_after(outcome,load_config())
+                    scheduler.wait_for_change(delay,watched,stop_event=stop_event)
         except RuntimeError as exc:
             logging.warning('%s',exc)
 
