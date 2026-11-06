@@ -21,6 +21,8 @@ The original desktop shortcut still targets `C:\Tools\Dev\RealmGrinder\launcher.
 
 `scripts/Verify-Repository.ps1` completed on commit `ebd43d7df16db422f60cbff2554c7298d5998679`: compile passed, installed-checkout suite **412 passed, 5 skipped**, and source-only archive suite **412 passed, 5 skipped**. The five skips require private visual screenshots/icons omitted from a clean checkout. Responsive visual matching was separately exercised against the ignored GemPower fixture at 976x669, 781x535, and 1171x803; all returned the proportionally scaled expected center. This was image matching only, not a live click/purchase test.
 
+After installing that source into the existing shortcut path, `scripts/Verify-Repository.ps1` also passed on `main` at `af0aa88d0ae820bb3e2907b7f6bd0ade192e3550`: **417 passed** in the installed checkout and **412 passed, 5 skipped** in the clean archive.
+
 The installed game was observed read-only at R24 with roughly `6.83e72` gems versus the 4.3.22 A0 R25 threshold `1e99`. No live input was sent, and no reset, purchase, Egg, Dragon stage, or achievement was verified. The available live state therefore cannot demonstrate the irreversible or later-stage flows. Windows actions require a visible game window and live semantic recognition; minimized input remains unsupported.
 
 ## Local installation safety checkpoint
