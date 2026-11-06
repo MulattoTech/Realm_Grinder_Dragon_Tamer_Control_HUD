@@ -196,6 +196,53 @@ def test_stale_save_never_becomes_fresh_by_reading_it_again(tmp_path):
     assert state['telemetry']['consequential_actions_allowed'] is False
 
 
+def test_slow_memory_sample_cannot_make_old_observation_fresh(tmp_path):
+    api = live_api()
+    class SlowMemory(FakeMemory):
+        def sample(self, save_state):
+            time.sleep(0.03)
+            return super().sample(save_state)
+    stale_at_start = observation(999, age=0)
+    state = api.LiveStateProvider(save_reader=snapshot,
+        memory=SlowMemory({'mana_current': stale_at_start}), state_dir=tmp_path,
+        max_memory_age=0.01).get()
+    assert state['mana_current'] == 812
+    assert state['telemetry']['rejected_memory_fields'] == ['mana_current']
+
+
+@pytest.mark.parametrize('value,source', [(True, 'PROCESS_MEMORY'), (900, 'UNKNOWN')])
+def test_boolean_or_wrong_source_memory_observation_fails_closed(tmp_path, value, source):
+    api = live_api()
+    item = observation(value)
+    item['source'] = source
+    state = api.LiveStateProvider(save_reader=snapshot,
+        memory=FakeMemory({'mana_current': item}), state_dir=tmp_path).get()
+    assert state['mana_current'] == 812
+    assert state['telemetry']['rejected_memory_fields'] == ['mana_current']
+
+
+@pytest.mark.parametrize('item', [None, {'value': 900, 'source': 'PROCESS_MEMORY',
+                                        'confidence': 'VERIFIED', 'timestamp': float('nan')}])
+def test_malformed_memory_observation_fails_closed(tmp_path, item):
+    api = live_api()
+    state = api.LiveStateProvider(save_reader=snapshot,
+        memory=FakeMemory({'mana_current': item}), state_dir=tmp_path).get()
+    assert state['mana_current'] == 812
+    assert state['telemetry']['rejected_memory_fields'] == ['mana_current']
+
+
+def test_save_that_ages_during_memory_sample_is_stale(tmp_path):
+    api = live_api()
+    class SlowMemory(FakeMemory):
+        def sample(self, save_state):
+            time.sleep(0.03)
+            return super().sample(save_state)
+    state = api.LiveStateProvider(save_reader=snapshot, memory=SlowMemory(),
+        state_dir=tmp_path, max_save_age=0.01).get()
+    assert state['telemetry']['save_provider_health'] == 'STALE'
+    assert state['telemetry']['consequential_actions_allowed'] is False
+
+
 def test_no_save_is_not_reported_as_a_new_r0_game(tmp_path):
     api = live_api()
     def broken(): raise FileNotFoundError('No save')
@@ -224,7 +271,8 @@ def test_mapping_range_nan_and_expired_process_rejected():
     api = memory_api()
     from src.memory.process import ProcessIdentity
     identity = ProcessIdentity(17, 123, 'RealmGrinderDesktop.exe', 8)
-    mapping = api.FieldMapping('mana_current', identity, 4096, 'Float64', 'VERIFIED', 'test', 0, 1000)
+    mapping = api.FieldMapping('mana_current', identity, 4096, 'Float64', 'VERIFIED',
+                               'two_cast_regeneration_cycles', 0, 1000)
     assert mapping.accepts(812)
     assert not mapping.accepts(-1)
     assert not mapping.accepts(1001)

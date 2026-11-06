@@ -2,6 +2,7 @@
 heap structure simulation, differential discovery, session invalidation, and live state fusion.
 """
 from __future__ import annotations
+import json
 import math
 from pathlib import Path
 import struct
@@ -88,7 +89,7 @@ def test_field_mapping_validation_and_bounds():
     m = FieldMapping(
         field='mana_current', identity=ident, address=0x04001000,
         datatype='AVM2Number', confidence='VERIFIED',
-        validation_source='AVM2_ATOM_DIFFERENTIAL_DISCOVERY',
+        validation_source='two_cast_regeneration_cycles',
         minimum=0.0, maximum=10000.0
     )
     assert m.valid_for(ident)
@@ -133,7 +134,7 @@ def test_avm2_tagged_atom_unpacking(tmp_path):
         proc.read_value(invalid_slot, 'AVM2Number')
 
 
-def test_provider_discovery_of_regenerating_mana(tmp_path):
+def test_automatic_heap_discovery_keeps_heuristics_as_candidates(tmp_path):
     proc = MockAVM2Process(pid=10, start_time=500)
     provider = MemoryProvider(tmp_path, pid_resolver=lambda: 10, process_factory=lambda pid: proc, discovery_enabled=True)
     provider._connect()
@@ -162,11 +163,10 @@ def test_provider_discovery_of_regenerating_mana(tmp_path):
         'excavations': 1500, 'mana': 500.0, 'assistants': 20000
     }
 
-    # Simulate mana regeneration by hook during discovery delay
+    # Keep both candidate slots stable: the max-mana-shaped value is not
+    # evidence that it is the current mana field.
     original_sleep = time.sleep
     def mock_sleep(seconds):
-        # Update mana double to simulate +35/s regeneration
-        proc.write_test_double(mana_double_addr, 500.0 + 35.0 * seconds)
         original_sleep(0.01)
 
     import src.memory.provider as prov_mod
@@ -176,24 +176,53 @@ def test_provider_discovery_of_regenerating_mana(tmp_path):
     discovered = provider.discover_fields(save_state, sample_delay=0.1)
     monkeypatch.undo()
 
-    assert 'mana_current' in discovered
-    assert discovered['mana_current'].address == mana_slot
-    assert discovered['mana_current'].confidence == 'VERIFIED'
+    assert discovered == {}
+    assert provider.mappings == {}
+    assert not provider.path.exists(), 'Uncalibrated candidates must not persist as mappings'
+    diagnostic = json.loads((tmp_path/'memory_discovery.json').read_text(encoding='utf-8'))
+    assert diagnostic['status'] == 'NEEDS_CONTROLLED_FIELD_VALIDATION'
+    assert diagnostic['candidate_counts']['max_mana_like'] >= 1
+    assert diagnostic['candidate_counts']['differential_mana_like'] == 0
+    assert any(item['address'] == max_slot for item in diagnostic['candidates']['max_mana_like'])
 
-    assert 'mana_max' in discovered
-    assert discovered['mana_max'].address == max_slot
-
-    assert 'coins' in discovered
-    assert discovered['coins'].address == coin_slot
-
-    # Verify that provider.sample() now reads live values from process memory
+    # Candidates alone must not override save values as process-memory observations.
     obs, health = provider.sample(save_state)
-    assert health['memory_provider_health'] == 'HEALTHY'
-    assert 'mana_current' in obs
-    assert obs['mana_current']['source'] == 'PROCESS_MEMORY'
-    assert obs['mana_current']['confidence'] == 'VERIFIED'
-    assert obs['mana_current']['value'] >= 500.0
-    assert obs['coins']['value'] == 1.5e138
+    assert health['memory_provider_health'] == 'CONNECTED_UNMAPPED'
+    assert obs == {}
+
+
+@pytest.mark.parametrize('field,source,expected', [
+    ('mana_current', 'two_cast_regeneration_cycles', True),
+    ('mana_current', 'controlled_mana_cap_change', False),
+    ('mana_current', 'AVM2_ATOM_DIFFERENTIAL_DISCOVERY', False),
+    ('mana_current', 'calibrated:mana_current:two_cast_regeneration_cycles', False),
+    ('coins', 'controlled_coin_delta', True),
+])
+def test_mapping_requires_field_specific_calibration_evidence(field, source, expected):
+    identity = ProcessIdentity(10, 500, 'RealmGrinderDesktop.exe', 4)
+    mapping = FieldMapping(field, identity, 4096, 'Float64', 'VERIFIED', source, 0, 1e308)
+    assert mapping.valid_for(identity) is expected
+
+
+def test_persisted_heuristic_verified_mapping_is_ignored(tmp_path):
+    proc = MockAVM2Process(pid=10, start_time=500)
+    provider = MemoryProvider(tmp_path, pid_resolver=lambda: 10,
+                              process_factory=lambda pid: proc)
+    double_addr, slot = proc.base+0x200, proc.base+0x100
+    proc.write_test_double(double_addr, 500.0)
+    proc.write_test_atom(slot, double_addr|7)
+    provider.path.write_text(json.dumps({'mappings': [{
+        'field': 'mana_current', 'identity': {'pid': 10, 'start_time': 500,
+            'exe_path': 'RealmGrinderDesktop.exe', 'pointer_size': 4},
+        'address': slot, 'datatype': 'AVM2Number', 'confidence': 'VERIFIED',
+        'validation_source': 'AVM2_ATOM_DIFFERENTIAL_DISCOVERY',
+        'minimum': 0, 'maximum': 1e9,
+    }]}), encoding='utf-8')
+
+    observations, health = provider.sample({'reincarnation': 24, 'gems': 1e70})
+    assert observations == {}
+    assert health['memory_provider_health'] == 'CONNECTED_UNMAPPED'
+    assert 'mana_current' not in provider.mappings
 
 
 def test_session_invalidation_and_clean_reconnect(tmp_path):
@@ -205,7 +234,7 @@ def test_session_invalidation_and_clean_reconnect(tmp_path):
     mapping = FieldMapping(
         field='mana_current', identity=ident1, address=proc1.base + 0x100,
         datatype='AVM2Number', confidence='VERIFIED',
-        validation_source='test', minimum=0.0, maximum=10000.0
+        validation_source='two_cast_regeneration_cycles', minimum=0.0, maximum=10000.0
     )
     # Set up memory so register() succeeds
     d_addr = proc1.base + 0x200
@@ -254,8 +283,8 @@ def test_live_state_provider_fusion_with_process_memory(tmp_path):
     proc.write_test_atom(coins_s, coins_d | 7)
 
     ident = proc.identity
-    provider.register(FieldMapping('mana_current', ident, mana_s, 'AVM2Number', 'VERIFIED', 'test', 0, 1e9))
-    provider.register(FieldMapping('coins', ident, coins_s, 'AVM2Number', 'VERIFIED', 'test', 0, 1e308))
+    provider.register(FieldMapping('mana_current', ident, mana_s, 'AVM2Number', 'VERIFIED', 'two_cast_regeneration_cycles', 0, 1e9))
+    provider.register(FieldMapping('coins', ident, coins_s, 'AVM2Number', 'VERIFIED', 'controlled_coin_delta', 0, 1e308))
 
     save_data = {
         'reincarnation': 24, 'ascension': 0, 'gems': 1e70,

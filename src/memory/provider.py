@@ -12,6 +12,16 @@ from src.atomic_store import write_json
 
 VOLATILE_FIELDS = frozenset({'mana_current', 'mana_max', 'mana_regeneration', 'coins',
     'assistants_current', 'fairy_assistants', 'hellfire_active', 'hellfire_remaining_seconds'})
+FIELD_EVIDENCE = {
+    'mana_current': frozenset({'two_cast_regeneration_cycles'}),
+    'mana_max': frozenset({'controlled_mana_cap_change'}),
+    'mana_regeneration': frozenset({'two_cast_regeneration_cycles'}),
+    'coins': frozenset({'controlled_coin_delta'}),
+    'assistants_current': frozenset({'controlled_assistant_count_delta'}),
+    'fairy_assistants': frozenset({'controlled_fairy_assistant_count_delta'}),
+    'hellfire_active': frozenset({'controlled_hellfire_transition'}),
+    'hellfire_remaining_seconds': frozenset({'controlled_hellfire_timer'}),
+}
 
 @dataclass
 class FieldMapping:
@@ -27,8 +37,13 @@ class FieldMapping:
     run_signature: list = field(default_factory=list)
 
     def valid_for(self, identity):
+        if (not isinstance(self.field, str) or self.field not in VOLATILE_FIELDS or
+                not isinstance(self.address, int) or isinstance(self.address, bool) or
+                not isinstance(self.validation_source, str)):
+            return False
+        field_evidence = self.validation_source in FIELD_EVIDENCE.get(self.field, ())
         return bool(identity is not None and identity == self.identity and self.address > 0 and
-                    self.confidence in ('VERIFIED', 'HIGH') and self.validation_source and
+                    self.confidence in ('VERIFIED', 'HIGH') and field_evidence and
                     self.field in VOLATILE_FIELDS)
 
     def accepts(self, value):
@@ -176,7 +191,6 @@ class MemoryProvider:
 
         save_coins = float(save_state.get('coins', 0) or 0)
         save_assistants = float(save_state.get('assistants', 0) or 0)
-        sig = run_signature(save_state)
         ident = self.reader.identity
 
         try:
@@ -262,65 +276,26 @@ class MemoryProvider:
             best_max_slot = next(s for s, val in possible_max if val == best_max_val)
             mana_max_slot = best_max_slot
 
-        if not mana_current_slot and mana_max_slot:
-            mana_current_slot = mana_max_slot
-
-        coin_slot = None
-        if coin_candidates and save_coins > 0:
-            coin_candidates.sort(key=lambda s: abs(math.log10(max(1.0, s[1])) - math.log10(max(1.0, save_coins))))
-            coin_slot = coin_candidates[0][0]
-
-        regen_slot = None
-        if detected_regen_rate and regen_candidates:
-            close = [s for s, val in regen_candidates if math.isclose(val, detected_regen_rate, rel_tol=0.15)]
-            if close:
-                regen_slot = close[0]
-
-        assist_slot = assist_candidates[0][0] if assist_candidates else None
-
-        new_mappings = {}
-        if mana_current_slot:
-            new_mappings["mana_current"] = FieldMapping(
-                field="mana_current", identity=ident, address=mana_current_slot,
-                datatype="AVM2Number", confidence="VERIFIED",
-                validation_source="AVM2_ATOM_DIFFERENTIAL_DISCOVERY",
-                minimum=0.0, maximum=1e9, run_signature=sig
-            )
-        if mana_max_slot:
-            new_mappings["mana_max"] = FieldMapping(
-                field="mana_max", identity=ident, address=mana_max_slot,
-                datatype="AVM2Number", confidence="VERIFIED",
-                validation_source="AVM2_ATOM_DIFFERENTIAL_DISCOVERY",
-                minimum=1000.0, maximum=1e9, run_signature=sig
-            )
-        if regen_slot:
-            new_mappings["mana_regeneration"] = FieldMapping(
-                field="mana_regeneration", identity=ident, address=regen_slot,
-                datatype="AVM2Number", confidence="VERIFIED",
-                validation_source="AVM2_ATOM_DIFFERENTIAL_DISCOVERY",
-                minimum=0.1, maximum=1e6, run_signature=sig
-            )
-        if coin_slot:
-            new_mappings["coins"] = FieldMapping(
-                field="coins", identity=ident, address=coin_slot,
-                datatype="AVM2Number", confidence="VERIFIED",
-                validation_source="AVM2_ATOM_DIFFERENTIAL_DISCOVERY",
-                minimum=0.0, maximum=1e308, run_signature=sig
-            )
-        if assist_slot:
-            new_mappings["fairy_assistants"] = FieldMapping(
-                field="fairy_assistants", identity=ident, address=assist_slot,
-                datatype="AVM2Number", confidence="VERIFIED",
-                validation_source="AVM2_ATOM_DIFFERENTIAL_DISCOVERY",
-                minimum=0.0, maximum=1e9, run_signature=sig
-            )
-
-        for name, mapping in new_mappings.items():
-            self.mappings[name] = mapping
-        if new_mappings:
-            self.persist()
-
-        return new_mappings
+        # Passive heap patterns are useful only as leads for a controlled probe.
+        # They never establish field identity, including for a max-mana-shaped slot.
+        write_json(self.state_dir/'memory_discovery.json', {
+            'identity': asdict(ident), 'timestamp': time.time(),
+            'status': 'NEEDS_CONTROLLED_FIELD_VALIDATION', 'confidence': 'LOW',
+            'candidate_counts': {
+                'mana_like': len(mana_candidates), 'max_mana_like': len(possible_max),
+                'coin_like': len(coin_candidates), 'regen_like': len(regen_candidates),
+                'assistant_like': len(assist_candidates),
+                'differential_mana_like': int(mana_current_slot is not None),
+            },
+            'candidates': {
+                'mana_like': [{'address': slot, 'value': value} for slot, value in mana_candidates],
+                'coin_like': [{'address': slot, 'value': value} for slot, value in coin_candidates],
+                'regen_like': [{'address': slot, 'value': value} for slot, value in regen_candidates],
+                'assistant_like': [{'address': slot, 'value': value} for slot, value in assist_candidates],
+                'max_mana_like': [{'address': slot, 'value': value} for slot, value in possible_max],
+            },
+        })
+        return {}
 
     def sample(self, save_state):
         observations = {}

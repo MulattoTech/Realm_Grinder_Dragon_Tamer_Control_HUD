@@ -64,17 +64,28 @@ class LiveStateProvider:
                 observations, health = self.memory.sample(saved)
             except (OSError, ValueError) as exc:
                 observations, health = {}, {'process_connected': False, 'memory_error': str(exc)}
+            sampled_at = time.time()
+            # Freshness is evaluated after the read finishes so a slow provider
+            # cannot make old save or process observations appear current.
+            age = max(0.0, sampled_at-timestamp)
+            save_healthy = save_error is None and age <= self.max_save_age
+            for item in provenance.values():
+                item['age_ms'] = round(age*1000, 3)
+                if item.get('source') == 'AIR_SHAREDOBJECT':
+                    item['confidence'] = 'HIGH' if save_healthy else 'LOW'
             rejected = []
             for name, observation in observations.items():
+                if not isinstance(observation, dict):
+                    rejected.append(name)
+                    continue
                 value = observation.get('value')
                 observed = observation.get('timestamp', 0)
-                valid = (name in VOLATILE_FIELDS and observation.get('confidence') in ('HIGH', 'VERIFIED')
-                         and isinstance(value, (int, float)) and math.isfinite(value) and value >= 0
-                         and 0 <= now-observed <= self.max_memory_age)
-                # Reads may finish slightly after 'now'; allow that narrow, measured interval.
-                if observed > now and observed <= time.time():
-                    valid = (name in VOLATILE_FIELDS and observation.get('confidence') in ('HIGH', 'VERIFIED')
-                             and isinstance(value, (int, float)) and math.isfinite(value) and value >= 0)
+                valid = (name in VOLATILE_FIELDS and observation.get('source') == 'PROCESS_MEMORY'
+                         and observation.get('confidence') in ('HIGH', 'VERIFIED')
+                         and isinstance(value, (int, float)) and not isinstance(value, bool)
+                         and math.isfinite(value) and value >= 0
+                         and isinstance(observed, (int, float)) and not isinstance(observed, bool)
+                         and math.isfinite(observed) and 0 <= sampled_at-observed <= self.max_memory_age)
                 if valid:
                     state[name] = value
                     provenance[name] = dict(observation, age_ms=round(max(0, time.time()-observed)*1000, 3))
@@ -86,7 +97,7 @@ class LiveStateProvider:
             else:
                 self.fallback_count += 1
             health = dict(health)
-            health.update(timestamp=time.time(), save_provider_health='STALE_ERROR' if save_error else
+            health.update(timestamp=sampled_at, save_provider_health='STALE_ERROR' if save_error else
                           ('HEALTHY' if save_healthy else 'STALE'), save_error=save_error,
                           last_save_read=now, last_save_change=timestamp, save_age_seconds=age,
                           fallback_count=self.fallback_count, rejected_memory_fields=rejected,
