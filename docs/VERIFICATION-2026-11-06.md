@@ -48,6 +48,18 @@ Follow-up checked at 2026-11-06 12:43 UTC on `codex/live-viewport-scaling`, base
 
 Status remains PARTIAL: visual recognition and two background purchase transitions are demonstrated, but progression toward R42, reset handling, Dragon milestones, trophy/achievement completion, minimized support, and a new GitHub release are not established.
 
+## Exact research-ID resolution follow-up
+
+Checked at 2026-11-06 13:51 UTC on `codex/live-viewport-scaling`, based on `main` at `fff03314f961126664e68e46ccce4ad8e3ff5bf6`.
+
+- Static SWF tracing showed template token `S50` maps through the source reference to `130002` (Conjuration), while supported game version 4.3.22 serializes Conjuration as upgrade ID `300`. Version 4.3.11 has the same serialized ID, but manifests are pinned separately to the exact binary hash and save version.
+- `compile_template` now resolves source token names against definitions from the exact supported SWF/schema pair. Missing or ambiguous installed definitions and unsupported/mismatched identities leave the manifest unverified. Manifest ownership checks require the active identity and schema to match the compiled manifest.
+- Regression tests cover the `S50` to `300` mapping, rejection of source ID `130002` as the save key, mismatched SWF hash rejection, and malformed missing identity. All seven packaged build manifests resolve against supported 4.3.22 definitions.
+- Targeted compiler, bootstrap, route, and action-verification suites: **60 passed** before adding the malformed-identity regression; the full source suite then reported **418 passed, 5 skipped**. A clean archive run reported **417 passed, 5 skipped**. Clean bootstrap made zero network requests and sent zero game input. The verifier then stopped at its clean-worktree gate as designed; committed-byte verification remains pending.
+- The live game was not touched for this code check. Existing R24 game and paused helper status remain as in the collection follow-up above. This compiler fix does not calibrate or automate non-Mercenary Research UI selection, and does not establish any reset, Dragon stage, or achievement.
+
+Status remains PARTIAL pending committed verification, installation of this slice, and research-selection UI calibration.
+
 ## Delayed production-save observation follow-up
 
 Checked at 2026-11-06 13:09 UTC on `codex/live-viewport-scaling`, based on `main` at `35be6c50b7c02a37980e959b2d33952e36b44edb`.

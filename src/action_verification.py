@@ -61,9 +61,13 @@ def verify_build(state, recommendation, manifest=None):
         checks.append(bloodline_ok)
         if not bloodline_ok: missing.append(f'Bloodline {bloodline}: ownership not verified')
     required=manifest.get('required_upgrade_ids',[])
+    identity=state.get('game_identity') or {}
     manifest_ok=(manifest.get('verified') is True and bool(required) and
                  manifest.get('template') == recommendation.get('template') and
-                 manifest.get('save_version') == raw.get('saveVersion'))
+                 manifest.get('save_version') == raw.get('saveVersion') and
+                 manifest.get('swf_sha256') == identity.get('swf_sha256') and
+                 identity.get('supported') is True and
+                 identity.get('save_version') == raw.get('saveVersion'))
     checks.append(manifest_ok)
     if not manifest_ok:
         missing.append('Complete current-version template ownership manifest is not verified')

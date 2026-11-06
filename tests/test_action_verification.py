@@ -162,20 +162,24 @@ def test_build_recommendation_does_not_prove_active_mercenary_build():
 
 
 def test_empty_or_unvalidated_build_manifest_is_not_proof():
-    a=api();s=state(faction=11);s['raw_data']['upgrades']['194']={'u1':True}
+    a=api();s=state(faction=11);s['raw_data']['upgrades'].update({'194':{'u1':True},'10':{'u1':True}})
+    s['game_identity']=None
     rec={'name':'Merc','faction':'Mercenary','bloodline':'Fairy','template':'FR2'}
-    result=a.verify_build(s,rec,manifest={'verified':True,'required_upgrade_ids':[]})
+    result=a.verify_build(s,rec,manifest={'verified':True,'template':'FR2','save_version':58,
+        'swf_sha256':'a'*64,'required_upgrade_ids':[10]})
     assert not result['build_verified']
 
 
 def test_complete_manifest_checks_all_owned_upgrades_and_spells():
     a=api();s=state(faction=11);s['alignment']=3
+    digest='a'*64;s['game_identity']={'supported':True,'swf_sha256':digest,'save_version':58}
     s['raw_data']['upgrades']={'194':{'u1':True},'101':{'u1':True},'102':{'u1':True}}
     s['raw_data']['mercSpell1']=6;s['raw_data']['mercSpell2']=9
     rec={'name':'Merc','faction':'Mercenary','bloodline':'Fairy','template':'TEST'}
-    manifest={'verified':True,'template':'TEST','save_version':58,'alignment':3,
+    manifest={'verified':True,'template':'TEST','save_version':58,'swf_sha256':digest,'alignment':3,
               'required_upgrade_ids':[101,102],'merc_spells':[6,9]}
     assert a.verify_build(s,rec,manifest)['build_verified']
+    assert not a.verify_build(s,rec,{**manifest,'swf_sha256':'b'*64})['build_verified']
     s['raw_data']['upgrades']['102']['u1']=False
     assert not a.verify_build(s,rec,manifest)['build_verified']
 

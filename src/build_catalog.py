@@ -35,28 +35,62 @@ def load_reference_ids():
             'spells':{name:i for i,name in named_entries(text,'spells')},
             'source_url':SOURCE,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
 
-def compile_template(template,catalog,save_version):
+def _supported_definitions(game_identity):
+    """Return SWF definitions pinned to the exact supported binary and save schema."""
+    if not isinstance(game_identity,dict) or game_identity.get('supported') is not True:
+        return []
+    digest=game_identity.get('swf_sha256')
+    version=game_identity.get('save_version')
+    if not isinstance(digest,str) or len(digest)!=64 or not isinstance(version,int):
+        return []
+    try:
+        versions=json.loads((ROOT/'data'/'supported_game_versions.json').read_text(encoding='utf-8')).get('versions',[])
+    except (OSError,ValueError):
+        return []
+    matches=[item for item in versions if item.get('swf_sha256')==digest and item.get('save_version')==version]
+    return matches[0].get('definitions',[]) if len(matches)==1 else []
+
+
+def compile_template(template,catalog,save_version,game_identity=None):
     required=[];spells=[];unknown=[]
+    definitions=_supported_definitions(game_identity)
+    source_names={}
+    for name,identifier in catalog.get('names',{}).items():
+        if identifier in source_names:
+            source_names[identifier]=None
+        else:
+            source_names[identifier]=name.split(': ',1)[-1]
+    installed_names={}
+    for definition in definitions:
+        if definition.get('kind')=='upgrade':
+            installed_names.setdefault(definition.get('name'),[]).append(definition.get('id'))
     for token in [p.strip() for p in template.replace('\n','').split(',') if p.strip()]:
         if token.startswith('SP:'):
             identifier=catalog['spells'].get(token[3:].strip())
             if identifier is None:unknown.append(token)
             else:spells.append(identifier)
         else:
-            identifier=catalog['codes'].get(token)
-            if identifier is None:unknown.append(token)
-            else:required.append(identifier)
+            source_id=catalog.get('codes',{}).get(token)
+            name=source_names.get(source_id) if source_id is not None else None
+            candidates=installed_names.get(name,[]) if name else []
+            identity_version=game_identity.get('save_version') if isinstance(game_identity,dict) else None
+            if len(candidates)!=1 or identity_version!=save_version:
+                unknown.append(token)
+            else:
+                required.append(candidates[0])
     if len(required)!=len(set(required)):unknown.append('DUPLICATE_UPGRADE_SELECTION')
-    return {'verified':bool(required) and not unknown,'template':template,'save_version':save_version,
+    verified=bool(required) and not unknown and bool(definitions)
+    return {'verified':verified,'template':template,'save_version':save_version,
             'required_upgrade_ids':required,'merc_spells':spells,'unresolved_tokens':unknown,
             'sources':[catalog['source_url']],'source_sha256':catalog['sha256'],
-            'verification_scope':'Source identifier mapping; in-game ownership is checked separately'}
+            'swf_sha256':game_identity.get('swf_sha256') if verified else None,
+            'verification_scope':'Exact supported SWF definitions; in-game ownership is checked separately'}
 
-def rebuild_manifests(save_version):
+def rebuild_manifests(save_version,game_identity=None):
     from src.wiki_data import BUILDS_DATABASE
     reference=load_reference_ids();builds={}
     for rec in BUILDS_DATABASE.values():
-        manifest=compile_template(rec.get('template',''),reference,save_version)
+        manifest=compile_template(rec.get('template',''),reference,save_version,game_identity)
         faction=rec.get('faction','')
         if 'Neutral' in faction:manifest['alignment']=3
         elif faction in ('Fairy','Fairy/Dwarf','Angel','Elf'):manifest['alignment']=1

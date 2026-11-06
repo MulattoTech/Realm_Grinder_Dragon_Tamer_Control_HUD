@@ -61,7 +61,7 @@ def initialize(root=ROOT,game_dir=None,refresh_installed=False):
     save_version=identity['save_version']
     status=identity['support_status']
     from src.wiki_data import BUILDS_DATABASE
-    manifests={rec['name']:compile_template(rec.get('template',''),reference,save_version) for rec in BUILDS_DATABASE.values()}
+    manifests={rec['name']:compile_template(rec.get('template',''),reference,save_version,identity) for rec in BUILDS_DATABASE.values()}
     path=root/'state/build_manifests.json'
     if not path.exists() or verified:write_json(path,{'schema_version':2,'builds':manifests})
     path=root/'state/upgrade_catalog.json'

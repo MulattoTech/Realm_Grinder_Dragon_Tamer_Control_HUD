@@ -166,7 +166,7 @@ class RouteExecutor:
     def deploy_template(self,template):
         from src.build_catalog import compile_template,load_reference_ids
         state=self.actions.read()
-        manifest=compile_template(template,load_reference_ids(),state['raw_data']['saveVersion'])
+        manifest=compile_template(template,load_reference_ids(),state['raw_data']['saveVersion'],state.get('game_identity'))
         if not manifest['verified']:
             return {'success':False,'status':'BLOCKED','action':'UNKNOWN_TEMPLATE_TOKEN',
                     'message':'Unresolved template selections: '+', '.join(manifest['unresolved_tokens'])}
