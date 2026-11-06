@@ -30,7 +30,7 @@ def locate_icon(frame, icon_path, threshold=0.84, full_frame=False):
     sx, sy = width / _ICON_REFERENCE_SIZE[0], height / _ICON_REFERENCE_SIZE[1]
     scale = _viewport_scale(width, height)
     top, bottom = round(80 * sy), height - round(104 * sy)
-    left, right = round(86 * sx), min(round(519 * sx), width)
+    left, right = round(55 * sx), min(round(519 * sx), width)
     if full_frame:
         top, bottom = round(20 * sy), height - round(20 * sy)
         left, right = round(20 * sx), width - round(20 * sx)
