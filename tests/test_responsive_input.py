@@ -37,6 +37,27 @@ def test_icon_search_scales_viewport_and_template_together(monkeypatch, factor):
     assert abs(found["y"] - round(145 * factor)) <= 2
 
 
+def test_icon_search_handles_anisotropic_viewport_scaling(monkeypatch):
+    """Wide/tall client resizing must not average away the rendered icon scale."""
+    import cv2
+    from PIL import Image
+    import src.semantic_ui as ui
+
+    source = _synthetic_icon()
+    base_icon = cv2.resize(source, (60, 60))[8:-8, 8:-8]
+    sx, sy = 1433 / 976, 822 / 669
+    canvas = np.full((669, 976, 3), (18, 20, 26), dtype=np.uint8)
+    canvas[120 - 22:120 + 22, 180 - 22:180 + 22] = base_icon[:, :, ::-1]
+    frame = Image.fromarray(canvas).resize((1433, 822), Image.Resampling.NEAREST)
+    monkeypatch.setattr(ui.cv2, "imread", lambda *_args, **_kwargs: source.copy())
+
+    found = ui.locate_icon(frame, Path("synthetic-icon.png"), threshold=0.84)
+
+    assert found is not None
+    assert abs(found["x"] - round(180 * sx)) <= 3
+    assert abs(found["y"] - round(120 * sy)) <= 3
+
+
 def test_semantic_layout_accepts_compact_viewports_without_out_of_bounds_points():
     from src.semantic_ui import control_point
 

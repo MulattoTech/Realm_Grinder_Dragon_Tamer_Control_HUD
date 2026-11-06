@@ -29,7 +29,7 @@ def locate_icon(frame, icon_path, threshold=0.84, full_frame=False):
         return None
     sx, sy = width / _ICON_REFERENCE_SIZE[0], height / _ICON_REFERENCE_SIZE[1]
     scale = _viewport_scale(width, height)
-    top, bottom = round(110 * sy), height - round(104 * sy)
+    top, bottom = round(80 * sy), height - round(104 * sy)
     left, right = round(86 * sx), min(round(519 * sx), width)
     if full_frame:
         top, bottom = round(20 * sy), height - round(20 * sy)
@@ -44,24 +44,37 @@ def locate_icon(frame, icon_path, threshold=0.84, full_frame=False):
         alpha = icon[:, :, 3].astype(float) / 255
         icon = (icon[:, :, :3] * alpha[:, :, None] + 18 * (1-alpha[:, :, None])).astype(np.uint8)
     best = None
+    # The game can be stretched to a different aspect ratio. Keep candidate
+    # scales per axis so averaging viewport dimensions cannot oversize one axis.
+    scale_pairs = [(scale, scale), (1.0, 1.0), (sx, sy), (sy, sx),
+                   (min(sx, sy), min(sx, sy)), (max(sx, sy), max(sx, sy))]
+    seen_sizes = set()
     for base_size in (48, 50, 52, 54, 56):
-        size = max(16, round(base_size * scale))
-        template = cv2.resize(icon, (size, size))[7:-7, 7:-7]
-        if template.shape[0] > area.shape[0] or template.shape[1] > area.shape[1]:
-            continue
-        response = cv2.matchTemplate(area, template, cv2.TM_CCOEFF_NORMED)
-        _, score, _, point = cv2.minMaxLoc(response)
-        if not math.isfinite(score):
-            continue
-        center = (left + point[0] + template.shape[1]//2, top + point[1] + template.shape[0]//2)
-        suppressed = response.copy()
-        x, y = point
-        radius = max(8, round(24 * scale))
-        suppressed[max(0,y-radius):y+radius+1, max(0,x-radius):x+radius+1] = -1
-        if best is None or score > best['score']:
-            best = {'x': center[0], 'y': center[1], 'score': float(score),
-                    'margin': float(score-suppressed.max()), 'size': size,
-                    'client_size': (width, height)}
+        for scale_x, scale_y in scale_pairs:
+            size_x = max(16, round(base_size * scale_x))
+            size_y = max(16, round(base_size * scale_y))
+            if (size_x, size_y) in seen_sizes:
+                continue
+            seen_sizes.add((size_x, size_y))
+            resized = cv2.resize(icon, (size_x, size_y))
+            crop_x = max(1, round(7 * scale_x))
+            crop_y = max(1, round(7 * scale_y))
+            template = resized[crop_y:-crop_y, crop_x:-crop_x]
+            if template.shape[0] > area.shape[0] or template.shape[1] > area.shape[1]:
+                continue
+            response = cv2.matchTemplate(area, template, cv2.TM_CCOEFF_NORMED)
+            _, score, _, point = cv2.minMaxLoc(response)
+            if not math.isfinite(score):
+                continue
+            center = (left + point[0] + template.shape[1]//2, top + point[1] + template.shape[0]//2)
+            suppressed = response.copy()
+            x, y = point
+            radius = max(8, round(24 * max(scale_x, scale_y)))
+            suppressed[max(0,y-radius):y+radius+1, max(0,x-radius):x+radius+1] = -1
+            if best is None or score > best['score']:
+                best = {'x': center[0], 'y': center[1], 'score': float(score),
+                        'margin': float(score-suppressed.max()), 'size': (size_x, size_y),
+                        'client_size': (width, height)}
     if best is None or best['score'] < threshold or best['margin'] < 0.035:
         return None
     return best

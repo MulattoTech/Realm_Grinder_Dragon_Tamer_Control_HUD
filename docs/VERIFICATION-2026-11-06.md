@@ -31,3 +31,16 @@ The five skips are visual integration cases requiring private screenshots or ico
 ## Status
 
 This is a tested UI and test-isolation slice, not Dragon Tamer completion or a new release. Continue with supported live-action proof and the unresolved stat 81 and reset-review gates. Keep reset permissions off until the existing safety requirements are satisfied.
+
+## Viewport recognition follow-up
+
+Follow-up checked at 2026-11-06 12:22 UTC on `codex/live-viewport-scaling`, based on the then-current `origin/main` at `d538277c7e3e13afef28c234809e76c55ec71b66`.
+
+- Added an anisotropic viewport regression at 1433x822. It failed before the recognizer change because the search crop began below the target and the averaged scale missed its native rendered size.
+- Adjusted the icon search region and evaluated native, averaged, and per-axis template scales while retaining the existing confidence and uniqueness-margin gates.
+- Responsive-input suite: **14 passed**. Full `scripts/Verify-Repository.ps1`: **413 passed, 5 skipped**; the skips require private visual fixtures. Clean bootstrap reported **0 network requests** and **0 game input**.
+- Read-only matching against the saved live capture of the real out-of-focus 1433x822 client found Gem Power at `(180, 145)`, score `0.941`, uniqueness margin `0.312`. No click was sent. This proves frame capture and semantic target detection for the visible, non-minimized game window, not background click delivery or minimized operation.
+- The first AFK attempt had stopped at a failed target lookup. STOP was set and the bot remained paused; no purchase or reset was made. Resets and excavation remain disabled.
+- The original desktop shortcut still points to `C:\Tools\Dev\RealmGrinder\launcher.py`. This source change has not yet been installed, released, or used for a live purchase.
+
+Status remains PARTIAL: this patch repairs visual recognition, but purchase transition proof, game progression, trophy state, minimized support, and a new GitHub release are not established.
