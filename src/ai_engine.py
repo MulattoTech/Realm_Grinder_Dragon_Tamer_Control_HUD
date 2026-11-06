@@ -1,7 +1,6 @@
 """
-Skynet Omniscient AI Optimization Engine for Realm Grinder Dragon Tamer.
-Provides mathematical modeling, real-time derivative analysis, inflection-point detection,
-optimal build selection, and automated multi-reincarnation pathfinding to R46+.
+Local progression advice and measured production trends.
+Advice proposes actions; the transaction layer checks permissions and evidence.
 """
 
 import time
@@ -72,11 +71,9 @@ class GemVelocityTracker:
         }
 
 
-class SkynetOptimizationCore:
+class ProgressionAdvisor:
     """
-    Omniscient decision-making brain.
-    Evaluates live game metrics against mathematical optimization criteria to determine
-    the single most productive action at any given millisecond.
+    Deterministic advice from supported prerequisites and measured production.
     """
     def __init__(self):
         self.velocity_tracker = GemVelocityTracker()
@@ -85,7 +82,7 @@ class SkynetOptimizationCore:
 
     def evaluate(self, game_st: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Executes an omniscient evaluation of the current game state.
+        Evaluates the current game state without external model calls.
         Returns a prioritized strategic directive with detailed reasoning.
         """
         r = game_st.get("reincarnation", 0)
@@ -103,35 +100,34 @@ class SkynetOptimizationCore:
 
         # Required gems for Reincarnation
         from src.wiki_data import get_reincarnation_gem_requirement, get_recommended_build
-        req_gems = get_reincarnation_gem_requirement(r)
+        req_gems = get_reincarnation_gem_requirement(r,game_st.get('ascension',0))
 
         # Calculus velocity update
         v_metrics = self.velocity_tracker.record_sample(pot_gems, coins)
         velocity = v_metrics["velocity"]
         saturation = v_metrics["saturation"]
         elapsed = v_metrics["elapsed_seconds"]
-        ultron_burst = bool(cfg.get("ultron_burst", True))
 
         # Strategy Decision Tree
         decision = "COMPOUND_PRODUCTION"
         priority = 10
         reasoning = []
-        if ultron_burst:
-            reasoning.append("⚡ [UltronBurst Mode Active]")
         action_type = "IDLE"
-        payload = {"ultron_burst": ultron_burst}
+        payload = {}
 
-        # -------------------------------------------------------------
-        # 1. Gate 5: Dragon Tamer Claim (Final Stage)
-        # -------------------------------------------------------------
-        if has_egg and r >= 46:
-            # Check dragon stages
-            if "210" in game_st.get("raw_data", {}).get("trophies", {}):
-                decision = "DRAGON_TAMER_OWNED"
-                priority = 100
-                action_type = "OBSERVE_TROPHY"
-                reasoning.append("Dragon Tamer trophy is present in the save. Steam achievement status has not been independently checked.")
-                return self._package(decision, priority, action_type, reasoning, payload)
+        # Later stages use the same version-bound graph as action dispatch.
+        # The advisor must not invent a separate historical Dragon route.
+        if r >= 42:
+            from src.knowledge_service import KnowledgeService
+            plan = KnowledgeService().plan_target('Dragon Tamer', game_st)
+            step = plan.get('next_action') or {}
+            if plan['complete']:
+                return self._package('DRAGON_TAMER_OWNED',100,'OBSERVE_TROPHY',
+                    ['Dragon Tamer trophy is present in the supported save. Steam achievement status is unverified.'],{'plan':plan})
+            ready = step.get('action') in ('purchase_dragon_stage','reach_reincarnation','excavate','excavate_for_egg','collect_coins')
+            return self._package('PROGRESS_DRAGON_GOAL' if ready else 'WAIT_FOR_EVIDENCE',80,
+                'FOLLOW_GOAL_PLAN' if ready else 'WAIT_FOR_EVIDENCE',
+                [f"Next milestone: {step.get('target','Unknown')}; {step.get('status','UNKNOWN')}. Action: {step.get('action','none')}."],{'plan':plan})
 
         # -------------------------------------------------------------
         # 2. Gate 0: Reincarnation Ready Check (Top Priority in R24-R45)
@@ -169,25 +165,10 @@ class SkynetOptimizationCore:
                 priority = 70
                 action_type = "EXECUTE_ABDICATION"
                 reasoning.append(
-                    f"Mathematical inflection point reached: +{pot_gems:.2e} gems "
+                    f"Configured gem-gain threshold reached: +{pot_gems:.2e} gems "
                     f"({gem_multiplier:.1f}x gain). Velocity saturation: {saturation*100:.1f}%."
                 )
                 return self._package(decision, priority, action_type, reasoning, {"gems_to_claim": pot_gems})
-
-        # -------------------------------------------------------------
-        # 4. Gate 1: R46 Spiky Rough Egg Hunting
-        # -------------------------------------------------------------
-        if r >= 46 and not has_egg:
-            decision = "EXCAVATE_FOR_EGG"
-            priority = 80
-            action_type = "EXECUTE_EXCAVATION"
-            rem = max(0, 1500 - excavations)
-            if rem > 0:
-                reasoning.append(f"Excavating to 1,500 milestone ({rem} remaining to unlock Egg drops).")
-            else:
-                p_drop = 0.02  # Documented eligible-egg chance; not a seed prediction.
-                reasoning.append(f"Digging for Spiky Rough Egg artifact. Current drop probability per dig: ~{p_drop*100:.3f}%.")
-            return self._package(decision, priority, action_type, reasoning, payload)
 
         # -------------------------------------------------------------
         # 5. Routine High-Speed Production Routine

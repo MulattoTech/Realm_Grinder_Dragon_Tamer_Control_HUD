@@ -20,8 +20,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "auto_reincarnate": False,
     "auto_excavate": False,
     "cycle_delay_sec": 5.0,
-    "abdicate_multiplier_threshold": 50.0,
-    "ultron_burst": True
+    "abdicate_multiplier_threshold": 50.0
 }
 
 _OPTIONAL_BOOLEAN_DEFAULTS = {
@@ -49,6 +48,7 @@ def load_config() -> Dict[str, Any]:
     for key, default in _OPTIONAL_BOOLEAN_DEFAULTS.items():
         if key in cfg and type(cfg[key]) is not bool:
             cfg[key] = default
+    cfg.pop('ultron_burst',None)  # Retired cosmetic setting in older local configurations.
     return cfg
 
 

@@ -9,10 +9,14 @@ def test_egg_forecast_requires_reincarnation_not_just_excavations():
 
 
 def test_egg_forecast_uses_documented_fixed_probability():
-    result=MonteCarloArtifactForecaster.calculate_egg_probabilities(1500,current_r=46)
+    result=MonteCarloArtifactForecaster.calculate_egg_probabilities(1500,current_r=42)
     assert result['is_eligible'] and result['current_dig_drop_chance']==pytest.approx(.02)
     assert result['p50_digs_needed']==35 and result['p90_digs_needed']==114 and result['p99_digs_needed']==228
     assert result['assumption'] and result['source_url']
+
+
+def test_egg_forecast_boundary_rejects_r41():
+    assert not MonteCarloArtifactForecaster.calculate_egg_probabilities(1500,current_r=41)['is_eligible']
 
 
 def test_omitted_reincarnation_does_not_claim_eligibility():

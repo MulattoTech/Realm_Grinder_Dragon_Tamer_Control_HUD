@@ -92,7 +92,11 @@ class RouteExecutor:
     def collect(self,step=None):
         if not input_allowed(self.actions.window):
             return {'success':False,'status':'BLOCKED','action':'PAUSED','message':'Setup is paused or the game window/session is not eligible'}
-        before=self.actions.read();ui=SemanticUI(self.actions.window,lambda:not input_allowed(self.actions.window))
+        before=self.actions.read()
+        if before.get('telemetry',{}).get('consequential_actions_allowed') is not True:
+            return {'success':False,'status':'BLOCKED','action':'OBSERVATION_UNTRUSTED',
+                    'message':'Waiting for a fresh save from the supported running game; no input sent'}
+        ui=SemanticUI(self.actions.window,lambda:not input_allowed(self.actions.window))
         from src.config import load_config
         config=load_config()
         with ActionLock(self.actions.state_dir):

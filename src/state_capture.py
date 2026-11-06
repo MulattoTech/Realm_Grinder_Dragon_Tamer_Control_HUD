@@ -126,7 +126,7 @@ class StateCaptureEngine:
             backup_path = f"FAILED: {e}"
 
         # 5. Progression & Bottleneck Calculations
-        req_gems = get_reincarnation_gem_requirement(r)
+        req_gems = get_reincarnation_gem_requirement(r,game_st.get('ascension',0))
         pot_gems = math.floor((math.sqrt(1.0 + 8.0 * (coins_this_game / 1e12)) - 1.0) / 2.0) if coins_this_game > 0 else 0.0
 
         stage_timestamps = {}
@@ -145,7 +145,8 @@ class StateCaptureEngine:
             gems,
             coins,
             stage_timestamps,
-            hellfire
+            hellfire,
+            ascension=game_st.get('ascension',0)
         )
 
         rec_build = get_recommended_build(r, gems)

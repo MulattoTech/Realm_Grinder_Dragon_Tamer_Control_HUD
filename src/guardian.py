@@ -1,5 +1,5 @@
 """
-Skynet Process Resiliency & Self-Healing Guardian.
+Game process health and optional restart support.
 Observes process/save health and supports guarded, opt-in recovery:
 - Automatic crash detection and silent Steam re-launch into iconic minimized state
 - Save readability validation and content hashing (no save rewriting or automatic rollback)

@@ -36,7 +36,7 @@ from src.config import CONFIG_FILE, load_config
 from src.save_reader import SOL_PATH
 from src.idle_scheduler import IdleScheduler
 from src.telemetry import ProgressionTracker
-from src.ai_engine import SkynetOptimizationCore
+from src.ai_engine import ProgressionAdvisor
 from src.guardian import ProcessGuardian
 from src.forecaster import MilestoneForecaster, MonteCarloArtifactForecaster
 from src.wiki_data import (
@@ -68,7 +68,7 @@ logging.basicConfig(
 class DragonBot:
     def __init__(self):
         self.window = RealmGrinderWindow()
-        self.ai = SkynetOptimizationCore()
+        self.ai = ProgressionAdvisor()
         self.guardian = ProcessGuardian()
         self.state = self.load_state()
         self.tracker = ProgressionTracker()
@@ -285,9 +285,10 @@ class DragonBot:
         selected_goal=cfg.get('selected_goal','Dragon Tamer')
         reached=(selected_goal=='Next reincarnation' and game_st['reincarnation']>=cfg.get('goal_target_r',game_st['reincarnation']+1))
         reached=reached or (selected_goal=='Build only' and self.state['build_verification']['build_verified'])
-        if selected_goal=='Named goal':
+        if selected_goal in ('Named goal','Dragon Tamer'):
             from src.knowledge_service import KnowledgeService
-            target_plan=KnowledgeService(state_dir=self.actions.state_dir).plan_target(cfg.get('named_goal','Dragon Tamer'),game_st)
+            target=cfg.get('named_goal','Dragon Tamer') if selected_goal=='Named goal' else 'Dragon Tamer'
+            target_plan=KnowledgeService(state_dir=self.actions.state_dir).plan_target(target,game_st)
             self.state['named_goal_plan']=target_plan
             reached=reached or target_plan['complete']
         if reached:

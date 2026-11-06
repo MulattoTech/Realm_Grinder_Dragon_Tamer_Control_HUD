@@ -69,7 +69,7 @@ class ProgressionTracker:
         self.history.append(entry);self.history=self.history[-self.max_history:]
         self.save_history()
 
-    def calculate_etas(self,current_r,current_gems,current_coins,stage_timestamps,hellfire_time=0,*,reload_history=False):
+    def calculate_etas(self,current_r,current_gems,current_coins,stage_timestamps,hellfire_time=0,*,reload_history=False,ascension=0):
         from src.measured_eta import estimate_target
         from src.wiki_data import get_reincarnation_gem_requirement
         from src.config import load_config
@@ -77,7 +77,7 @@ class ProgressionTracker:
         rows=[{'time':row['time'],'value':row.get('potential_gems',0),'run':row.get('run')}
               for row in self.history if row.get('r')==current_r and row.get('gems')==current_gems and row.get('run') is not None]
         paused=load_config().get('paused',True) or os.path.exists(os.path.join(os.path.dirname(TELEMETRY_FILE),'STOP'))
-        estimate=estimate_target(rows,get_reincarnation_gem_requirement(current_r),paused=paused)
+        estimate=estimate_target(rows,get_reincarnation_gem_requirement(current_r,ascension),paused=paused)
         seconds=estimate['seconds']
         unknown='Not established'
         return {'current_r_eta':self._format_duration(seconds) if seconds is not None else estimate['status'].replace('_',' ').title(),
@@ -86,8 +86,8 @@ class ProgressionTracker:
                 'hatch_eta':'Requires verified incubation start','drakeling_eta':'Requires measured post-Hatch activity',
                 'dragon_eta':'Requires verified previous stage and assistants','elder_dragon_eta':'Requires verified previous stage and maximum mana',
                 'total_eta':unknown,'total_eta_seconds':None,'target_completion_date':None,
-                'r_progress_pct':min(100,100*current_gems/get_reincarnation_gem_requirement(current_r)),
-                'remaining_r_count':max(0,46-current_r)}
+                'r_progress_pct':min(100,100*current_gems/get_reincarnation_gem_requirement(current_r,ascension)),
+                'remaining_r_count':max(0,48-current_r)}
 
     @staticmethod
     def _format_duration(seconds: float) -> str:

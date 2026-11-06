@@ -14,6 +14,29 @@ STATE_DIR = Path(__file__).resolve().parents[1]/'state'
 UNKNOWN_FIELDS = {'mana_max', 'mana_regeneration', 'assistants_total', 'assistants_current',
                   'fairy_assistants', 'hellfire_since_hatch'}
 
+def dragon_quest_counter(state):
+    """Read the exact 4.3.22 purchase predicate, without inferring timer history.
+
+    Installed Game.getFullStat (method 1706) sums statistic 81 across the three
+    buckets serialized by Game.save (1342). Stage purchases reset those buckets.
+    This value is a counter, not proof of when an egg was acquired or what
+    gameplay advances it. Other binaries require a separately reviewed mapping.
+    """
+    identity = state.get('game_identity', {})
+    if (identity.get('supported') is not True or identity.get('swf_sha256') !=
+            '7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b' or
+            state.get('raw_data', {}).get('saveVersion') != 58):
+        return None
+    stats = state['raw_data'].get('stats')
+    if not isinstance(stats, list) or len(stats) <= 81 or not isinstance(stats[81], dict):
+        return None
+    values = [stats[81].get(key) for key in ('stats', 'statsReset', 'statsRei')]
+    if any(isinstance(value, bool) or not isinstance(value, (int, float)) or
+           not math.isfinite(value) or value < 0 for value in values):
+        return None
+    total = sum(values)
+    return total if math.isfinite(total) else None
+
 class LiveStateProvider:
     def __init__(self, save_reader=get_current_game_state, memory=None, state_dir=STATE_DIR,
                  max_save_age=90.0, max_memory_age=2.0, identity_reader=None):
@@ -51,6 +74,7 @@ class LiveStateProvider:
                 saved = copy.deepcopy(self._last_good)
             state = copy.deepcopy(saved)
             state['game_identity'] = self.identity_reader()
+            state['dragon_quest_counter'] = dragon_quest_counter(state)
             timestamp = saved.get('save_timestamp', now-saved.get('save_age_seconds', 0))
             age = max(0.0, now-timestamp)
             save_healthy = save_error is None and age <= self.max_save_age
@@ -67,6 +91,8 @@ class LiveStateProvider:
                     confidence, validation = 'LOW', 'ambiguous_legacy_stat_not_assistants_evidence'
                 elif name in ('potential_gems', 'gems_gain'):
                     source, validation = 'DERIVED', 'save_coins_this_game_formula'
+                elif name == 'dragon_quest_counter':
+                    source, validation = 'DERIVED', 'installed_getFullStat_81'
                 provenance[name] = {'value': value, 'source': source, 'timestamp': timestamp,
                     'age_ms': round(age*1000, 3), 'confidence': confidence, 'validation_source': validation}
             try:

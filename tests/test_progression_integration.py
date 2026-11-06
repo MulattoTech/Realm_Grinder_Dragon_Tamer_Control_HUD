@@ -186,9 +186,9 @@ def test_owned_named_goal_is_verified_without_input(tmp_path):
 
 
 def test_large_current_mana_cannot_create_a_dragon_tamer_directive():
-    from src.ai_engine import SkynetOptimizationCore
+    from src.ai_engine import ProgressionAdvisor
     s={'reincarnation':46,'gems':1e90,'coins':1e200,'mana':999999,'mana_max':None,'has_egg':True,'raw_data':{'trophies':{}}}
-    result=SkynetOptimizationCore().evaluate(s,{})
+    result=ProgressionAdvisor().evaluate(s,{})
     assert result['decision']!='CLAIM_DRAGON_TAMER'
 
 
@@ -205,11 +205,14 @@ def test_launcher_prepares_a_fresh_checkout_before_opening_hud():
     assert any(isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id=='initialize' for n in ast.walk(node))
 
 
-def test_auto_clear_does_not_excavate_when_config_disables_it(monkeypatch):
+def test_auto_clear_does_not_excavate_when_config_disables_it(monkeypatch,tmp_path):
     import src.config as config
     from src.progression_actions import ProgressionActions
     monkeypatch.setattr(config,'load_config',lambda:{'selected_goal':'Dragon Tamer','auto_excavate':False})
     actions=ProgressionActions.__new__(ProgressionActions)
+    actions.state_dir=tmp_path
+    actions._knowledge=SimpleNamespace(plan_target=lambda *args:{'complete':False,
+        'next_action':{'action':'excavate_for_egg'}})
     actions.read=lambda:{'reincarnation':46,'has_egg':False}
     actions.catalog=lambda:{}
     calls=[]

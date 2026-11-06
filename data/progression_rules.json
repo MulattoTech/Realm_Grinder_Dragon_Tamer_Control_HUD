@@ -941,8 +941,8 @@
         "id": 605
       },
       "dependencies": [
-        "Reach R44",
-        "Hatch!"
+        "Hatch!",
+        "Reach R44"
       ],
       "conditions": [
         {
@@ -993,8 +993,8 @@
         "id": 606
       },
       "dependencies": [
-        "Reach R46",
-        "Drakeling"
+        "Drakeling",
+        "Reach R46"
       ],
       "conditions": [
         {
@@ -1013,7 +1013,7 @@
           "value": 0
         },
         {
-          "field": "assistants_num",
+          "field": "assistants_current",
           "op": "gte",
           "value": 5000
         }
@@ -1055,8 +1055,8 @@
         "id": 607
       },
       "dependencies": [
-        "Reach R48",
-        "Dragon"
+        "Dragon",
+        "Reach R48"
       ],
       "conditions": [
         {

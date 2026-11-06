@@ -54,3 +54,23 @@ def test_unknown_binary_or_save_schema_blocks_actions(tmp_path, supported, schem
     provider = LiveStateProvider(lambda: saved, NoMemory(), tmp_path,
                                  identity_reader=lambda: identity)
     assert provider.get()['telemetry']['consequential_actions_allowed'] is False
+
+
+@pytest.mark.parametrize('digest,record,expected', [
+    ('7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b',
+     {'stats': 120, 'statsReset': 6000, 'statsRei': 2000}, 8120),
+    ('a'*64, {'stats': 99999, 'statsReset': 0, 'statsRei': 0}, None),
+    ('7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b',
+     {'stats': 99999}, None),
+    ('7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b',
+     {'stats': float('nan'), 'statsReset': 0, 'statsRei': 0}, None),
+])
+def test_dragon_counter_reads_exact_installed_condition(tmp_path, digest, record, expected):
+    identity = {'supported': True, 'swf_sha256': digest, 'save_version': 58}
+    saved = {'reincarnation': 24, 'save_timestamp': time.time(),
+             'save_fingerprint': 'snapshot', 'raw_data': {'saveVersion': 58, 'stats': [{}]*81+[record]}}
+    result = LiveStateProvider(lambda: saved, NoMemory(), tmp_path,
+                               identity_reader=lambda: identity).get()
+    assert result.get('dragon_quest_counter') == expected
+    if expected is not None:
+        assert result['provenance']['dragon_quest_counter']['validation_source'] == 'installed_getFullStat_81'

@@ -21,12 +21,17 @@ def blocked(message,action='BLOCKED'):
     return {'success':False,'action':action,'status':'BLOCKED','message':message}
 
 def actual_dragon_stage(state,catalog):
-    if state['reincarnation'] < 46: return 'REACH_R46'
-    if not state['has_egg']: return 'ACQUIRE_EGG'
+    from src.knowledge_service import KnowledgeService
+    plan=KnowledgeService().plan_target('Dragon Tamer',state)
+    if plan['steps'][-1]['status']=='UNSUPPORTED_GAME_VERSION':return 'UNVERIFIED_GAME_VERSION'
     if milestone_owned(state,'dragon_tamer',catalog) is True: return 'COMPLETED'
+    if state['reincarnation'] < 42: return 'REACH_R42'
+    if not state['has_egg']: return 'ACQUIRE_EGG'
     for name,stage in [('hatch','STAGE1_HATCH'),('drakeling','STAGE2_DRAKELING'),
                        ('dragon','STAGE3_DRAGON'),('elder_dragon','STAGE4_ELDER_DRAGON')]:
-        if milestone_owned(state,name,catalog) is not True: return stage
+        if milestone_owned(state,name,catalog) is not True:
+            required={'hatch':42,'drakeling':44,'dragon':46,'elder_dragon':48}[name]
+            return f'REACH_R{required}' if state['reincarnation']<required else stage
     return 'VERIFY_TROPHY'
 
 class ProgressionActions:
@@ -140,7 +145,7 @@ class ProgressionActions:
             write_json(self.state_dir/'permanent_milestone_audit.json',audit)
             profile=self.load('ui_actions.json')
             profile_reincarnations=profile.get('reincarnations',[])
-            return (state['gems']>=get_reincarnation_gem_requirement(state['reincarnation']) and
+            return (state['gems']>=get_reincarnation_gem_requirement(state['reincarnation'],state.get('ascension',0)) and
                     state['reincarnation'] in profile_reincarnations and
                     audit_matches_current(audit,state,checklist))
         return self._transaction('REINCARNATED','reincarnation',ready,reincarnation_verified)
@@ -166,8 +171,8 @@ class ProgressionActions:
         state=self.read()
         if state['has_egg']:
             return {'success':True,'status':'VERIFIED','action':'EGG_OBTAINED','message':'Spiky Rough Egg is present in the decoded save'}
-        if state['reincarnation']<46: return blocked('Dragon egg excavation requires the Dragon unlock stage','REQUIRES_R46')
-        result=self._transaction('EXCAVATED','excavate',lambda s:s['reincarnation']>=46,
+        if state['reincarnation']<42: return blocked('Dragon egg excavation requires R42 in the supported game','REQUIRES_R42')
+        result=self._transaction('EXCAVATED','excavate',lambda s:s['reincarnation']>=42,
             lambda before,after:fresh_transition(before,after) and
             (after['has_egg'] or after['excavations']>before['excavations']))
         if result['success'] and self.read()['has_egg']: result['action']='EGG_OBTAINED'
@@ -199,15 +204,18 @@ class ProgressionActions:
         if not build['build_verified']:return blocked('; '.join(build.get('missing',[])),'BUILD_UNVERIFIED')
         return self.route.collect()
 
-    def advance_reincarnation(self,decision=None):
+    def advance_reincarnation(self,decision=None,target_r=46):
         state=self.read()
-        if state['reincarnation']>=46:
-            return {'success':True,'status':'VERIFIED','action':'R46_REACHED','message':'R46 or later is present in the save'}
+        if isinstance(target_r,bool) or not isinstance(target_r,int) or not 1<=target_r<=48:
+            return blocked('Requested reincarnation is outside the reviewed progression range','UNSUPPORTED_TARGET')
+        if state['reincarnation']>=target_r:
+            return {'success':True,'status':'VERIFIED','action':f'R{target_r}_REACHED',
+                    'message':f'R{target_r} or later is present in the save'}
         from src.config import load_config
         cfg=load_config()
-        if state['gems']>=get_reincarnation_gem_requirement(state['reincarnation']) and cfg.get('auto_reincarnate',True):
+        if state['gems']>=get_reincarnation_gem_requirement(state['reincarnation'],state.get('ascension',0)) and cfg.get('auto_reincarnate',False):
             return self.reincarnate()
-        if cfg.get('auto_abdicate',True) and (decision in ('ABDICATE_FOR_REINCARNATION','OPTIMAL_ABDICATION') or
+        if cfg.get('auto_abdicate',False) and (decision in ('ABDICATE_FOR_REINCARNATION','OPTIMAL_ABDICATION') or
                                             state['potential_gems']>=state['gems']*2):
             return self.abdicate()
         if not self.diagnose_build(state)['build_verified'] and cfg.get('auto_apply_build',True):
@@ -225,11 +233,14 @@ class ProgressionActions:
                     'message':plan['goal']+' is owned in the decoded save'}
         step=plan['next_action'];kind=step.get('action')
         if kind=='purchase_named':return self.route.purchase_named(step)
-        if kind in ('collect_coins','collect_resource'):return self.route.collect()
-        if kind=='reach_reincarnation':return self.advance_reincarnation()
+        if kind=='collect_coins':return self.route.collect()
+        if kind=='collect_resource':
+            return dict(blocked(f"{step.get('target',target)}: no verified acquisition strategy for {step.get('field','unknown resource')}",
+                                'RESOURCE_STRATEGY_REQUIRED'),requirements=step)
+        if kind=='reach_reincarnation':return self.advance_reincarnation(target_r=step.get('target_r'))
         if kind in ('excavate','excavate_for_egg'):
             from src.config import load_config
-            if not load_config().get('auto_excavate',True):return blocked('Excavation is disabled by configuration')
+            if not load_config().get('auto_excavate',False):return blocked('Excavation is disabled by configuration')
             return self.excavate()
         if kind=='purchase_dragon_stage':
             stage={'Hatch!':'hatch','Drakeling':'drakeling','Dragon':'dragon','Elder Dragon':'elder_dragon'}[step['target']]
@@ -241,15 +252,10 @@ class ProgressionActions:
         config=load_config()
         if config.get('selected_goal')=='Named goal':
             return self.execute_named_goal(config.get('named_goal','Dragon Tamer'))
-        stage=actual_dragon_stage(self.read(),self.catalog())
-        if stage=='REACH_R46': return self.advance_reincarnation(decision)
-        if stage=='ACQUIRE_EGG':
-            if not config.get('auto_excavate',True):
-                return blocked('Excavation is disabled by configuration','AUTO_EXCAVATE_DISABLED')
-            return self.excavate()
-        names={'STAGE1_HATCH':'hatch','STAGE2_DRAKELING':'drakeling','STAGE3_DRAGON':'dragon','STAGE4_ELDER_DRAGON':'elder_dragon'}
-        if stage in names: return self.purchase_milestone(names[stage])
-        if stage=='COMPLETED':
-            return {'success':True,'status':'VERIFIED','action':'DRAGON_TAMER_OWNED',
-                    'message':'Dragon Tamer trophy is present in the save; Steam achievement is not independently verified'}
-        return blocked('Elder ownership and Dragon Tamer trophy must be verified separately','VERIFY_TROPHY')
+        if config.get('selected_goal')=='Build only':
+            return self.setup_build()
+        if config.get('selected_goal')=='Next reincarnation':
+            return self.advance_reincarnation(decision,target_r=config.get('goal_target_r',self.read()['reincarnation']+1))
+        if config.get('selected_goal','Dragon Tamer')=='Dragon Tamer':
+            return self.execute_named_goal('Dragon Tamer')
+        return blocked('Select a supported goal before starting automation','UNKNOWN_GOAL')

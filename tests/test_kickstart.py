@@ -124,6 +124,18 @@ def test_collect_paused_returns_blocked(tmp_path):
     assert result['status'] == 'BLOCKED'
 
 
+def test_collect_rejects_untrusted_observation_before_sending_input(tmp_path):
+    state = fresh_post_reset_state()
+    state['telemetry']['consequential_actions_allowed'] = False
+    actions = _MockActions(state, tmp_path)
+    with patch('src.route_executor.input_allowed', return_value=True), \
+         patch('src.route_executor.SemanticUI') as ui:
+        result = route_module.RouteExecutor(actions).collect()
+    assert result['status'] == 'BLOCKED'
+    ui.assert_not_called()
+    actions.window.press_key.assert_not_called()
+
+
 # ---------------------------------------------------------------------------
 # DragonBot.kickstart_new_run() delegation tests
 # ---------------------------------------------------------------------------

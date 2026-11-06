@@ -115,7 +115,7 @@ def test_elder_dragon_at_r46_routes_to_r48():
     "goal,reincarnation,owned_upgrades,target_r,extra",
     [
         ("Drakeling", 43, (604,), 44, {}),
-        ("Dragon", 45, (604, 605), 46, {"faction": 0, "assistants_num": 5000}),
+        ("Dragon", 45, (604, 605), 46, {"faction": 0, "assistants_current": 5000}),
     ],
 )
 def test_dragon_stage_r_boundaries_route_to_the_next_reincarnation(goal, reincarnation, owned_upgrades, target_r, extra):
@@ -146,7 +146,7 @@ def test_dragon_and_elder_thresholds_and_unknown_costs_are_explicit_in_data():
     assert {condition["field"]: condition["value"] for condition in dragon["conditions"]} == {
         "reincarnation": 46,
         "faction": 0,
-        "assistants_num": 5000,
+        "assistants_current": 5000,
         "dragon_quest_counter": 7200,
     }
     elder = indexed["Elder Dragon"]
