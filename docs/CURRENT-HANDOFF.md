@@ -1,83 +1,35 @@
-# Current handoff - repository-first baseline
+# Current handoff
 
-Date: 2026-09-26
+Date: 2026-11-06
 
-## Canonical source
-GitHub repository: `MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD`.
+## Current source and release state
 
-The repository is now the source of truth. The old local folder is only a checkout. Any future machine should be able to start from a GitHub release or a fresh clone and reconstruct the development environment without copying local runtime state.
+Canonical repository: `MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD` (public). This handoff describes the `codex/realm-completion` development branch at `689d6851884d67e40d1b3476360b56377ad1cf82`. It is a verified development prerelease candidate, not an end-to-end Dragon Tamer release. `VERSION` is `0.1.0-alpha.2`.
 
-## Reconciliation result
-- Original remote `main` and the local committed HEAD both pointed to `b628761`.
-- The local working tree contained substantial uncommitted Sep. 24 work: reset/modal recognition, runtime safety changes, route/progression changes, tests, seven calibration anchors, and verification notes.
-- That exact pre-reconciliation state was preserved on GitHub first as branch `reconcile/local-wip-2026-09-26`, commit `8189d4b`.
-- Clean-checkout reset tests originally depended on an ignored generated icon registry. Commit `5107942` fixes that dependency without weakening named-icon checks.
+The original desktop shortcut still targets `C:\Tools\Dev\RealmGrinder\launcher.py`. This branch has not yet been promoted to `main`, pushed, or installed into that path. The shortcut itself does not need to change when the installation is updated in place.
 
-## Verification state
-On the fully provisioned local checkout: **293 tests pass** (up from 262).
-From a committed source-only archive (verify_checkout.py): **257 tests pass** and 5 visual integration tests skip with explicit missing-private-fixture reasons.
-`Verify-Repository.ps1` passes at commit `785d7a3`.
+## Implemented and locally verified
 
-No source-only checkout requires a save, runtime log, screenshot collection, or generated icon cache to pass its portable test set.
+- Existing Tk/Win32 HUD retained. The UI reports the selected objective, planner-derived Dragon milestones, blockers, and live/persisted STOP state in plain language. Ultron/Skynet mode branding and the cosmetic Ultron configuration option are removed.
+- Dragon planning is bound to installed Realm Grinder 4.3.22 SWF SHA-256 `7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b` and save schema 58. Static facts cover Egg eligibility at R42 and 1,500 excavations, stage reincarnations R42/R44/R46/R48, and the stat 81 purchase threshold. The gameplay counter updater and its advancement semantics are unknown; stage readiness remains blocked until its save evidence satisfies the planner.
+- Unknown or mismatched game identity/schema, stale save observations, missing purchase proof, unreviewed reset coverage, and uncertain action records fail closed. Reset, abdication, and excavation settings default off.
+- Ordinary observations do not scan the process heap. Save decoding and its fingerprint use the same byte snapshot. The HUD observation cache avoids blocking UI refreshes, and idle scheduling backs off when waiting or paused.
+- Semantic visual matching scales with the visible client viewport. A target click is bound to the recognized frame dimensions and is rejected if the client is resized or minimized before dispatch. Minimized/background input is not claimed as working.
+- Installer checks native command exit codes; clean source verification is pinned to Python 3.12; release archives are built atomically from committed Git content only.
 
-## Current branch
-`feat/autonomous-goal-pipeline` — pushed to GitHub. PR available at:
-https://github.com/MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD/pull/new/feat/autonomous-goal-pipeline
+## Verification on this branch
 
-## Product state
-The existing Gemini-built Control HUD remains the product UI. Improvements made in this session:
+`scripts/Verify-Repository.ps1 -AllowDirty` completed on commit `689d6851884d67e40d1b3476360b56377ad1cf82`: compile passed, installed-checkout suite **412 passed, 5 skipped**, and source-only archive suite **412 passed, 5 skipped**. The five skips require private visual screenshots/icons omitted from a clean checkout. Responsive visual matching was separately exercised against the ignored GemPower fixture at 976x669, 781x535, and 1171x803; all returned the proportionally scaled expected center. This was image matching only, not a live click/purchase test.
 
-### Task 1 — Volatile Field Visuals in HUD ✅
-- Added `mana_bar()` helper in `telemetry_presenter.py` that extracts live memory fields
-  (mana_current, mana_max, mana_regeneration, fill_pct, source badge) from state.
-- Updated `telemetry_banner()` to include regen rate.
-- Added live mana bar row to HUD header: `[MEM]`/`[SAV]` badge (cyan-glow when live
-  process memory active), mana progress bar (fill% = current/max), Mana/Regen label.
-- 250ms `update_mana_bar()` Tkinter `after()` loop (non-blocking, no thread deadlocks).
-- Saturating mana (≥95% or ≤50 headroom) turns mana label amber.
+The installed game was observed read-only at R24 with roughly `6.83e72` gems versus the 4.3.22 A0 R25 threshold `1e99`. No live input was sent, and no reset, purchase, Egg, Dragon stage, or achievement was verified. The available live state therefore cannot demonstrate the irreversible or later-stage flows. Windows actions require a visible game window and live semantic recognition; minimized input remains unsupported.
 
-### Task 2 — "⚡ Automate Straight to Goal" 1-Click Button ✅
-- Prominent gold-accent button at top of Quest tab in the HUD.
-- `action_automate_straight_to_goal()`:
-  - Calls `require_interactive_session()` — blocked if not on interactive desktop.
-  - Sets game window to `SW_SHOWNOACTIVATE` (no focus theft, no window restoration).
-  - Reads selected goal from config (Dragon Tamer / Named goal / etc.).
-  - Removes STOP file and sets `paused=False` via `save_config()`.
-  - Updates HUD status label with active objective and running state.
-  - One worker owner (WorkerLease preserved; no competing loops created).
+## Local installation safety checkpoint
 
-### Task 5 — Closed-Loop Volatile Saturation Spell Autocasting ✅
-- `spell_policy.py` now uses `mana_max` and `mana_regeneration` from live AVM2 memory.
-- Detects saturation: `headroom ≤ 50` OR `mana_current / mana_max ≥ 0.95`.
-- When saturating: aggressively schedules Tax Collection (spell 18) bursts to consume
-  saturated headroom and avoid wasting regen; burst count = `headroom // 200 + 1`.
-- Returns `headroom`, `mana_saturation_pct`, `saturating` keys for HUD/logging.
-- Non-saturating fallback: sparse Tax Collections (max 3) only if inactive priority spells remain.
-- Budget never exceeds `mana_current` regardless of saturation state.
+Before any updated HUD launch, `state/bot_config.json` at the original installation was copied to ignored `state/bot_config.before-safe-pause-20261106-053315.json`, then set to `paused=true`, `auto_abdicate=false`, `auto_reincarnate=false`, `auto_excavate=false`; `state/STOP` was created. No Realm Grinder helper process was running at that check. The live save and game process were not changed.
 
-### Task 6 — Test Suite Expansion ✅
-- `tests/test_spell_policy.py`: +8 saturation tests (threshold detection, Tax dump,
-  budget cap, unknown max passthrough, result key contract).
-- `tests/test_telemetry_presenter.py`: +8 mana_bar tests (fill computation, 100% cap,
-  MEM/SAVE badge, regen formatting, banner inclusion).
-- `tests/test_autonomous_goal.py` (new): HUD button STOP/unpause, session blocking,
-  volatile saturation integration, mana_bar presenter tests.
-- `tests/test_kickstart.py` (new): `collect()` kickstart dispatch, alignment guard,
-  pause blocking, DragonBot AST delegation checks, route planner post-reset scenarios.
+## Next actions
 
-## Still not certified end-to-end
-- Autonomous R24 → R46 progression (Tasks 3 & 4 from the directive are architecturally
-  wired but require live game calibration; the existing RouteExecutor/ProgressionActions
-  path is the implementation — no new competing loops were added).
-- Safe reincarnation confirmation and same-R permanent-milestone audit.
-- Robust version-specific post-R40 strategy.
-- Complete Dragon-stage execution and final Steam achievement confirmation.
-- Fully proven minimized/background interaction for every action.
-
-## Repository workflow
-Run `Install.ps1 -Dev` on a fresh checkout, then `scripts/Verify-Repository.ps1`.
-Build a release artifact from clean committed HEAD with `scripts/Build-Release.ps1`.
-Until GitHub workflow permission is authorized, release publication is manual via GitHub CLI/API.
-
-Historical runtime notes were moved to `docs/archive/CURRENT-HANDOFF-2026-09-24.md`.
-Read `docs/CLAUDE-HANDOFF.md` and `docs/AUTOPILOT-TARGET-ARCHITECTURE.md` before the next major implementation pass.
+1. Promote this tested branch to `main` only after a final remote reconciliation; push the verified commits and build a source-only prerelease artifact from committed `main`.
+2. Update the original installation in place while preserving its ignored runtime state and the pause checkpoint; the existing desktop shortcut remains valid.
+3. Launch the existing HUD paused and verify the new status and STOP presentation without game input.
+4. Keep actual progression marked partial until the counter updater, reset review/calibration, purchases, and trophy outcome are evidenced. Do not bypass reset gates or claim minimized automation.

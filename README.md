@@ -2,7 +2,7 @@
 
 Windows-native automation and a source-backed progression workbench for the Steam version of Realm Grinder. This is the existing application, improved in place. It plays through normal game-window input and reads the save and process memory; it does not edit saves, patch the game, inject code, or invoke Steam achievement APIs.
 
-**Current status: tested development checkpoint, not an end-to-end certified Dragon Tamer run.** See `docs/CURRENT-HANDOFF.md` before continuing work. The running HUD must be closed and reopened after source updates; changing files does not hot-reload an existing Python process.
+**Current status: verified development prerelease; Dragon Tamer progression is not end-to-end certified.** The exact 4.3.22 Dragon prerequisites are version-scoped, but quest-counter progression, reset permissions, later purchases, and final achievement remain unverified. See `docs/CURRENT-HANDOFF.md`. Restart the HUD after updating source.
 
 ## What is implemented
 
@@ -28,13 +28,13 @@ python tools/bootstrap.py
 python launcher.py
 ```
 
-The repository is private; use your normal authorized Git credentials. No credentials belong in configuration files or commits. A non-default Steam location can be supplied with `python tools/bootstrap.py --game-dir "D:\SteamLibrary\steamapps\common\Realm Grinder"` or the `REALM_GRINDER_GAME_DIR` environment variable.
+Use your normal authorized Git credentials for the public repository. No credentials belong in configuration files or commits. A non-default Steam location can be supplied with `python tools/bootstrap.py --game-dir "D:\SteamLibrary\steamapps\common\Realm Grinder"` or the `REALM_GRINDER_GAME_DIR` environment variable.
 
 Bootstrap creates a paused configuration, leaves reset actions disabled, reconstructs build manifests from bundled factual IDs, and validates the supported local game binary before extracting matching icon metadata. It makes no network request or game input. It preserves an existing configuration and STOP file. Game files are read only.
 
 ## Operate the HUD
 
-Keep the game open. In Build Advisor, explicitly enable visible-window input when named-icon targeting is needed; a minimized status image is not a live screenshot. Select a path and start with **Build only**. The worker buys one verified prerequisite at a time, imports the selected Mercenary build as resources become available, and then uses the same production executor for ongoing building/upgrade purchases and mana-budgeted spells.
+Keep the game visible for semantic actions. Minimized/background semantic input is not supported. Window coordinates and icon matching scale with the visible client area; if the window changes size between recognition and dispatch, the click is canceled. Start with **Build only** to check basic connection and profile behavior. The helper buys one verified prerequisite at a time and uses the shared production executor for ordinary purchases and budgeted spells.
 
 Select **Named goal**, choose a reviewed target, and use **Inspect requirements** to see dependencies, missing measurements, and separate currency budgets. Unknown recipes remain reference-only. Resume and Start share the same admission checks; an unresolved action cannot be silently discarded by the Resume button.
 
@@ -57,7 +57,7 @@ For example, older Stoic Resistance descriptions differ from the installed 4.3.1
 
 ## Known acceptance gaps
 
-Reliable volatile memory mapping, minimized named-icon control, research-template UI calibration, reset/ascension UI verification, and a completed R24-to-R25/Dragon Tamer run remain unproven. The current reset adapter intentionally blocks uncalibrated profiles and missing same-R milestone audits. The legacy post-R40 requirement model needs version-specific validation before later-stage automation can be certified. Generic references and candidate builds are not a claim of comprehensive game support.
+Live volatile memory calibration, quest-counter advancement semantics, research-template UI calibration, reset/ascension UI calibration, complete R24-to-Dragon progression, later-stage purchases, and final achievement are unverified. Reset remains fail-closed without a pinned milestone review. Version 4.3.22 mechanics are bound to the installed SWF hash and save schema; unknown profiles cannot authorize purchases. Generic references and candidate builds are not complete game support.
 
 ## Tests and continuation
 
