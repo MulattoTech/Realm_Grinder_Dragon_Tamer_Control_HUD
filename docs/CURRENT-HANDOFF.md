@@ -2,6 +2,20 @@
 
 Date: 2026-11-06
 
+## Read-only memory probe correction
+
+`tools/probe_live_memory.py` no longer launches a missing game or calls
+ShowWindow on an existing game. Two regression tests reproduced these unwanted
+side effects before the fix and pass afterward. A live probe attached to PID
+45836, scanned readable memory, found zero validated volatile mappings, and
+left the game minimized. Health remains CONNECTED_UNMAPPED; this does not
+establish current/max mana or regeneration calibration. Private output is
+`state/memory_probe_results.json` and `state/test-lab/read-only-memory-probe.log`.
+
+A read-only trace of the supported 4.3.22 keyboard handlers found spell-slot
+shortcuts but no building/upgrade/buy-all shortcut. Do not extrapolate the
+Call to Arms result to minimized purchases or relax the visual purchase guards.
+
 ## Native minimized spell progress
 
 Call to Arms is now a verified candidate for native minimized input. A bounded

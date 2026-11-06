@@ -21,38 +21,14 @@ from src.memory.provider import MemoryProvider, FieldMapping
 from src.save_reader import get_current_game_state
 from src.window import RealmGrinderWindow
 from src.atomic_store import write_json
-import win32gui
 
 def ensure_game_running(max_wait_seconds: float = 20.0) -> int:
-    """Ensure Realm Grinder is running and return its PID. Never disturbs foreground if already running."""
+    """Require an existing game; an observation probe must not launch or restore it."""
     window = RealmGrinderWindow()
     if window.find_window():
         return window.pid
 
-    # Launch game minimized without stealing focus
-    import subprocess
-    game_exe = Path(r"C:\Program Files (x86)\Steam\steamapps\common\Realm Grinder\RealmGrinderDesktop.exe")
-    if not game_exe.exists():
-        raise FileNotFoundError(f"Realm Grinder executable not found: {game_exe}")
-
-    startup = subprocess.STARTUPINFO()
-    startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-    startup.wShowWindow = 7 # SW_SHOWMINNOACTIVE
-    subprocess.Popen([str(game_exe)], cwd=str(game_exe.parent), startupinfo=startup)
-
-    start = time.time()
-    while time.time() - start < max_wait_seconds:
-        time.sleep(0.3)
-        if window.find_window():
-            if not window.is_minimized():
-                try:
-                    win32gui.ShowWindow(window.hwnd, 7)
-                except Exception:
-                    pass
-            print(f"[+] Game window found (HWND {window.hwnd}). Waiting 6 seconds for AIR heap initialization...")
-            time.sleep(6.0)
-            return window.pid
-    raise TimeoutError("Timed out waiting for Realm Grinder window to appear")
+    raise RuntimeError('Realm Grinder must be already running; the read-only probe will not launch it')
 
 def probe_memory() -> dict:
     print("=======================================================")
@@ -64,11 +40,6 @@ def probe_memory() -> dict:
     # Read current persistent save state for anchors
     save = get_current_game_state()
     print(f"[+] Save Anchors: R={save.get('reincarnation')}, Gems={save.get('gems'):.3e}, Coins={save.get('coins'):.3e}, Exc={save.get('excavations')}")
-
-    # Set background tick mode without stealing focus
-    window = RealmGrinderWindow()
-    if window.find_window():
-        win32gui.ShowWindow(window.hwnd, 4) # SW_SHOWNOACTIVATE
 
     state_dir = ROOT / "state"
     provider = MemoryProvider(state_dir, discovery_enabled=True)
@@ -113,15 +84,6 @@ def probe_memory() -> dict:
     out_file = state_dir / "memory_probe_results.json"
     write_json(out_file, results)
     print(f"[+] Telemetry written to {out_file}")
-
-    # Keep game in non-intrusive background state
-    # Note: Adobe AIR pauses event loop when minimized (SW_SHOWMINNOACTIVE=7),
-    # but ticks at full speed with SW_SHOWNOACTIVATE=4 with zero focus theft.
-    if window.hwnd and window.is_minimized():
-        try:
-            win32gui.ShowWindow(window.hwnd, 4)
-        except Exception:
-            pass
 
     provider.close()
     return results
