@@ -56,6 +56,7 @@ class _MockActions:
     def __init__(self, state, tmp_path):
         self.state_dir = tmp_path
         self.window = MagicMock()
+        self.window.is_minimized.return_value = False
         self.window.get_client_size.return_value = [1280, 752]
         self._state = state
         self.runner = MagicMock()

@@ -1,5 +1,6 @@
 """Selected-path prerequisite execution using the one shared transaction owner."""
 from pathlib import Path
+import math
 import time
 from src.action_verification import ActionLock,upgrade_owned,fresh_transition
 from src.atomic_store import write_json
@@ -99,6 +100,56 @@ class RouteExecutor:
             result['message']=name+': target unavailable, obscured, unaffordable, or input paused; no purchase claimed'
         return result
 
+    def cast_minimized_call_to_arms(self):
+        """One native hotkey with cast-count proof; no minimized visual actions.
+
+        Only slot 2 / Call to Arms has current minimized live evidence. Tax
+        Collection counters can increase passively, so they are not an oracle.
+        Save-derived mana is a preliminary budget check, not a live guarantee;
+        the cast counter and active timer must confirm the actual result.
+        """
+        from src.config import load_config
+        proof={}
+        def precondition(state):
+            config=load_config();identity=state.get('game_identity',{})
+            raw=state.get('raw_data',{});record=raw.get('spells',{}).get('3',{})
+            mana=state.get('mana_current');count=record.get('c');timer=record.get('t')
+            finite=lambda value:type(value) in (int,float) and math.isfinite(value)
+            return bool(self.actions.window.is_minimized() and
+                config.get('auto_spells',True) and config.get('auto_cast_spells',True) and
+                identity.get('supported') is True and identity.get('swf_sha256')==SUPPORTED_4322_SWF and
+                identity.get('save_version')==58 and raw.get('saveVersion')==58 and
+                all(state.get('telemetry',{}).get(k) is not None for k in ('pid','process_start_time')) and
+                finite(mana) and mana>=400 and finite(count) and count>=0 and count==int(count) and
+                finite(timer) and timer<0 and record.get('a') is False)
+        def dispatch():
+            if not input_allowed(self.actions.window) or not self.actions.window.is_minimized():
+                raise RuntimeError('Minimized spell input cancelled before key dispatch')
+            self.actions.window.press_key('2',delay_after=.1)
+        def verify(old,new):
+            if not self.actions.window.is_minimized():
+                raise RuntimeError('Window state changed during minimized spell verification')
+            before=old['raw_data']['spells']['3']['c']
+            record=new.get('raw_data',{}).get('spells',{}).get('3',{})
+            same_run=all(old.get(k)==new.get(k) for k in ('reincarnation','faction','alignment'))
+            timer=record.get('t')
+            valid=(fresh_transition(old,new) and same_run and record.get('a') is False and
+                   record.get('c')==before+1 and type(timer) in (int,float) and
+                   math.isfinite(timer) and timer>=0)
+            if valid:
+                proof.update(spell_id=3,key='2',before_casts=before,after_casts=record['c'],
+                    before_fingerprint=old['save_fingerprint'],after_fingerprint=new['save_fingerprint'],
+                    active_timer=timer,minimized_at_verification=True)
+            return valid
+        result=self.actions.runner.run('MINIMIZED_CALL_TO_ARMS',precondition,dispatch,verify,allow_no_effect=True)
+        result['proof']=proof
+        if result['status'] in ('NO_EFFECT','UNCERTAIN'):
+            (self.actions.state_dir/'STOP').write_text('Minimized spell was not verified; review before retrying',encoding='utf-8')
+        if result['status']=='BLOCKED':
+            result['message']+=' Minimized collection supports only one inactive, non-autocast Call to Arms with sufficient mana.'
+        write_json(self.actions.state_dir/'minimized_spell_action.json',result)
+        return result
+
     def collect(self,step=None):
         if not input_allowed(self.actions.window):
             return {'success':False,'status':'BLOCKED','action':'PAUSED','message':'Setup is paused or the game window/session is not eligible'}
@@ -106,6 +157,8 @@ class RouteExecutor:
         if before.get('telemetry',{}).get('consequential_actions_allowed') is not True:
             return {'success':False,'status':'BLOCKED','action':'OBSERVATION_UNTRUSTED',
                     'message':'Waiting for a fresh save from the supported running game; no input sent'}
+        if self.actions.window.is_minimized():
+            return self.cast_minimized_call_to_arms()
         ui=SemanticUI(self.actions.window,lambda:not input_allowed(self.actions.window))
         from src.config import load_config
         config=load_config()

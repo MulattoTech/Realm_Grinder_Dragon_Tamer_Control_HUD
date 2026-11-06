@@ -192,7 +192,8 @@ def test_collect_waits_for_delayed_fresh_save_with_coin_growth(tmp_path,monkeypa
     reads=[0]
     class Actions:
         state_dir=tmp_path
-        window=object()
+        from types import SimpleNamespace
+        window=SimpleNamespace(is_minimized=lambda:False)
         def read(self):
             reads[0]+=1
             return after if elapsed[0]>=1 else before

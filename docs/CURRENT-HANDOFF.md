@@ -2,6 +2,29 @@
 
 Date: 2026-11-06
 
+## Native minimized spell progress
+
+Call to Arms is now a verified candidate for native minimized input. A bounded
+single-key probe on supported 4.3.22, PID 45836, showed spell 3 cast count
+13 -> 14 and inactive -> active timer, with a fresh same-process save and the
+window remaining minimized at every check. A second test through the new
+`RouteExecutor.collect` path showed 14 -> 15. No reset or save editing occurred;
+the real HUD stayed paused and its STOP/config were preserved. The source test
+configuration was paused and STOP restored after the one-shot test.
+
+Minimized collection now dispatches only slot 2 / Call to Arms through the
+existing transaction runner, with backup, supported-version, inactive-spell,
+autocast-off and preliminary mana checks. It requires a fresh same-process
+cast-count increase of exactly one and an active timer. Failed or uncertain
+verification creates STOP. All visual purchases and reset guards remain intact.
+The timer requirement was added after the second live test and still needs a
+final committed-code check. Targeted regressions: 34 passed. Full verifier pending.
+
+Tax Collection is excluded: a no-input control showed its count rising by ten
+between fresh saves despite autocast=false. Passive coin growth and that counter
+cannot prove input delivery in this Goblin run. This spell slice does not resolve
+the S50 unlock blocker or establish minimized purchases, resets, or full progression.
+
 ## Browser runtime follow-up: minimized automation remains unverified
 
 The official browser SWF was tested separately from the desktop AIR SWF. Its
