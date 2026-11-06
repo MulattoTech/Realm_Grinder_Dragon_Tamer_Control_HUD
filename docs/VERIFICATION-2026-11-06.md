@@ -64,6 +64,12 @@ A live read-only capture at 1433x822 shows the R24 Goblin game view with no Rese
 
 Status remains PARTIAL. The ID compiler and existing collection automation are verified; non-Mercenary research UI selection, progression to R42, reset handling, Dragon stages, minimized operation, and Dragon Tamer achievement completion remain unproven.
 
+## Non-Mercenary route blocker follow-up
+
+Static tracing on the current main head found that the R24 Goblin `deploy_build` request was diverted to generic collection. This hid the existing `RESEARCH_UI_NOT_CALIBRATED` result and allowed the same unowned research set to be requested repeatedly. The executor now routes the non-Mercenary request through the version-bound compiler, which reports the explicit blocker without sending input. A regression reproduced the old diversion before the code change. Focused route tests pass (**9 passed**); full source suite passes (**418 passed, 5 skipped**). The five skips require private visual fixtures absent from the clean checkout.
+
+The installed 4.3.22 SWF tutorial identifies the unlock chain as upgrading a base building to its unique building to unlock the first Research Facility, then purchasing that facility to expose the Research panel. The exact Goblin facility ID/ownership key and current panel visibility are still unresolved. This source-level route correction has not yet been installed or exercised in the game. The installed helper remains paused with STOP present and all reset actions disabled; no game input or save write was sent. Progression, reset eligibility, Dragon stages, and the Dragon Tamer achievement remain unverified.
+
 ## Delayed production-save observation follow-up
 
 Checked at 2026-11-06 13:09 UTC on `codex/live-viewport-scaling`, based on `main` at `35be6c50b7c02a37980e959b2d33952e36b44edb`.

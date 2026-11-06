@@ -22,7 +22,7 @@ def test_already_owned_stoic_does_not_search_or_click(tmp_path):
     assert result['success'] and result['action']=='ALREADY_OWNED'
 
 
-def test_non_mercenary_template_uses_measured_faction_collection(tmp_path,monkeypatch):
+def test_non_mercenary_template_reports_uncalibrated_research_without_collecting(tmp_path,monkeypatch):
     from types import SimpleNamespace
     import src.config as config
 
@@ -40,12 +40,15 @@ def test_non_mercenary_template_uses_measured_faction_collection(tmp_path,monkey
     executor=api().RouteExecutor(Actions())
     executor.planner=SimpleNamespace(next_step=lambda *_args:{'action':'deploy_build','target':'Goblin build',
         'template':'S50,S105','recommendation':{'name':'Goblin build'}})
-    executor.collect=lambda step:{'success':False,'status':'OBSERVING','action':'COLLECT_RESOURCES','step':step}
+    executor.collect=lambda _step:pytest.fail('Research deployment must not be hidden as resource collection')
+    executor.deploy_template=lambda template:{'success':False,'status':'BLOCKED',
+        'action':'RESEARCH_UI_NOT_CALIBRATED','template':template}
 
     result=executor.run_once()
 
-    assert result['action']=='COLLECT_RESOURCES'
-    assert result['step']['target']=='Goblin build'
+    assert result['status']=='BLOCKED'
+    assert result['action']=='RESEARCH_UI_NOT_CALIBRATED'
+    assert result['template']=='S50,S105'
 
 
 def test_unverified_faction_template_stays_fail_closed(tmp_path,monkeypatch):
