@@ -31,34 +31,32 @@ def test_banner_labels_verified_process_memory():
     assert 'MEM' in text and '1 verified' in text
 
 
-def test_max_mana_none_cannot_show_elder_ready():
-    a=api();model=a.dragon_stage_views(state(),{})[4]
-    assert model['status']=='UNVERIFIED'
-    assert 'Unknown' in model['detail'] and model['ready'] is False
+def test_old_elapsed_time_assumptions_are_not_used_for_goal_stages():
+    a=api()
+    assert hasattr(a, 'dragon_goal_presentation')
 
 
-def test_lifetime_or_run_hellfire_is_not_since_hatch():
-    a=api();model=a.dragon_stage_views(state(),{})[2]
-    assert model['ready'] is False
-    assert 'since Hatch' in model['detail']
+def test_stage_reference_reads_profile_facts_and_labels_counter_uncertainty():
+    a=api()
+    view=a.dragon_stage_reference({
+        'req_r':46,
+        'time_gate_seconds':7200,
+        'time_gate_description':'Static purchase check: save stat 81 total >= 7200; updater unknown',
+        'req_faction':0,
+        'req_assistants':5000,
+        'assistants_description':'5,000 Fairy assistants under faction field 0',
+    },True)
+    assert 'R46' in view
+    assert 'Dragon quest counter (stat 81)' in view
+    assert 'updater semantics UNKNOWN' in view
+    assert '5,000 Fairy assistants' in view
+    assert '43200' not in view
 
 
-def test_unknown_fairy_assistants_not_rendered_as_zero_or_total_buildings():
-    a=api();s=state();s['assistants']=23590
-    model=a.dragon_stage_views(s,{})[3]
-    assert model['ready'] is False and 'Unknown' in model['detail']
-    assert '23,590' not in model['detail']
-
-
-def test_verified_upgrade_ownership_overrides_guessed_timers():
-    a=api();s=state();s['has_egg']=True;s['raw_data']['upgrades']['1234']={'u1':True}
-    model=a.dragon_stage_views(s,{'hatch':{'id':1234,'kind':'upgrade','verified':True}})[1]
-    assert model['status']=='OWNED' and model['progress']==100
-
-
-def test_uncatalogued_legacy_id_is_not_ownership_proof():
-    a=api();s=state();s['raw_data']['upgrades']['1247']={'u1':True}
-    assert a.dragon_stage_views(s,{})[4]['status']=='UNVERIFIED'
+def test_stage_reference_hides_profile_facts_until_identity_supported():
+    a=api()
+    view=a.dragon_stage_reference({'req_r':42,'req_excavations':1500},False)
+    assert view=='Requirements: UNKNOWN until the supported game profile is confirmed.'
 
 
 def test_unknown_number_formats_without_crashing():

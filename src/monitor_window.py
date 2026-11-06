@@ -1,9 +1,9 @@
 """
 Realm Grinder - Dragon Tamer Quest Tracker & Control HUD (v4.5)
-Constantly improving live desktop interface powered by 100% scraped G00F Not-a-Wiki data.
+Existing desktop Control HUD with data-driven, fail-closed progression presentation.
 Includes:
-- Complete Live ETA Engine: Real-time calculation for Next R, R46 Gate, and Total Dragon Tamer completion
-- Autopilot Status Banner: Clarifies 24/7 hands-free background progression vs optional manual override buttons
+- Current profile and progression-plan status, with unknown evidence shown explicitly
+- STOP controls that pause the existing worker without terminating the game
 - Visual Color & Status Legend: Explains green, cyan/blue, purple, amber, and dark slate button states
 - Self-Explanatory Action Buttons: Plain-English subtitles and dynamic hover explanations for every button
 - Zero-Red Clickable UX: Flame Amber for active farming, Dark Slate for locked prerequisites, Green for claimable
@@ -21,7 +21,6 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
 import win32gui
-import win32con
 
 WORKSPACE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 STATE_FILE = os.path.join(WORKSPACE_DIR, "state", "dragon_tamer_state.json")
@@ -46,15 +45,14 @@ from src.wiki_data import (
 from src.save_reader import extract_save_string_from_sol
 from src.live_state import get_live_game_state
 from src.observation_cache import ObservationCache
-from src.telemetry_presenter import telemetry_banner,dragon_stage_views,mana_bar
+from src.telemetry_presenter import telemetry_banner,dragon_goal_presentation,dragon_stage_reference,mana_bar
 from src.runtime_safety import input_allowed,require_interactive_session
 from src.strategy_rules import PATH_CHOICES,selected_route
 from src.source_knowledge import KnowledgeStore
 from src.atomic_store import write_json
 from src.gate_clearer import GateClearer
-from src.ai_engine import SkynetOptimizationCore
+from src.ai_engine import ProgressionAdvisor
 from src.guardian import ProcessGuardian
-from src.forecaster import MonteCarloArtifactForecaster, MilestoneForecaster
 from src.state_machine import DragonBot
 
 
@@ -140,7 +138,7 @@ class ModernDragonTrackerApp:
         self.telemetry = ProgressionTracker()
         self.config = load_config()
         self.clearer = GateClearer()
-        self.ai = SkynetOptimizationCore()
+        self.ai = ProgressionAdvisor()
         self.guardian = ProcessGuardian()
 
         # Theme Colors
@@ -220,32 +218,32 @@ class ModernDragonTrackerApp:
         title_lbl = tk.Label(top_row, text="DRAGON TAMER QUEST TRACKER", font=("Segoe UI", 10, "bold"), fg=self.c_gold, bg=self.c_panel)
         title_lbl.pack(side="left")
 
-        self.ultron_badge = tk.Label(top_row, text="⚡ ULTRONBURST v5.2 ACTIVE", font=("Segoe UI", 8, "bold"), fg=self.c_gold, bg="#1e180a", padx=6, pady=2)
-        self.ultron_badge.pack(side="right")
+        self.strategy_badge = tk.Label(top_row, text="Local strategy", font=("Segoe UI", 8, "bold"), fg=self.c_gold, bg="#1e180a", padx=6, pady=2)
+        self.strategy_badge.pack(side="right")
 
         self.status_row = tk.Frame(header, bg=self.c_panel)
         self.status_row.pack(fill="x", padx=8, pady=(2, 3))
 
-        self.worker_badge = tk.Label(self.status_row, text="🤖 24/7 Autopilot", font=("Segoe UI", 8, "bold"), fg=self.c_green, bg="#0d2218", padx=6, pady=2)
+        self.worker_badge = tk.Label(self.status_row, text="Bot status: UNKNOWN", font=("Segoe UI", 8, "bold"), fg=self.c_green, bg="#0d2218", padx=6, pady=2)
         self.worker_badge.pack(side="left")
 
-        self.window_state_badge = tk.Label(self.status_row, text="🗕 Minimized", font=("Segoe UI", 8, "bold"), fg=self.c_cyan, bg="#0c202a", padx=6, pady=2)
+        self.window_state_badge = tk.Label(self.status_row, text="Game window: UNKNOWN", font=("Segoe UI", 8, "bold"), fg=self.c_cyan, bg="#0c202a", padx=6, pady=2)
         self.window_state_badge.pack(side="left", padx=6)
 
         # ETA pill cleanly on right side
         eta_pill = tk.Frame(self.status_row, bg="#141c2b", highlightbackground=self.c_cyan, highlightthickness=1)
         eta_pill.pack(side="right")
 
-        self.overall_eta_lbl = tk.Label(eta_pill, text="⏳ ETA: Calculating...", font=("Segoe UI", 8, "bold"), fg=self.c_cyan, bg="#141c2b", padx=6, pady=1)
+        self.overall_eta_lbl = tk.Label(eta_pill, text="Next R ETA: Not established", font=("Segoe UI", 8, "bold"), fg=self.c_cyan, bg="#141c2b", padx=6, pady=1)
         self.overall_eta_lbl.pack(side="left")
 
         self.overall_target_lbl = tk.Label(eta_pill, text="", font=("Segoe UI", 7), fg=self.c_muted, bg="#141c2b", padx=2, pady=1)
         self.overall_target_lbl.pack(side="left", padx=(0, 6))
 
-        # Hands-free notification banner
+        # Current worker and game-state summary
         handsfree_bar = tk.Frame(header, bg="#131722")
         handsfree_bar.pack(fill="x", padx=4, pady=(1, 3))
-        self.hf_lbl = tk.Label(handsfree_bar, wraplength=590, anchor="w", text="💡 24/7 Background Autopilot active.", font=("Segoe UI", 7), fg=self.c_muted, bg="#131722", justify="left")
+        self.hf_lbl = tk.Label(handsfree_bar, wraplength=590, anchor="w", text="Bot actions are controlled by the pause state and verified prerequisites.", font=("Segoe UI", 7), fg=self.c_muted, bg="#131722", justify="left")
         self.hf_lbl.pack(fill="x", padx=6, pady=2)
 
         # Live volatile mana bar row
@@ -281,7 +279,7 @@ class ModernDragonTrackerApp:
 
         tab_defs = [
             ("quest", "📜 Quest & ETAs"),
-            ("skynet", "🧠 Skynet AI Core"),
+            ("strategy", "Strategy Review"),
             ("advisor", "📖 Build Advisor"),
             ("wiki", "📚 Wiki Lookup"),
             ("controls", "⚙ Automation"),
@@ -305,14 +303,14 @@ class ModernDragonTrackerApp:
         self.container.pack(fill="both", expand=True, padx=8, pady=2)
 
         self.tab_quest = tk.Frame(self.container, bg=self.c_bg)
-        self.tab_skynet = tk.Frame(self.container, bg=self.c_bg)
+        self.tab_strategy = tk.Frame(self.container, bg=self.c_bg)
         self.tab_advisor = tk.Frame(self.container, bg=self.c_bg)
         self.tab_wiki = tk.Frame(self.container, bg=self.c_bg)
         self.tab_controls = tk.Frame(self.container, bg=self.c_bg)
         self.tab_logs = tk.Frame(self.container, bg=self.c_bg)
 
         self.build_tab_quest()
-        self.build_tab_skynet()
+        self.build_tab_strategy()
         self.build_tab_advisor()
         self.build_tab_wiki()
         self.build_tab_controls()
@@ -348,7 +346,7 @@ class ModernDragonTrackerApp:
             relief="flat", padx=8, pady=3, cursor="hand2", command=self.action_snapshot_state
         )
         self.snap_btn.pack(side="left", padx=4, pady=4)
-        self.bind_hover(self.snap_btn, "State Snapshot: Takes a full visual screenshot (even if minimized) and captures complete game telemetry for future calculations.")
+        self.bind_hover(self.snap_btn, "State Snapshot: Captures a screenshot and current telemetry for local review.")
 
         self.pause_btn = tk.Button(
             footer, text="⏸ Pause Bot", font=("Segoe UI", 8, "bold"),
@@ -356,7 +354,7 @@ class ModernDragonTrackerApp:
             relief="flat", padx=8, pady=3, cursor="hand2", command=self.action_toggle_pause
         )
         self.pause_btn.pack(side="left", padx=4, pady=4)
-        self.bind_hover(self.pause_btn, "Pause/Resume Bot: Suspends or resumes the 24/7 autonomous background bot loop.")
+        self.bind_hover(self.pause_btn, "Pause or resume the current automation worker.")
 
         self.refresh_btn = tk.Button(
             footer, text="🔄 Refresh Save", font=("Segoe UI", 8),
@@ -374,13 +372,13 @@ class ModernDragonTrackerApp:
             else:
                 btn.configure(bg=self.c_panel, fg=self.c_muted)
 
-        for tab_frame in [self.tab_quest, self.tab_skynet, self.tab_advisor, self.tab_wiki, self.tab_controls, self.tab_logs]:
+        for tab_frame in [self.tab_quest, self.tab_strategy, self.tab_advisor, self.tab_wiki, self.tab_controls, self.tab_logs]:
             tab_frame.pack_forget()
 
         if tid == "quest":
             self.tab_quest.pack(fill="both", expand=True)
-        elif tid == "skynet":
-            self.tab_skynet.pack(fill="both", expand=True)
+        elif tid == "strategy":
+            self.tab_strategy.pack(fill="both", expand=True)
         elif tid == "advisor":
             self.tab_advisor.pack(fill="both", expand=True)
         elif tid == "wiki":
@@ -397,14 +395,14 @@ class ModernDragonTrackerApp:
         else:self.root.after(0,apply)
 
     def build_tab_quest(self):
-        # 0. Skynet AI Live Decision Banner
+        # 0. Local strategy summary
         ai_banner = tk.Frame(self.tab_quest, bg="#101826", highlightbackground=self.c_accent, highlightthickness=1)
         ai_banner.pack(fill="x", padx=4, pady=(2, 2))
-        self.skynet_banner_lbl = tk.Label(
-            ai_banner, text="🧠 SKYNET AI CORE: Initializing omniscient calculus engine...",
+        self.strategy_banner_lbl = tk.Label(
+            ai_banner, text="Local strategy summary: Waiting for a supported profile and save observation.",
             font=("Segoe UI", 7, "bold"), fg=self.c_cyan, bg="#101826", anchor="w", padx=6, pady=2
         )
-        self.skynet_banner_lbl.pack(fill="x")
+        self.strategy_banner_lbl.pack(fill="x")
 
         # PRIMARY 1-CLICK GOAL BUTTON — Automate Straight to Goal
         goal_btn_frame = tk.Frame(self.tab_quest, bg="#0d1520",
@@ -424,16 +422,32 @@ class ModernDragonTrackerApp:
 
         self.automate_status_lbl = tk.Label(
             goal_btn_frame,
-            text="Configure path & goal above, then click to start full autonomous progression.",
+            text="Configure the path and goal above, then start the existing automation worker.",
             font=("Segoe UI", 8), fg=self.c_muted, bg="#0d1520",
             wraplength=380, justify="left", anchor="w"
         )
         self.automate_status_lbl.pack(side="left", fill="x", expand=True, padx=6)
 
         self.bind_hover(self.automate_btn,
-            "⚡ Automate Straight to Goal: Sets game to non-intrusive background mode, unpauses the worker, "
-            "and runs full autonomous progression — build setup, spell casting, abdications, reincarnations — "
-            "until the selected goal is reached. One worker owner; no focus theft.")
+            "⚡ Automate Straight to Goal: Runs the selected goal through the shared Start admission checks "
+            "and the existing worker. Unknown profile or consequence telemetry keeps the bot stopped.")
+
+        stop_row = tk.Frame(self.tab_quest, bg="#211313", highlightbackground="#8b2626", highlightthickness=1)
+        stop_row.pack(fill="x", padx=4, pady=(0, 2))
+        tk.Label(stop_row, text="BOT STOP CONTROLS", font=("Segoe UI", 7, "bold"),
+                 fg="#ffb3b3", bg="#211313").pack(side="left", padx=8, pady=4)
+        self.stop_btn = tk.Button(
+            stop_row, text="STOP", command=self.action_stop,
+            font=("Segoe UI", 9, "bold"), bg="#a52a2a", fg="white",
+            activebackground="#c0392b", activeforeground="white", relief="flat", padx=12
+        )
+        self.stop_btn.pack(side="right", padx=(3, 6), pady=3)
+        self.emergency_stop_btn = tk.Button(
+            stop_row, text="EMERGENCY STOP", command=self.action_emergency_stop,
+            font=("Segoe UI", 9, "bold"), bg="#5c1717", fg="white",
+            activebackground="#8b0000", activeforeground="white", relief="flat", padx=10
+        )
+        self.emergency_stop_btn.pack(side="right", padx=3, pady=3)
 
         # 1. Master Auto-Clear Header Banner
         banner = tk.Frame(self.tab_quest, bg="#1a2234", highlightbackground=self.c_cyan, highlightthickness=1)
@@ -443,14 +457,14 @@ class ModernDragonTrackerApp:
         b_info = tk.Frame(banner, bg="#1a2234")
         b_info.pack(side="left", fill="both", expand=True, padx=8, pady=4)
 
-        self.active_gate_lbl = tk.Label(b_info, text="⚡ Active Bottleneck: Gate 0 (Reincarnation R24 -> R25)", font=("Segoe UI", 9, "bold"), fg=self.c_gold, bg="#1a2234", anchor="w")
+        self.active_gate_lbl = tk.Label(b_info, text="Dragon Tamer: UNKNOWN | Profile: UNKNOWN", font=("Segoe UI", 9, "bold"), fg=self.c_gold, bg="#1a2234", anchor="w")
         self.active_gate_lbl.pack(fill="x")
 
-        self.active_gate_sublbl = tk.Label(b_info, text="Target: 1.000 Dtg Gems | Running on 24/7 Autopilot. Manual click is optional.", font=("Segoe UI", 7), fg=self.c_muted, bg="#1a2234", anchor="w")
+        self.active_gate_sublbl = tk.Label(b_info, text="Next milestone: UNKNOWN | Blocker: supported game identity not confirmed.", font=("Segoe UI", 7), fg=self.c_muted, bg="#1a2234", anchor="w")
         self.active_gate_sublbl.pack(fill="x")
 
         self.master_clear_btn = tk.Button(
-            banner, text="⚡ FORCE FAST-TRACK\nACTIVE GATE NOW", font=("Segoe UI", 8, "bold"),
+            banner, text="Run Selected\nPath", font=("Segoe UI", 8, "bold"),
             bg="#00b894", fg="#0d1117", activebackground="#00e5c0", activeforeground="black",
             relief="flat", padx=8, pady=2, cursor="hand2", command=self.action_fast_track
         )
@@ -478,16 +492,17 @@ class ModernDragonTrackerApp:
         tk.Label(target_row,text='Named goal:',bg=self.c_panel,fg=self.c_muted,font=('Segoe UI',8)).pack(side='left',padx=4)
         self.named_goal_var=tk.StringVar(value=load_config().get('named_goal','Dragon Tamer'))
         from src.knowledge_service import KnowledgeService
-        known_targets=tuple(KnowledgeService().book.rules)
+        self.goal_knowledge = KnowledgeService()
+        known_targets=tuple(self.goal_knowledge.book.rules)
         self.named_goal_combo=ttk.Combobox(target_row,textvariable=self.named_goal_var,values=known_targets,width=30)
         self.named_goal_combo.pack(side='left',padx=3)
         self.named_goal_combo.bind('<<ComboboxSelected>>',lambda event:self.save_selected_path())
         tk.Button(target_row,text='Inspect requirements',command=self.inspect_named_goal,bg=self.c_panel,fg=self.c_cyan,
                   relief='flat',font=('Segoe UI',8)).pack(side='right',padx=4)
 
-        # 3. Gate 0: Reincarnation Progression to R46
+        # 3. Current run and next-reincarnation status
         r_card = tk.LabelFrame(
-            self.tab_quest, text=" Gate 0: Reincarnation Progression to R46 (Dragon Prerequisite) ",
+            self.tab_quest, text=" Current Run and Next Reincarnation ",
             font=("Segoe UI", 8, "bold"), fg=self.c_cyan, bg=self.c_card,
             bd=1, relief="solid", highlightbackground=self.c_border
         )
@@ -496,11 +511,11 @@ class ModernDragonTrackerApp:
         r_header = tk.Frame(r_card, bg=self.c_card)
         r_header.pack(fill="x", padx=8, pady=(2, 1))
 
-        self.r_val_lbl = tk.Label(r_header, text="Reincarnation: R24 / R46 (52.2%)", font=("Segoe UI", 9, "bold"), fg=self.c_text, bg=self.c_card)
+        self.r_val_lbl = tk.Label(r_header, text="Reincarnation: UNKNOWN", font=("Segoe UI", 9, "bold"), fg=self.c_text, bg=self.c_card)
         self.r_val_lbl.pack(side="left")
 
-        self.r46_eta_badge = tk.Label(r_header, text="R46 ETA: Calculating...", font=("Segoe UI", 8, "bold"), fg=self.c_gold, bg=self.c_card)
-        self.r46_eta_badge.pack(side="right")
+        self.next_r_eta_badge = tk.Label(r_header, text="Next R ETA: Not established", font=("Segoe UI", 8, "bold"), fg=self.c_gold, bg=self.c_card)
+        self.next_r_eta_badge.pack(side="right")
 
         self.r_prog = ttk.Progressbar(r_card, style="Cyan.Horizontal.TProgressbar", length=100, mode="determinate")
         self.r_prog.pack(fill="x", padx=8, pady=(2, 3))
@@ -517,7 +532,7 @@ class ModernDragonTrackerApp:
         self.coins_lbl = tk.Label(stats_grid, text="Coins: 0.000", font=("Segoe UI", 8), fg=self.c_gold, bg=self.c_card)
         self.coins_lbl.grid(row=1, column=0, sticky="w", padx=4, pady=1)
 
-        self.goal_lbl = tk.Label(stats_grid, text="R25 Goal: 1.000 Dtg (1e99)", font=("Segoe UI", 8), fg=self.c_muted, bg=self.c_card)
+        self.goal_lbl = tk.Label(stats_grid, text="Next reincarnation threshold: UNKNOWN", font=("Segoe UI", 8), fg=self.c_muted, bg=self.c_card)
         self.goal_lbl.grid(row=1, column=1, sticky="w", padx=16, pady=1)
 
         # Gate 0 Action Buttons Row
@@ -548,9 +563,9 @@ class ModernDragonTrackerApp:
         self.btn_reincarnate.pack(side="left", padx=4)
         self.bind_hover(self.btn_reincarnate, "Reincarnate: Unlocks in Green when current gems reach target. Reincarnates to next R level.")
 
-        # 4. Card 2: Dragon Stages (Gates 1 to 5)
+        # 4. Planner-backed dragon milestones
         dragon_card = tk.LabelFrame(
-            self.tab_quest, text=" Dragon Unlock Stages (Automated Progression & Overrides) ",
+            self.tab_quest, text=" Dragon Tamer Prerequisites (Profile and save evidence) ",
             font=("Segoe UI", 8, "bold"), fg=self.c_gold, bg=self.c_card,
             bd=1, relief="solid", highlightbackground=self.c_border
         )
@@ -565,17 +580,17 @@ class ModernDragonTrackerApp:
             top = tk.Frame(f, bg="#1a1b24")
             top.pack(fill="x", padx=6, pady=(2, 1))
 
-            name_lbl = tk.Label(top, text=f"Stage {s_id}: {s_info['name']}", font=("Segoe UI", 8, "bold"), fg=self.c_gold, bg="#1a1b24")
+            name_lbl = tk.Label(top, text=s_info.get('name', 'Unknown milestone'), font=("Segoe UI", 8, "bold"), fg=self.c_gold, bg="#1a1b24")
             name_lbl.pack(side="left")
 
-            status_lbl = tk.Label(top, text="LOCKED (Requires R46+)", font=("Segoe UI", 7, "bold"), fg=self.c_red, bg="#1a1b24")
+            status_lbl = tk.Label(top, text="UNKNOWN", font=("Segoe UI", 7, "bold"), fg=self.c_amber, bg="#1a1b24")
             status_lbl.pack(side="right")
 
             # Row 2: Live Progress Details
             mid = tk.Frame(f, bg="#1a1b24")
             mid.pack(fill="x", padx=6, pady=(1, 1))
 
-            prog_lbl = tk.Label(mid, text="Progress: Calculating...", font=("Segoe UI", 7), fg=self.c_cyan, bg="#1a1b24")
+            prog_lbl = tk.Label(mid, text="Waiting for supported profile and save evidence.", font=("Segoe UI", 7), fg=self.c_cyan, bg="#1a1b24")
             prog_lbl.pack(side="left")
 
             prog_bar = ttk.Progressbar(f, style="Gold.Horizontal.TProgressbar", length=100, mode="determinate")
@@ -585,7 +600,7 @@ class ModernDragonTrackerApp:
             bot = tk.Frame(f, bg="#1a1b24")
             bot.pack(fill="x", padx=6, pady=(1, 3))
 
-            req_txt = s_info.get("description", "")
+            req_txt = dragon_stage_reference(s_info, False)
             req_lbl = tk.Label(bot, text=req_txt, font=("Segoe UI", 7), fg=self.c_muted, bg="#1a1b24", anchor="w")
             req_lbl.pack(side="left", fill="x", expand=True)
 
@@ -597,6 +612,7 @@ class ModernDragonTrackerApp:
             clear_btn.pack(side="right", padx=(4, 0))
 
             self.stage_cards[s_id] = {
+                "name": s_info.get('name', 'Unknown milestone'),
                 "frame": f,
                 "status_lbl": status_lbl,
                 "prog_lbl": prog_lbl,
@@ -605,107 +621,46 @@ class ModernDragonTrackerApp:
                 "clear_btn": clear_btn
             }
 
-    def build_tab_skynet(self):
-        # 1. Main Neural Brain Directive Card
-        brain_card = tk.LabelFrame(
-            self.tab_skynet, text=" Skynet Omniscient Neural Decision Core ",
+    def build_tab_strategy(self):
+        # 1. Local progression decision card
+        strategy_card = tk.LabelFrame(
+            self.tab_strategy, text=" Progression Decision ",
             font=("Segoe UI", 8, "bold"), fg=self.c_gold, bg=self.c_card,
             bd=1, relief="solid", highlightbackground=self.c_border
         )
-        brain_card.pack(fill="x", padx=4, pady=(2, 3))
+        strategy_card.pack(fill="x", padx=4, pady=(2, 3))
 
-        b_top = tk.Frame(brain_card, bg=self.c_card)
+        b_top = tk.Frame(strategy_card, bg=self.c_card)
         b_top.pack(fill="x", padx=8, pady=(4, 2))
 
-        self.skynet_directive_badge = tk.Label(
-            b_top, text="⚡ DIRECTIVE: COMPOUND_PRODUCTION",
+        self.strategy_directive_badge = tk.Label(
+            b_top, text="Decision: Waiting for state",
             font=("Consolas", 9, "bold"), fg=self.c_cyan, bg="#141724", padx=6, pady=2
         )
-        self.skynet_directive_badge.pack(side="left")
+        self.strategy_directive_badge.pack(side="left")
 
-        self.ultron_burst_badge = tk.Label(
-            b_top, text="⚡ ULTRONBURST: ENGAGED",
-            font=("Consolas", 8, "bold"), fg=self.c_gold, bg="#1e180a", padx=6, pady=2
-        )
-        self.ultron_burst_badge.pack(side="left", padx=8)
-
-        self.skynet_priority_badge = tk.Label(
+        self.strategy_priority_badge = tk.Label(
             b_top, text="Priority: 10 / 100", font=("Segoe UI", 8, "bold"),
             fg=self.c_gold, bg=self.c_card
         )
-        self.skynet_priority_badge.pack(side="right")
+        self.strategy_priority_badge.pack(side="right")
 
-        lbl_stream = tk.Label(brain_card, text="Omniscient AI Thought Stream & Mathematical Rationale:", font=("Segoe UI", 7, "bold"), fg=self.c_muted, bg=self.c_card)
+        lbl_stream = tk.Label(strategy_card, text="Decision factors:", font=("Segoe UI", 7, "bold"), fg=self.c_muted, bg=self.c_card)
         lbl_stream.pack(anchor="w", padx=8, pady=(2, 1))
 
-        self.skynet_thought_text = tk.Text(
-            brain_card, height=3, font=("Segoe UI", 8), bg="#14161f", fg=self.c_text,
+        self.strategy_thought_text = tk.Text(
+            strategy_card, height=3, font=("Segoe UI", 8), bg="#14161f", fg=self.c_text,
             bd=1, relief="solid", highlightbackground=self.c_border, wrap="word"
         )
-        self.skynet_thought_text.pack(fill="x", padx=8, pady=(0, 4))
+        self.strategy_thought_text.pack(fill="x", padx=8, pady=(0, 4))
 
-        # 2. Calculus Derivative Telemetry Card
-        calc_card = tk.LabelFrame(
-            self.tab_skynet, text=" Real-Time Calculus Derivatives & Growth Saturation ",
-            font=("Segoe UI", 8, "bold"), fg=self.c_cyan, bg=self.c_card,
-            bd=1, relief="solid", highlightbackground=self.c_border
-        )
-        calc_card.pack(fill="x", padx=4, pady=2)
+        tk.Label(self.tab_strategy,
+                 text="Dragon milestone readiness and blockers are shown from the current profile plan on the Quest tab.",
+                 font=("Segoe UI", 8), fg=self.c_muted, bg=self.c_panel, anchor="w").pack(fill="x", padx=8, pady=4)
 
-        sat_row = tk.Frame(calc_card, bg=self.c_card)
-        sat_row.pack(fill="x", padx=8, pady=(2, 1))
-
-        tk.Label(sat_row, text="Growth Saturation (Inflection Point):", font=("Segoe UI", 8), fg=self.c_text, bg=self.c_card).pack(side="left")
-        self.skynet_sat_pct_lbl = tk.Label(sat_row, text="0.0% (Accelerating)", font=("Segoe UI", 8, "bold"), fg=self.c_green, bg=self.c_card)
-        self.skynet_sat_pct_lbl.pack(side="right")
-
-        self.skynet_sat_bar = ttk.Progressbar(calc_card, style="Gold.Horizontal.TProgressbar", length=100, mode="determinate")
-        self.skynet_sat_bar.pack(fill="x", padx=8, pady=(0, 4))
-
-        metrics_grid = tk.Frame(calc_card, bg=self.c_card)
-        metrics_grid.pack(fill="x", padx=8, pady=(0, 4))
-
-        self.skynet_vel_lbl = tk.Label(metrics_grid, text="Gem Velocity (dG/dt): 0.00 /s", font=("Segoe UI", 8), fg=self.c_cyan, bg=self.c_card)
-        self.skynet_vel_lbl.grid(row=0, column=0, sticky="w", padx=4, pady=1)
-
-        self.skynet_acc_lbl = tk.Label(metrics_grid, text="Acceleration (d²G/dt²): 0.00 /s²", font=("Segoe UI", 8), fg=self.c_muted, bg=self.c_card)
-        self.skynet_acc_lbl.grid(row=0, column=1, sticky="w", padx=16, pady=1)
-
-        self.skynet_elapsed_lbl = tk.Label(metrics_grid, text="Current Run Duration: 0m 00s", font=("Segoe UI", 8), fg=self.c_text, bg=self.c_card)
-        self.skynet_elapsed_lbl.grid(row=1, column=0, sticky="w", padx=4, pady=1)
-
-        self.skynet_inflect_lbl = tk.Label(metrics_grid, text="Projected Inflection: Dynamic", font=("Segoe UI", 8), fg=self.c_gold, bg=self.c_card)
-        self.skynet_inflect_lbl.grid(row=1, column=1, sticky="w", padx=16, pady=1)
-
-        # 3. Monte Carlo Artifact Simulation Card (Spiky Rough Egg Artifact 211)
-        mc_card = tk.LabelFrame(
-            self.tab_skynet, text=" Monte Carlo Probability Engine (Spiky Rough Egg Artifact 211) ",
-            font=("Segoe UI", 8, "bold"), fg=self.c_gold, bg=self.c_card,
-            bd=1, relief="solid", highlightbackground=self.c_border
-        )
-        mc_card.pack(fill="x", padx=4, pady=2)
-
-        mc_grid = tk.Frame(mc_card, bg=self.c_card)
-        mc_grid.pack(fill="x", padx=8, pady=3)
-
-        self.mc_chance_lbl = tk.Label(mc_grid, text="Drop Chance per Dig: 0.000% (Unlocks at R46, 1500+ digs)", font=("Segoe UI", 8, "bold"), fg=self.c_cyan, bg=self.c_card)
-        self.mc_chance_lbl.grid(row=0, column=0, columnspan=2, sticky="w", padx=4, pady=1)
-
-        self.mc_p50_lbl = tk.Label(mc_grid, text="P50 (Median Drop): ~476 digs past 1500", font=("Segoe UI", 8), fg=self.c_text, bg=self.c_card)
-        self.mc_p50_lbl.grid(row=1, column=0, sticky="w", padx=4, pady=1)
-
-        self.mc_p90_lbl = tk.Label(mc_grid, text="P90 (90% Confidence): ~1,060 digs", font=("Segoe UI", 8), fg=self.c_text, bg=self.c_card)
-        self.mc_p90_lbl.grid(row=1, column=1, sticky="w", padx=16, pady=1)
-
-        self.mc_p99_lbl = tk.Label(mc_grid, text="P99 (conditional probability): ~1,682 digs", font=("Segoe UI", 8), fg=self.c_gold, bg=self.c_card)
-        self.mc_p99_lbl.grid(row=2, column=0, sticky="w", padx=4, pady=1)
-
-        self.mc_cost_lbl = tk.Label(mc_grid, text="Target Reincarnation: R46 required", font=("Segoe UI", 8), fg=self.c_muted, bg=self.c_card)
-        self.mc_cost_lbl.grid(row=2, column=1, sticky="w", padx=16, pady=1)
-
-        # 4. Self-Healing Process Guardian Matrix Card
+        # 4. Runtime and window status
         guard_card = tk.LabelFrame(
-            self.tab_skynet, text=" Process Guardian & Self-Healing Matrix (Zero-Downtime Guarantee) ",
+            self.tab_strategy, text=" Runtime and Window Status ",
             font=("Segoe UI", 8, "bold"), fg=self.c_green, bg=self.c_card,
             bd=1, relief="solid", highlightbackground=self.c_border
         )
@@ -714,24 +669,24 @@ class ModernDragonTrackerApp:
         g_grid = tk.Frame(guard_card, bg=self.c_card)
         g_grid.pack(fill="x", padx=8, pady=3)
 
-        self.g_status_lbl = tk.Label(g_grid, text="🛡️ Steam Client: ACTIVE & HEALTHY", font=("Segoe UI", 8, "bold"), fg=self.c_green, bg=self.c_card)
+        self.g_status_lbl = tk.Label(g_grid, text="Game process: UNKNOWN", font=("Segoe UI", 8, "bold"), fg=self.c_green, bg=self.c_card)
         self.g_status_lbl.grid(row=0, column=0, columnspan=2, sticky="w", padx=4, pady=1)
 
-        self.g_win_lbl = tk.Label(g_grid, text="🗕 Window State: 100% Minimized (Background Safe)", font=("Segoe UI", 8), fg=self.c_cyan, bg=self.c_card)
+        self.g_win_lbl = tk.Label(g_grid, text="Window state is shown in the Quest header.", font=("Segoe UI", 8), fg=self.c_cyan, bg=self.c_card)
         self.g_win_lbl.grid(row=1, column=0, sticky="w", padx=4, pady=1)
 
-        self.g_hash_lbl = tk.Label(g_grid, text="Save SHA256: Verified & Validated", font=("Segoe UI", 8), fg=self.c_muted, bg=self.c_card)
+        self.g_hash_lbl = tk.Label(g_grid, text="Save fingerprint: UNKNOWN", font=("Segoe UI", 8), fg=self.c_muted, bg=self.c_card)
         self.g_hash_lbl.grid(row=1, column=1, sticky="w", padx=16, pady=1)
 
-        self.g_restarts_lbl = tk.Label(g_grid, text="Auto-Heal Crashes: 0 (Flawless Stability)", font=("Segoe UI", 8), fg=self.c_text, bg=self.c_card)
+        self.g_restarts_lbl = tk.Label(g_grid, text="Worker restart count: Not measured", font=("Segoe UI", 8), fg=self.c_text, bg=self.c_card)
         self.g_restarts_lbl.grid(row=2, column=0, sticky="w", padx=4, pady=1)
 
-        self.g_backup_lbl = tk.Label(g_grid, text="Rolling Backups: Active & Pruned", font=("Segoe UI", 8), fg=self.c_muted, bg=self.c_card)
+        self.g_backup_lbl = tk.Label(g_grid, text="Backup status: Not measured", font=("Segoe UI", 8), fg=self.c_muted, bg=self.c_card)
         self.g_backup_lbl.grid(row=2, column=1, sticky="w", padx=16, pady=1)
 
     def build_tab_advisor(self):
         card = tk.LabelFrame(
-            self.tab_advisor, text=" G00F Not-a-Wiki Optimal Build Advisor ",
+            self.tab_advisor, text=" Reviewed Build Advisor ",
             font=("Segoe UI", 8, "bold"), fg=self.c_cyan, bg=self.c_card,
             bd=1, relief="solid", highlightbackground=self.c_border
         )
@@ -750,7 +705,7 @@ class ModernDragonTrackerApp:
         self.adv_build_notes.pack(anchor="w", padx=8, pady=(1, 6))
 
         self.visible_input_var=tk.BooleanVar(value=not load_config().get('require_minimized',True))
-        tk.Checkbutton(card,text='Allow background messages while the game remains visible (never take focus)',
+        tk.Checkbutton(card,text='Allow visible-window input when same-desktop and verified-control checks pass',
             variable=self.visible_input_var,command=self.save_selected_path,bg=self.c_card,fg=self.c_text,
             selectcolor=self.c_panel,font=('Segoe UI',8)).pack(anchor='w',padx=8,pady=3)
         self.route_detail=tk.Label(card,text='Next prerequisite: reading state',bg=self.c_card,fg=self.c_amber,
@@ -852,6 +807,9 @@ class ModernDragonTrackerApp:
         if not state.get('telemetry',{}).get('process_connected'):
             self.set_feedback('Start blocked: Realm Grinder is not connected on this desktop.',self.c_red)
             return False
+        if state.get('telemetry',{}).get('consequential_actions_allowed') is not True:
+            self.set_feedback('Start blocked: consequence telemetry is not currently authorized.',self.c_amber)
+            return False
         config=load_config()
         try:
             if config.get('require_minimized',True) and not self.clearer.window.is_minimized():
@@ -902,15 +860,15 @@ class ModernDragonTrackerApp:
             elif pending.get('status') not in ('VERIFIED','NO_EFFECT','RECONCILED_NO_TEMPLATE_TEXT'):
                 self.set_feedback(f"Start blocked: unrecognized pending action status ({pending.get('status')}).",self.c_amber)
                 return False
-        if config.get('selected_goal')=='Build only' and config.get('named_goal') in ('Reach R46','Dragon Tamer'):
-            self.set_feedback('Build only pauses after the current build is verified; explicit target tracking is available under Named goal.',self.c_amber)
+        if config.get('selected_goal')=='Build only' and config.get('named_goal')=='Dragon Tamer':
+            self.set_feedback('Build only pauses after the current build is verified; select Named goal for Dragon Tamer tracking.',self.c_amber)
         config['paused']=False
         if config.get('selected_goal')=='Next reincarnation':config['goal_target_r']=state['reincarnation']+1
         save_config(config)
         if os.path.exists(STOP_FILE):os.remove(STOP_FILE)
         self.config=config
         message='Selected path started. The existing worker will execute one verified prerequisite at a time.'
-        if config.get('selected_goal')=='Build only' and config.get('named_goal') in ('Reach R46','Dragon Tamer'):
+        if config.get('selected_goal')=='Build only' and config.get('named_goal')=='Dragon Tamer':
             message+=' Build only pauses if the active build becomes verified; select Named goal for explicit '+config['named_goal']+' tracking.'
             self.set_feedback(message,self.c_amber)
         else:self.set_feedback(message,self.c_cyan)
@@ -1038,10 +996,9 @@ class ModernDragonTrackerApp:
             ("auto_spells", "Auto Spell Combo & Autocast Loop (keys 1-6)", True),
             ("auto_buy_buildings", "Auto Buy All Buildings", True),
             ("auto_buy_upgrades", "Auto Buy All Upgrades", True),
-            ("auto_excavate", "Auto Smart Excavations (R46 Egg hunt)", False),
+            ("auto_excavate", "Auto Smart Excavations (Dragon Egg hunt)", False),
             ("auto_click_realm", "Auto Click Realm Background", True),
-            ("auto_apply_build", "Auto Deploy Recommended Wiki Build", True),
-            ("ultron_burst", "⚡ UltronBurst Protocol (First-Principles Renaissance)", True)
+            ("auto_apply_build", "Auto Deploy Recommended Wiki Build", True)
         ]
 
         for key, text, def_val in toggles:
@@ -1161,7 +1118,7 @@ class ModernDragonTrackerApp:
         st = get_live_game_state()
         r = st["reincarnation"]
         gems = st["gems"]
-        req = get_reincarnation_gem_requirement(r)
+        req = get_reincarnation_gem_requirement(r, st.get('ascension'))
 
         if gems < req:
             messagebox.showwarning("Not Ready", f"Cannot reincarnate to R{r+1} yet!\nCurrent Gems: {gems:.2e}\nRequired Gems: {req:.2e}")
@@ -1231,7 +1188,7 @@ class ModernDragonTrackerApp:
     def action_snapshot_state(self):
         def _snap():
             try:
-                self.set_feedback("Capturing state and screenshot (minimized-safe)...", self.c_cyan)
+                self.set_feedback("Capturing a state snapshot...", self.c_cyan)
                 from src.state_capture import StateCaptureEngine
                 engine = StateCaptureEngine()
                 snap = engine.capture_full_state(save_screenshot=True)
@@ -1249,6 +1206,35 @@ class ModernDragonTrackerApp:
 
         threading.Thread(target=_snap, daemon=True).start()
 
+    def _stop_worker(self, emergency=False):
+        """Persist the existing STOP/config pause without touching game processes."""
+        config = load_config()
+        config['paused'] = True
+        try:
+            os.makedirs(os.path.dirname(STOP_FILE), exist_ok=True)
+            with open(STOP_FILE, 'w', encoding='utf-8') as output:
+                output.write('Emergency STOP' if emergency else 'Paused by user')
+            save_config(config)
+        except Exception as exc:
+            self.set_feedback(f'STOP request failed: {exc}', self.c_red)
+            return False
+        self.config = config
+        if hasattr(self, 'pause_btn'):
+            self.pause_btn.configure(text='▶ Resume Bot', bg='#1b6ca8')
+        if hasattr(self, 'worker_badge'):
+            self.worker_badge.configure(text='● Bot Paused', fg=self.c_amber, bg='#261b0a')
+        if hasattr(self, 'automate_status_lbl'):
+            self.automate_status_lbl.configure(text='Bot paused. The game remains open.', fg=self.c_amber)
+        self.set_feedback('Emergency STOP set; game process remains open.' if emergency else
+                           'STOP set. In-game autocasting is a separate game setting.', self.c_red if emergency else self.c_amber)
+        return True
+
+    def action_stop(self):
+        return self._stop_worker(emergency=False)
+
+    def action_emergency_stop(self):
+        return self._stop_worker(emergency=True)
+
     def action_toggle_pause(self):
         config=load_config()
         is_paused=os.path.exists(STOP_FILE) or config.get('paused',True)
@@ -1256,20 +1242,16 @@ class ModernDragonTrackerApp:
             # Resume must pass the same connection, geometry and pending-action checks as Start.
             self.start_selected_path()
             return
-        with open(STOP_FILE,'w',encoding='utf-8') as output:output.write('Paused by user')
-        config['paused']=True;save_config(config);self.config=config
-        self.pause_btn.configure(text='Resume Bot',bg='#1b6ca8')
-        self.worker_badge.configure(text='Bot paused',fg=self.c_amber)
-        self.set_feedback('Bot paused. In-game autocasting is a separate game setting.')
+        # Stop synchronously without touching the observation cache. Calling the
+        # class method also keeps this safety path independent of callback proxies.
+        ModernDragonTrackerApp._stop_worker(self)
 
     def action_automate_straight_to_goal(self):
         """1-Click 'Automate Straight to Goal' handler.
 
-        Delegates all admission and resume state changes to Start/Resume, then
-        applies the existing non-focus-stealing window hint and updates the HUD.
+        Delegates all admission and resume state changes to Start/Resume.
 
-        Safety constraints: READ-ONLY memory only; one worker owner (WorkerLease);
-        never steals focus or restores minimized state.
+        Uses the existing worker only; it does not manipulate game windows.
         """
         try:
             started = self.start_selected_path()
@@ -1284,22 +1266,6 @@ class ModernDragonTrackerApp:
                 )
             return False
 
-        # Show game window in background (non-intrusive) if it is findable
-        try:
-            hwnd = self.clearer.window.hwnd
-            if not hwnd or not win32gui.IsWindow(hwnd):
-                self.clearer.window.find_window()
-                hwnd = self.clearer.window.hwnd
-            if hwnd and win32gui.IsWindow(hwnd) and win32gui.IsIconic(hwnd):
-                # SW_SHOWNOACTIVATE = 4: shows without taking focus or un-minimizing
-                # Only show if already minimized; do NOT restore a user-minimized window.
-                pass  # respect current minimized state; AIR still runs at full speed
-            elif hwnd and win32gui.IsWindow(hwnd):
-                # Window is visible — ensure it stays in background, no focus theft
-                win32gui.ShowWindow(hwnd, win32con.SW_SHOWNOACTIVATE)
-        except Exception:
-            pass  # window state management is best-effort; never block automation for it
-
         # Load config, set goal and unpause
         config = load_config()
         goal = config.get('selected_goal', 'Dragon Tamer')
@@ -1309,11 +1275,11 @@ class ModernDragonTrackerApp:
         self.config = config
 
         # Update feedback and automate button label
-        msg = f'🚀 Automating straight to {goal_display}: Autonomous progression active.'
+        msg = f'Automation active for {goal_display}.'
         self.set_feedback(msg, self.c_gold)
         if hasattr(self, 'automate_status_lbl'):
             self.automate_status_lbl.configure(
-                text=f'🚀 Active → {goal_display} | Worker running. Pause Bot to stop.',
+                text=f'Active: {goal_display} | Worker running. Use STOP to pause.',
                 fg=self.c_green
             )
         self.update_state()
@@ -1401,14 +1367,13 @@ class ModernDragonTrackerApp:
             coins_this_game = st.get("coins_this_game", coins)
             excavations = st["excavations"]
             hellfire = st.get("hellfire_time", 0)
-            has_egg = st["has_egg"]
-            assistants=st.get("fairy_assistants")
-            mana=st.get("mana_max")
             build_status=self.clearer.actions.diagnose_build(st)
 
             # Potential gems calculation
             pot_gems = math.floor((math.sqrt(1.0 + 8.0 * (coins_this_game / 1e12)) - 1.0) / 2.0) if coins_this_game > 0 else 0.0
-            req_gems = get_reincarnation_gem_requirement(r)
+            req_gems = get_reincarnation_gem_requirement(r, st.get('ascension'))
+            dragon_plan = self.goal_knowledge.plan_target('Dragon Tamer', st)
+            goal_view = dragon_goal_presentation(st, dragon_plan)
 
             # Telemetry ETAs
             stage_timestamps = {}
@@ -1419,12 +1384,16 @@ class ModernDragonTrackerApp:
                 except Exception:
                     pass
 
-            etas = self.telemetry.calculate_etas(r, gems, coins, stage_timestamps, hellfire_time=hellfire,reload_history=True)
+            etas = self.telemetry.calculate_etas(
+                r, gems, coins, stage_timestamps,
+                hellfire_time=hellfire, reload_history=True, ascension=st.get('ascension', 0),
+            )
 
-            # Update Header Overall ETA and R46 Badge
-            self.overall_eta_lbl.configure(text=f"ETA: {etas['total_eta']}")
-            self.overall_target_lbl.configure(text=etas['target_completion_date'] or "")
-            self.r46_eta_badge.configure(text=f"R46 ETA: ~{etas['r46_eta']}")
+            # Estimate only the next reincarnation. Whole-goal completion has
+            # no fabricated date and is bound to trophy 210 evidence.
+            self.overall_eta_lbl.configure(text=f"Next R ETA: {etas['current_r_eta']}")
+            self.overall_target_lbl.configure(text=goal_view['completion'])
+            self.next_r_eta_badge.configure(text=f"Next R ETA: {etas['current_r_eta']}")
             banner = telemetry_banner(st,build_status)
             age = snapshot.age_seconds
             if age is None or age > self.observation_cache.stale_after or snapshot.error:
@@ -1440,7 +1409,7 @@ class ModernDragonTrackerApp:
                 self.worker_badge.configure(text="● Bot Paused", fg=self.c_amber, bg="#261b0a")
             else:
                 self.pause_btn.configure(text="⏸ Pause Bot", bg="#8b2626")
-                self.worker_badge.configure(text="🤖 24/7 Autopilot", fg=self.c_green, bg="#0d2218")
+                self.worker_badge.configure(text="Bot enabled", fg=self.c_green, bg="#0d2218")
 
             # Live Window Minimized State Sync
             try:
@@ -1456,84 +1425,44 @@ class ModernDragonTrackerApp:
             except Exception:
                 pass
 
-            # Skynet AI, Guardian, and Monte Carlo evaluation
+            # Local progression assessment and runtime status
             ai_eval = self.ai.evaluate(st, cfg)
-            pulse={'game_alive':st.get('telemetry',{}).get('process_connected',False),'save_hash':None,'restarts':0}
-            mc = MonteCarloArtifactForecaster.calculate_egg_probabilities(excavations,current_r=r)
+            reasoning = ai_eval['reasoning'].strip()
 
-            # Update Quest tab Skynet AI Live Banner
-            self.skynet_banner_lbl.configure(
-                text=f"🧠 SKYNET AI DIRECTIVE: {ai_eval['decision']} | {ai_eval['reasoning'][:90]}..."
+            # Update the local strategy summary
+            self.strategy_banner_lbl.configure(
+                text=f"Local strategy: {ai_eval['decision']} | {reasoning[:90]}..."
             )
 
-            # Update Skynet Tab Widgets
-            self.skynet_directive_badge.configure(text=f"⚡ DIRECTIVE: {ai_eval['decision']}")
-            self.skynet_priority_badge.configure(text=f"Priority: {ai_eval['priority']} / 100")
-            self.skynet_thought_text.delete("1.0", "end")
-            self.skynet_thought_text.insert("1.0", ai_eval["reasoning"])
-
-            is_ub = bool(cfg.get("ultron_burst", True))
-            if is_ub:
-                self.ultron_burst_badge.configure(text="⚡ ULTRONBURST: ENGAGED", fg=self.c_gold, bg="#1e180a")
-                self.ultron_badge.configure(text="⚡ ULTRONBURST: ENGAGED", fg=self.c_gold, bg="#1e180a")
-            else:
-                self.ultron_burst_badge.configure(text="⚡ ULTRONBURST: STANDBY", fg=self.c_muted, bg=self.c_card)
-                self.ultron_badge.configure(text="⚡ ULTRONBURST: STANDBY", fg=self.c_muted, bg=self.c_panel)
-
-            payload = ai_eval.get("payload", {})
-            vel = payload.get("velocity", 0.0)
-            sat = payload.get("saturation", 0.0)
-            elapsed = payload.get("elapsed", 0.0)
-
-            self.skynet_sat_bar["value"] = sat * 100.0
-            sat_status = "Plateau / Inflection Near" if sat > 0.7 else "Accelerating Growth"
-            self.skynet_sat_pct_lbl.configure(text=f"{sat*100.0:.1f}% ({sat_status})")
-            self.skynet_vel_lbl.configure(text=f"Gem Velocity (dG/dt): +{format_rg_num(vel)} /s")
-            self.skynet_elapsed_lbl.configure(text=f"Current Run Duration: {int(elapsed//60)}m {int(elapsed%60):02d}s")
-
-            # Monte Carlo widget update
-            elig_str = "Eligible now!" if mc["is_eligible"] else "Unlocks at 1500 digs in R46"
-            self.mc_chance_lbl.configure(text=f"Drop Chance per Dig: {mc['current_dig_drop_percent']:.4f}% ({elig_str})")
-            self.mc_p50_lbl.configure(text=f"P50 (Median Drop): ~{mc['p50_digs_needed']} digs past 1500")
-            self.mc_p90_lbl.configure(text=f"P90 (90% Confidence): ~{mc['p90_digs_needed']} digs")
-            self.mc_p99_lbl.configure(text=f"P99 (model estimate): ~{mc['p99_digs_needed']} digs")
+            # Update strategy explanation widgets
+            self.strategy_directive_badge.configure(text=f"Decision: {ai_eval['decision']}")
+            self.strategy_priority_badge.configure(text=f"Priority score: {ai_eval['priority']}")
+            self.strategy_thought_text.delete("1.0", "end")
+            self.strategy_thought_text.insert("1.0", reasoning)
 
             # Guardian status update
-            g_alive = pulse.get("game_alive", True)
+            g_alive = st.get('telemetry', {}).get('process_connected') is True
             self.g_status_lbl.configure(
                 text=f"Game process: {'CONNECTED' if g_alive else 'NOT CONNECTED'}",
                 fg=self.c_green if g_alive else self.c_amber
             )
-            h_str = pulse.get("save_hash", "") or ""
-            if len(h_str) >= 14:
-                self.g_hash_lbl.configure(text=f"Save SHA256: {h_str[:8]}...{h_str[-6:]} (Verified)")
-            self.g_restarts_lbl.configure(text=f"Auto-Heal Crashes: {pulse.get('restarts', 0)}")
 
-            # 1. Update Active Bottleneck Banner
-            if r < 46:
-                pct_gem = min(100.0, (gems / req_gems) * 100.0)
-                self.active_gate_lbl.configure(text=f"⚡ Active Bottleneck: Gate 0 (Reincarnation R{r} -> R{r+1})")
-                self.active_gate_sublbl.configure(
-                    text=f"Target: {format_rg_num(req_gems)} ({pct_gem:.1f}%) | Missing: {46-r} R's | Next R: ~{etas['current_r_eta']}"
-                )
-            elif not has_egg:
-                self.active_gate_lbl.configure(text="⚡ Active Bottleneck: Gate 1 (Spiky Rough Egg Artifact 211)")
-                rem_excav = max(0, 1500 - excavations)
-                self.active_gate_sublbl.configure(
-                    text=f"Excavations: {excavations}/1,500 ({rem_excav} remaining). 2% drop rate past 1500."
-                )
-            else:
-                self.active_gate_lbl.configure(text="⚡ Active Bottleneck: Dragon Unlock Quest in Progress")
-                self.active_gate_sublbl.configure(text=f"Stages 1-4 incubating / fulfilling requirements. Overall ETA: {etas['total_eta']}")
+            # 1. Planner-derived profile, completion, next milestone and blocker.
+            self.active_gate_lbl.configure(
+                text=f"Dragon Tamer: {goal_view['completion']} | Profile: {goal_view['profile_status']}"
+            )
+            self.active_gate_sublbl.configure(
+                text=f"Next milestone: {goal_view['next_milestone']} | Blocker: {goal_view['blocker']}"
+            )
 
-            # 2. Update Gate 0 (Reincarnation) Card
-            pct_r = min(100.0, (r / 46.0) * 100.0)
-            self.r_val_lbl.configure(text=f"Reincarnation: R{r} / R46 ({pct_r:.1f}%)")
-            self.r_prog["value"] = pct_r
+            # 2. Current run and next reincarnation, without a fixed Dragon target.
+            self.r_val_lbl.configure(text=f"Reincarnation: R{r} | Ascension: {st.get('ascension', 'UNKNOWN')}")
+            pct_next_r = min(100.0, max(0.0, 100.0 * gems / req_gems)) if req_gems > 0 else 0.0
+            self.r_prog["value"] = pct_next_r
             self.gems_lbl.configure(text=f"Gems: {format_rg_num(gems)}")
             self.pot_gems_lbl.configure(text=f"Pot Gems: {format_rg_num(pot_gems)}")
             self.coins_lbl.configure(text=f"Coins: {format_rg_num(coins)}")
-            self.goal_lbl.configure(text=f"R{r+1} Goal: {format_rg_num(req_gems)} (ETA: {etas['current_r_eta']})")
+            self.goal_lbl.configure(text=f"Next reincarnation threshold: {format_rg_num(req_gems)}")
 
             # Update Reincarnate button state
             if gems >= req_gems:
@@ -1543,50 +1472,36 @@ class ModernDragonTrackerApp:
                 self.btn_reincarnate.configure(state="disabled", bg=self.c_dark, fg=self.c_muted, text="🔒 Reincarnate (Need More Gems)")
                 self.bind_hover(self.btn_reincarnate, f"Reincarnate Locked: Current gems {format_rg_num(gems)} / {format_rg_num(req_gems)}.")
 
-            # 3. Update Dragon Unlock Stages Breakdown
-            # Stage 0: Egg
-            card0 = self.stage_cards[0]
-            if has_egg:
-                card0["status_lbl"].configure(text="COMPLETED ✓", fg=self.c_green)
-                card0["prog_lbl"].configure(text="Egg Acquired! Artifact 211 unlocked in save.", fg=self.c_green)
-                card0["prog_bar"]["value"] = 100
-                card0["clear_btn"].configure(text="🟢 Egg Acquired ✓", state="disabled", bg=self.c_dark, fg=self.c_muted)
-                self.bind_hover(card0["clear_btn"], "Stage 0 Complete: Spiky Rough Egg is already found and verified in your save.")
-            else:
-                if r < 46:
-                    card0["status_lbl"].configure(text=f"LOCKED (Current R{r}, Need R46)", fg=self.c_muted)
-                    card0["prog_lbl"].configure(text=f"Excavations: {excavations}/1500 | Reincarnation: R{r}/R46 | R46 ETA: ~{etas['r46_eta']}", fg=self.c_muted)
-                    card0["prog_bar"]["value"] = min(100.0, (r / 46.0) * 100.0)
-                    card0["clear_btn"].configure(text="🟣 Fast-Track R46 Climb", state="normal", bg=self.c_purple, fg="white")
-                    self.bind_hover(card0["clear_btn"], "Fast-Track Climb: (Manual override) Pushes production and build deployment to advance towards R46.")
-                else:
-                    rem = max(0, 1500 - excavations)
-                    card0["status_lbl"].configure(text="READY TO CLEAR ⚡", fg=self.c_gold)
-                    card0["prog_lbl"].configure(text=f"Excavations: {excavations}/1500 ({rem} remaining) | Dig ready!", fg=self.c_gold)
-                    card0["prog_bar"]["value"] = min(100.0, (excavations / 1500.0) * 100.0)
-                    card0["clear_btn"].configure(text="🔵 Dig to 1500+ / Egg", state="normal", bg=self.c_blue, fg="white")
-                    self.bind_hover(card0["clear_btn"], "Dig for Egg: Excavates up to 1,500 using available coins to find Spiky Rough Egg.")
-
-            for index,view in dragon_stage_views(st,self.clearer.actions.catalog()).items():
-                card=self.stage_cards[index]
-                card['status_lbl'].configure(text=view['status'],fg=self.c_green if view['ownership_verified'] else self.c_amber)
-                card['prog_lbl'].configure(text=view['detail'],fg=self.c_muted)
-                card['prog_bar']['value']=view['progress']
-                enabled=view['can_check'] and input_allowed(self.clearer.window)
+            # 3. Show milestone statuses directly from the rulebook plan.
+            milestone_by_name = {row['name']: row for row in goal_view['milestones']}
+            actions_allowed = st.get('telemetry', {}).get('consequential_actions_allowed') is True
+            for stage_id, card in self.stage_cards.items():
+                view = milestone_by_name.get(card['name'])
+                status = view['status'] if view else 'UNKNOWN'
+                blockers = view['blockers'] if view else ['Planner evidence: UNKNOWN']
+                detail = '; '.join(blockers) if blockers else (
+                    'Ownership observed in save' if status == 'OWNED' else 'Planner requirements currently met.'
+                )
+                color = self.c_green if status == 'OWNED' else self.c_cyan if status in ('READY', 'NEEDS_RESOURCES') else self.c_amber
+                card['status_lbl'].configure(text=status, fg=color)
+                card['prog_lbl'].configure(text=detail, fg=self.c_muted)
+                card['req_lbl'].configure(text=dragon_stage_reference(
+                    DRAGON_UNLOCK_STAGES.get(stage_id, {}), goal_view['profile_status'] == 'SUPPORTED'
+                ))
+                card['prog_bar']['value'] = 100 if status == 'OWNED' else 0
+                enabled = (actions_allowed and status in ('READY', 'NEEDS_RESOURCES')
+                           and input_allowed(self.clearer.window))
                 card['clear_btn'].configure(state='normal' if enabled else 'disabled',
-                    text='Check verified milestone' if enabled else 'Needs verified prerequisites')
+                    text='Run existing stage action' if enabled else 'Waiting for verified prerequisites')
             if is_paused or not build_status['build_verified']:
-                self.overall_eta_lbl.configure(text='ETA: measuring / prerequisites')
-                self.overall_target_lbl.configure(text='')
-                self.r46_eta_badge.configure(text='R46 ETA: not established')
+                self.overall_target_lbl.configure(text=goal_view['completion'])
                 if not is_paused:self.worker_badge.configure(text='Setup / verification needed',fg=self.c_amber)
 
             # 4. Update Advisor
             route=self.clearer.actions.route.plan(st)
             _,rec=selected_route(st,load_config().get('selected_path','Automatic'))
             self.route_detail.configure(text=f"Next: {route.get('target') or route['action']}\n{route['reason']}")
-            self.active_gate_sublbl.configure(text=f"Next: {route.get('target') or route['action']} | {route['reason'][:74]}")
-            self.master_clear_btn.configure(text='START SELECTED\nPATH')
+            self.master_clear_btn.configure(text='Run Selected\nPath')
             self.adv_build_name.configure(text=f"Recommended: {rec['name']}")
             self.adv_build_meta.configure(text=f"Faction: {rec['faction']} | Bloodline: {rec['bloodline']}")
             self.adv_build_notes.configure(text="; ".join(build_status["missing"]) or "Build ownership verified")
