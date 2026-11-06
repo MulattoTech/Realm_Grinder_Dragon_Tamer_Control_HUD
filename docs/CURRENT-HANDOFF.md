@@ -83,6 +83,28 @@ with incomplete identity metadata correctly failed closed; the recorded comparis
 uses `get_game_identity()` instead. Evidence is in the private lab's
 `planner-comparison.json`. No action executor or game input ran in this comparison.
 
+### Offline runtime compatibility investigation
+
+A locally cached Ruffle 0.7.1 self-hosted package (official release zip SHA-256
+`ef12edbee135d581a9cd523837d746da30a07a64dbf1cf472d2e472c656f4b5e`)
+was tested with an unchanged private copy of the installed 4.3.22 SWF. The browser
+uses a separate profile, Chromium sandbox, loopback-only requests, blocked service
+workers, and no imported save. The SWF renders black: AVM2 construction fails at
+`Translation$/detectLocale()` with TypeError #1010 accessing `length`. Ruffle's
+load promise resolves despite this error; it is not evidence of gameplay readiness.
+The engine emits this error via console.log, so collecting only console.error
+misses it. `tools/probe_offline_runtime.py` now reproduces the failure, retains all
+console messages and a screenshot, and labels the result RUNTIME_ERROR. Two
+regressions cover error classification. All probe contexts/servers close on exit.
+
+Reproduce with `python tools/probe_offline_runtime.py --assets state/test-lab/offline-runtime`.
+Playwright is an optional developer dependency already available locally; runtime
+dependencies and HUD startup are unchanged. Game binaries, Ruffle packages, browser
+profiles, and captures remain ignored and are not redistributed. Native minimized
+automation, Ruffle game compatibility, save imports and persistence remain unproven.
+Next trace detectLocale's required runtime field and determine whether supported
+configuration or a compatible runtime can satisfy it without changing the game.
+
 ## Current source and release state
 
 Canonical repository: `MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD` (public). The published `0.1.0-alpha.2` source is commit `ebd43d7df16db422f60cbff2554c7298d5998679`; this handoff also records the later installation smoke check. It is a development prerelease, not an end-to-end Dragon Tamer release. The release is [v0.1.0-alpha.2](https://github.com/MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD/releases/tag/v0.1.0-alpha.2).
