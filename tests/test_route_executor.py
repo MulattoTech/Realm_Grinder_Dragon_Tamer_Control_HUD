@@ -21,6 +21,56 @@ def test_already_owned_stoic_does_not_search_or_click(tmp_path):
     result=api().RouteExecutor(Actions()).purchase_named({'target':'Stoic Resistance'})
     assert result['success'] and result['action']=='ALREADY_OWNED'
 
+
+def test_non_mercenary_template_uses_measured_faction_collection(tmp_path,monkeypatch):
+    from types import SimpleNamespace
+    import src.config as config
+
+    monkeypatch.setattr(config,'load_config',lambda:{'selected_path':'Automatic'})
+    class Actions:
+        state_dir=tmp_path
+        window=None
+        def read(self):
+            return {'reincarnation':24,'faction':3,'alignment':2,'gems':1e72,
+                    'raw_data':{'saveVersion':58,'upgrades':{},'buildings':{}}}
+        def load(self,_name):return {}
+        def manifest(self,_recommendation):return {'verified':True,'required_upgrade_ids':[1],'merc_spells':[]}
+        def deploy_template(self,_template):raise AssertionError('Mercenary template UI must not be used for Goblin')
+
+    executor=api().RouteExecutor(Actions())
+    executor.planner=SimpleNamespace(next_step=lambda *_args:{'action':'deploy_build','target':'Goblin build',
+        'template':'S50,S105','recommendation':{'name':'Goblin build'}})
+    executor.collect=lambda step:{'success':False,'status':'OBSERVING','action':'COLLECT_RESOURCES','step':step}
+
+    result=executor.run_once()
+
+    assert result['action']=='COLLECT_RESOURCES'
+    assert result['step']['target']=='Goblin build'
+
+
+def test_unverified_faction_template_stays_fail_closed(tmp_path,monkeypatch):
+    from types import SimpleNamespace
+    import src.config as config
+
+    monkeypatch.setattr(config,'load_config',lambda:{'selected_path':'Automatic'})
+    class Actions:
+        state_dir=tmp_path
+        window=None
+        def read(self):return {'reincarnation':24,'faction':None,'alignment':None,'gems':1e72,
+                              'raw_data':{'saveVersion':58,'upgrades':{}}}
+        def load(self,_name):return {}
+        def manifest(self,_recommendation):return {'verified':True,'required_upgrade_ids':[1],'merc_spells':[]}
+        def deploy_template(self,_template):raise AssertionError('No template input for an unknown faction')
+
+    executor=api().RouteExecutor(Actions())
+    executor.planner=SimpleNamespace(next_step=lambda *_args:{'action':'deploy_build','target':'unknown build',
+        'template':'S50','recommendation':{'name':'unknown build'}})
+    executor.collect=lambda _step:pytest.fail('Unknown faction must not collect or click')
+
+    result=executor.run_once()
+
+    assert result['status']=='BLOCKED' and result['action']=='FACTION_UNVERIFIED'
+
 def test_progression_setup_delegates_to_selected_route():
     import ast
     tree=ast.parse(Path('src/progression_actions.py').read_text(encoding='utf-8'))

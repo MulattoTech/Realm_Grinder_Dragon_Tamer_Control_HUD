@@ -124,6 +124,16 @@ class RouteExecutor:
         if action=='purchase_named':return self.purchase_named(step)
         if action=='collect_coins':return self.collect(step)
         if action=='deploy_build':
+            current=self.actions.read()
+            faction=current.get('faction')
+            if type(faction) is not int or faction not in (*range(9),11):
+                return {'success':False,'status':'BLOCKED','action':'FACTION_UNVERIFIED',
+                        'message':'Faction is not verified; no build or collection input sent'}
+            if faction!=11:
+                # The import dialog is calibrated only for Mercenary builds.
+                # Continue ordinary state-measured progression for known factions
+                # instead of sending a non-Mercenary template to that UI.
+                return self.collect(step)
             result=self.actions.deploy_template(step['template'])
             # A partial build can still make ordinary production progress.
             if not result.get('build_verified') and input_allowed(self.actions.window):
