@@ -1,5 +1,23 @@
 # Verification report - 2026-11-06
 
+## Official browser build startup probe
+
+At source `3ad22cc`, `python tools/probe_offline_runtime.py --assets
+state/test-lab/browser-runtime --seconds 20` loaded the official browser SWF
+under Ruffle 0.7.1 with no runtime-error log. Screenshot inspection showed only
+the Kongregate-host message: **gameplay NOT_VERIFIED**. The local probe allowed
+only its loopback origin and imported no saves.
+
+A separate fresh headless Edge guest profile opened the normal Kongregate page
+and observed four frames at 15-second intervals after Play. The first two were
+preroll; the third was the game's loading screen; the fourth was black. Logs
+showed Kongregate API/time.gov fetch errors and an AVM2 timer timeout. This is
+**FAIL for hosted game startup in this tested environment**, not proof of a
+universal site failure. No login, save import, purchase, or desktop input occurred.
+Browser contexts closed normally. Minimized automation and site embedding remain
+unverified. This follow-up changes documentation only; executable verification
+remains the `6aea097` result below and was not rerun for these notes.
+
 ## Offline runtime probe
 
 Code commit `6aea097cfd102281760fdebc2e23cc0b48363568` passed the full

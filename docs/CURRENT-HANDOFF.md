@@ -2,6 +2,29 @@
 
 Date: 2026-11-06
 
+## Browser runtime follow-up: minimized automation remains unverified
+
+The official browser SWF was tested separately from the desktop AIR SWF. Its
+SHA256 is `6ccb7d425f0330c874162b322453d0b9d50c4a4e1a8dd243c9db437eaa59aa79`.
+The bounded local Ruffle probe had no AVM2 error, but rendered only a message
+directing the player to Kongregate. This is not gameplay acceptance; do not
+remove or spoof the host check to make a local embedding appear supported.
+
+A fresh headless Edge profile then opened the normal Kongregate game page,
+used its Play button, dismissed the optional signup modal, and waited through
+the preroll ad. The real game reached its loading screen, then rendered black.
+Console evidence includes failure to load the Kongregate Flash API and time.gov
+resource, followed by an AVM2 timer script timeout. The old standalone frame URL
+also redirected to a 404; use the normal game page for future hosted checks.
+
+Private screenshots and reports are under `state/test-lab/browser-probes/hosted-b69f73c81f774591ac258528eaa41fd9`
+and `state/test-lab/runtime-probe-6adf8272891f43a8a4a91226e2c23642`.
+Both browser contexts were closed. No save was imported, no credentials were
+used, and no desktop-game input was sent. The browser path is currently blocked
+at startup, not a proven replacement for the native input backend. Next work
+must resolve a concrete runtime failure or establish native isolated execution
+before attempting test-save imports; do not repeat loader-only acceptance tests.
+
 ## Resumed scope: isolated save testing and reusable strategy
 
 The user approved Astra Medium coordination, verified backups of the real save,
