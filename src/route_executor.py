@@ -218,6 +218,10 @@ class RouteExecutor:
                 return fresh_transition(before,after) and progress['progressed']
             result=self.actions.runner.run('GOBLIN_RESEARCH_TEMPLATE',
                 precondition,dispatch,verify,allow_no_effect=True)
+            if result.get('status')=='NO_EFFECT':
+                (self.actions.state_dir/'STOP').write_text(
+                    'Research template transaction made no verified selection; review Research availability before resuming',
+                    encoding='utf-8')
             result['build_verified']=bool(observed.get('complete'))
             if result['success']:
                 result.update(action='BUILD_COMPLETE' if observed['complete'] else 'BUILD_PARTIAL',

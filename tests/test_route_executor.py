@@ -247,3 +247,32 @@ def test_partial_template_changes_are_not_full_build_success():
     result=module.template_progress(before,after,manifest)
     assert result['progressed'] and not result['complete']
     assert result['upgrades_owned']==1 and result['spells_selected']==1
+
+
+def test_research_template_no_effect_writes_stop_instead_of_retrying(tmp_path,monkeypatch):
+    import src.route_executor as module
+    state={'faction':3,'raw_data':{'saveVersion':58,'upgrades':{'412':{'u1':True}}},
+        'game_identity':{'supported':True,'save_version':58,
+            'swf_sha256':'7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'},
+        'save_fingerprint':'before'}
+    manifest={'verified':True,'template':'S50','required_upgrade_ids':[130002],
+        'merc_spells':[],'save_version':58,
+        'swf_sha256':'7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b'}
+    monkeypatch.setattr(module,'input_allowed',lambda _window:True)
+    monkeypatch.setattr('src.build_catalog.compile_template',lambda *_args:manifest)
+    monkeypatch.setattr('src.build_catalog.load_reference_ids',lambda:{})
+    class UI:
+        def __init__(self,*_args):pass
+        def research_entry_available(self):return True
+        def enter_research_template(self,_template):pass
+    monkeypatch.setattr(module,'SemanticUI',UI)
+    class Runner:
+        def run(self,*_args,**_kwargs):return {'success':False,'status':'NO_EFFECT','message':'No requested research acquired'}
+    class Actions:
+        state_dir=tmp_path
+        window=object()
+        runner=Runner()
+        def read(self):return state
+    result=module.RouteExecutor(Actions()).deploy_template('S50')
+    assert result['status']=='NO_EFFECT'
+    assert (tmp_path/'STOP').exists()
