@@ -8,6 +8,7 @@ import os
 import re
 import json
 import base64
+import hashlib
 import threading
 from typing import Optional, Dict, Any
 
@@ -21,8 +22,11 @@ def extract_save_string_from_sol(sol_path: str = SOL_PATH) -> str:
     if not os.path.exists(sol_path):
         raise FileNotFoundError(f"SharedObject file not found at: {sol_path}")
     with open(sol_path, "rb") as f:
-        d = f.read()
+        return _extract_save_string(f.read())
 
+
+def _extract_save_string(d: bytes) -> str:
+    """Extract a save string from one already-read SharedObject snapshot."""
     end = d.rfind(b"$e")
     if end == -1:
         raise ValueError("Could not locate '$e' terminator in .sol file.")
@@ -110,14 +114,17 @@ def get_current_game_state() -> Dict[str, Any]:
     for _ in range(3):
         try:
             before = os.stat(SOL_PATH)
-            data = decode_save(extract_save_string_from_sol())
+            with open(SOL_PATH, "rb") as stream:
+                snapshot = stream.read()
+            data = decode_save(_extract_save_string(snapshot))
             after = os.stat(SOL_PATH)
             if (before.st_mtime_ns, before.st_size) != (after.st_mtime_ns, after.st_size):
                 raise OSError('Save changed during decoding')
             result = normalize_save_data(data)
             result.update(save_timestamp=after.st_mtime,
                           save_age_seconds=max(0, time.time()-after.st_mtime),
-                          save_fingerprint=f'{after.st_mtime_ns}:{after.st_size}',
+                          save_fingerprint=(f'{after.st_mtime_ns}:{after.st_size}:'
+                                            f'{hashlib.sha256(snapshot).hexdigest()}'),
                           save_decoded_at=time.time())
             return result
         except (OSError, ValueError, EOFError) as exc:
