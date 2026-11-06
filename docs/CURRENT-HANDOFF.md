@@ -2,6 +2,37 @@
 
 Date: 2026-11-06
 
+## Resumed scope: isolated save testing and reusable strategy
+
+The user approved Astra Medium coordination, verified backups of the real save,
+and edited **isolated test saves** to accelerate late-stage testing. This supersedes
+the earlier blanket save-edit prohibition only for isolated test copies; production
+save integrity, read-only memory, and no Steam achievement API calls remain required.
+The user also requested an embedding assessment for M-TechLabs, ingestion of the
+Musicfamily wiki, and evaluation of eleven named automation/advisory repositories.
+Non-Electron operation and the existing HUD remain requirements.
+
+`tools/save_lab.py` creates a unique local lab containing an original backup and
+baseline fixture, checks byte hashes and decoding, rejects storage inside the live
+save directory, and verifies manifest paths stay inside the lab. This is file
+isolation only: a separate running game profile is **not yet established**. Never
+import a test save into the existing Steam session as a substitute for isolation.
+The live R24/schema-58 backup and baseline were successfully verified locally;
+paths and hashes are retained in ignored `state/test-lab` manifests. No live save
+was written. Four focused regressions pass, including corruption and path escape.
+
+Initial metadata was retrieved for all eleven requested repositories/gist. Actual
+license text, useful code, and version compatibility still require review; metadata
+alone does not establish permission or suitability to vendor code. The Kongregate
+page exposes an embed endpoint; third-party embedding and automation compatibility
+are not yet proven. The Musicfamily root is accessible through the local HTTP
+client and returned 109 links, despite a web-browser fetch timing out.
+
+Next: finish reference intake, establish runtime storage isolation, implement and
+round-trip a version-bound test-save encoder, then exercise researched progression
+routes in the isolated runtime. Keep synthetic, modified-save, and legitimately
+earned gameplay evidence distinguishable. End-to-end completion remains PARTIAL.
+
 ## Current source and release state
 
 Canonical repository: `MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD` (public). The published `0.1.0-alpha.2` source is commit `ebd43d7df16db422f60cbff2554c7298d5998679`; this handoff also records the later installation smoke check. It is a development prerelease, not an end-to-end Dragon Tamer release. The release is [v0.1.0-alpha.2](https://github.com/MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD/releases/tag/v0.1.0-alpha.2).
