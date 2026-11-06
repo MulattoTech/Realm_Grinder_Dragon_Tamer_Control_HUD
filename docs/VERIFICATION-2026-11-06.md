@@ -58,7 +58,11 @@ Checked at 2026-11-06 13:51 UTC on `codex/live-viewport-scaling`, based on `main
 - Targeted compiler, bootstrap, route, and action-verification suites: **60 passed** before adding the malformed-identity regression; the full source suite then reported **418 passed, 5 skipped**. A clean archive run reported **417 passed, 5 skipped**. Clean bootstrap made zero network requests and sent zero game input. The verifier then stopped at its clean-worktree gate as designed; committed-byte verification remains pending.
 - The live game was not touched for this code check. Existing R24 game and paused helper status remain as in the collection follow-up above. This compiler fix does not calibrate or automate non-Mercenary Research UI selection, and does not establish any reset, Dragon stage, or achievement.
 
-Status remains PARTIAL pending committed verification, installation of this slice, and research-selection UI calibration.
+The verifier passed on commit `25f4097120aac6f26f368a51e2584e05cb9c56dc` from the source checkout: **418 passed, 5 skipped** in both source and clean archive. The install path was fast-forwarded from origin/main to the same commit; its verifier reported **423 installed tests passed** and **418 passed, 5 skipped** in the clean archive. Clean bootstrap recognized the installed 4.3.22 hash/schema, made zero network requests, and sent zero game input. The existing desktop shortcut still targets Python 3.12 `pythonw.exe` with `C:\Tools\Dev\RealmGrinder\launcher.py`; the updated HUD relaunched through it as PID 64768. Game PID 45836 stayed open, config stayed paused, STOP stayed present, and reset actions stayed disabled.
+
+A live read-only capture at 1433x822 shows the R24 Goblin game view with no Research sidebar tab. No click or purchase was sent. The research deployment path remains fail-closed with `RESEARCH_UI_NOT_CALIBRATED`; the research panel prerequisite and click targets are not yet verified for this save. The community research walkthrough describes panel access after unlocking a facility and buying unique buildings in later runs: https://realm-grinder.fandom.com/wiki/Research:_Step_by_step. This was not validated against the current save.
+
+Status remains PARTIAL. The ID compiler and existing collection automation are verified; non-Mercenary research UI selection, progression to R42, reset handling, Dragon stages, minimized operation, and Dragon Tamer achievement completion remain unproven.
 
 ## Delayed production-save observation follow-up
 
