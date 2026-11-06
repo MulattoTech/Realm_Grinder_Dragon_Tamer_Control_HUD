@@ -9,6 +9,17 @@ class NoMemory:
         return {}, {'process_connected': True}
 
 
+def test_ordinary_telemetry_does_not_start_heap_discovery(tmp_path, monkeypatch):
+    import src.live_state as live
+    discovery = []
+    def memory_factory(folder, discovery_enabled):
+        discovery.append(discovery_enabled)
+        return NoMemory()
+    monkeypatch.setattr(live, 'MemoryProvider', memory_factory)
+    LiveStateProvider(lambda: {}, state_dir=tmp_path)
+    assert discovery == [False]
+
+
 def test_observation_carries_current_binary_identity(tmp_path):
     identity = {'supported': True, 'swf_sha256': 'a'*64, 'game_version': '4.3.22', 'save_version': 58}
     saved = {'reincarnation': 24, 'save_timestamp': time.time(),

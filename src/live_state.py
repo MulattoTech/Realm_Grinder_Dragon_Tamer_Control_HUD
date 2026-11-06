@@ -21,7 +21,8 @@ class LiveStateProvider:
         from src.game_identity import get_game_identity
         self.identity_reader = identity_reader or get_game_identity
         self.state_dir = Path(state_dir)
-        self.memory = memory if memory is not None else MemoryProvider(self.state_dir, discovery_enabled=True)
+        # Heap discovery is an explicit diagnostic, never ordinary HUD polling.
+        self.memory = memory if memory is not None else MemoryProvider(self.state_dir, discovery_enabled=False)
         self.max_save_age, self.max_memory_age = max_save_age, max_memory_age
         self._last_good = None
         self._lock = threading.RLock()
