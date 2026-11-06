@@ -13,6 +13,7 @@ from src.atomic_store import write_json
 from src.build_catalog import compile_template
 
 ROOT=Path(__file__).resolve().parents[1]
+VERSION_CATALOG_PATH=ROOT/'data/supported_game_versions.json'
 
 
 def find_game_directory(explicit=None):
@@ -51,37 +52,37 @@ def initialize(root=ROOT,game_dir=None,refresh_installed=False):
             'require_minimized':True,'cycle_delay_sec':5.0})
         (root/'state/STOP').write_text('New checkout: review source coverage and select a path before resuming.',encoding='utf-8')
     reference=json.loads((ROOT/'data/reference_identifiers.json').read_text(encoding='utf-8'))
-    known=json.loads((ROOT/'data/installed_identifiers.json').read_text(encoding='utf-8'))
-    save_version=known['save_version']
-    binary=game/'RealmGrinderDesktop.swf'
-    digest=hashlib.sha256(binary.read_bytes()).hexdigest() if binary.exists() else None
-    verified=digest==known['swf_sha256']
-    status='MATCHED_BUNDLED_IDENTIFIERS' if verified else 'UNRECOGNIZED_BINARY' if digest else 'NOT_AVAILABLE'
+    from src import game_identity
+    # Keep the public module constant usable for controlled tests and local
+    # metadata refreshes while identity cache keys include its stat signature.
+    game_identity.VERSION_CATALOG_PATH=VERSION_CATALOG_PATH
+    identity=game_identity.get_game_identity(game)
+    digest=identity['swf_sha256'];verified=identity['supported']
+    save_version=identity['save_version']
+    status=identity['support_status']
     from src.wiki_data import BUILDS_DATABASE
     manifests={rec['name']:compile_template(rec.get('template',''),reference,save_version) for rec in BUILDS_DATABASE.values()}
     path=root/'state/build_manifests.json'
-    if not path.exists():write_json(path,{'schema_version':2,'builds':manifests})
+    if not path.exists() or verified:write_json(path,{'schema_version':2,'builds':manifests})
     path=root/'state/upgrade_catalog.json'
-    if not path.exists():
-        entries={item['name']:{'id':item['id'],'save_version':save_version,
-            'verification':'installed_definition' if verified else 'unverified_bundled_identifier',
-            'source_sha256':known['swf_sha256'],'verified_against_installed':verified}
-            for item in known['definitions'] if item['kind']=='upgrade'}
-        write_json(path,entries)
+    if not path.exists() and not verified:write_json(path,{})
     path=root/'state/milestone_catalog.json'
-    if not path.exists():
+    if not path.exists() or verified:
         names={'spiky_rough_egg':('Spiky Rough Egg','trophy'),'hatch':('Hatch!','upgrade'),
                'drakeling':('Drakeling','upgrade'),'dragon':('Dragon','upgrade'),
                'elder_dragon':('Elder Dragon','upgrade'),'dragon_tamer':('Dragon Tamer','trophy')}
         milestones={}
         for key,(name,kind) in names.items():
-            matches=[item for item in known['definitions'] if item['name']==name and item['kind']==kind]
+            matches=[item for item in _definitions_for_identity(identity) if item['name']==name and item['kind']==kind]
             if len(matches)==1:milestones[key]={'id':matches[0]['id'],'kind':kind,'verified':verified,
-                'source':'BUNDLED_INSTALLED_IDENTIFIERS','swf_sha256':known['swf_sha256']}
+                'source':'SUPPORTED_INSTALLED_LITERAL_DEFINITION','swf_sha256':digest}
         write_json(path,{'schema_version':2,'milestones':milestones})
-    if verified and (refresh_installed or not (root/'assets/templates/registry.json').exists()):
+    if verified:
         from src.installed_catalog import install_catalog
-        install_catalog(game_dir=game,root_dir=root,save_version=save_version)
+        install_catalog(game_dir=game,root_dir=root,save_version=save_version,
+                        invalidate_existing=True)
+    elif not verified:
+        _invalidate_installed_catalogs(root)
     if verified:
         anchors=ROOT/'data/ui_reference'
         manifest=json.loads((anchors/'manifest.json').read_text(encoding='utf-8'))
@@ -102,8 +103,40 @@ def initialize(root=ROOT,game_dir=None,refresh_installed=False):
             knowledge.ingest(note['title'],note['source_url'],note['text'],origin=note['origin'],
                              captured_at=note['captured_at'],license='Project development observation; game facts retain their original attribution')
     report={'game_metadata':status,'game_dir':str(game),'installed_sha256':digest,
+            'game_version':identity['game_version'],'save_version':identity['save_version'],
             'network_requests':0,'game_input_sent':False,
             'prepared_build_manifests':len(manifests),'configuration_preserved':True,
             'instructions':'Open the HUD from the logged-on Windows desktop. Keep resets off until semantic reset validation passes.'}
     write_json(root/'state/bootstrap_report.json',report)
     return report
+
+
+def _definitions_for_identity(identity):
+    if not identity.get('supported'):
+        return []
+    catalog=json.loads(VERSION_CATALOG_PATH.read_text(encoding='utf-8'))
+    version=next((item for item in catalog.get('versions',[])
+                  if item.get('swf_sha256')==identity.get('swf_sha256')),None)
+    return [] if version is None else version.get('definitions',[])
+
+
+def _invalidate_installed_catalogs(root):
+    """Remove local generated verification tied to a different/absent SWF."""
+    state=root/'state';path=state/'upgrade_catalog.json'
+    if path.exists():
+        try:catalog=json.loads(path.read_text(encoding='utf-8'))
+        except (OSError,ValueError):catalog={}
+        catalog={name:item for name,item in catalog.items()
+                 if item.get('verification') not in ('installed_definition','unverified_bundled_identifier')
+                 and not item.get('verified_against_installed')}
+        write_json(path,catalog)
+    write_json(state/'milestone_catalog.json',{'schema_version':2,'milestones':{}})
+    definitions=state/'installed_definitions.json'
+    if definitions.exists():definitions.unlink()
+    registry_path=root/'assets/templates/registry.json'
+    if registry_path.exists():
+        try:registry=json.loads(registry_path.read_text(encoding='utf-8'))
+        except (OSError,ValueError):registry={}
+        registry={name:item for name,item in registry.items()
+                  if not str(item.get('source_page','')).startswith('INSTALLED_GAME ')}
+        write_json(registry_path,registry)

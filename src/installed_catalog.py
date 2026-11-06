@@ -84,13 +84,25 @@ def sprite_image(atlas,attributes):
     return frame
 
 
-def install_catalog(game_dir=None,root_dir=None,save_version=None):
+def install_catalog(game_dir=None,root_dir=None,save_version=None,invalidate_existing=True):
     root=Path(root_dir or ROOT)
     game=Path(game_dir or GAME)
-    from src.save_reader import get_current_game_state
-    report=inspect_definitions(game/'RealmGrinderDesktop.swf');write_json(root/'state/installed_definitions.json',report)
-    if save_version is None:save_version=get_current_game_state()['raw_data']['saveVersion']
+    from src.game_identity import get_game_identity
+    identity=get_game_identity(game)
+    if not identity['supported']:
+        raise ValueError('Installed definition catalogs require a supported SWF')
+    if save_version is None:save_version=identity['save_version']
+    if save_version!=identity['save_version']:
+        raise ValueError('Save version does not match supported game identity')
+    report=inspect_definitions(game/'RealmGrinderDesktop.swf')
+    if report['swf_sha256']!=identity['swf_sha256']:
+        raise ValueError('Installed binary changed while reading definition metadata')
+    write_json(root/'state/installed_definitions.json',report)
     path=root/'state/upgrade_catalog.json';catalog=json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
+    if invalidate_existing:
+        catalog={name:item for name,item in catalog.items()
+                 if item.get('verification') not in ('installed_definition','unverified_bundled_identifier')
+                 and not item.get('verified_against_installed')}
     for item in report['definitions']:
         if item['kind']!='upgrade':continue
         catalog[item['name']]={'id':item['id'],'save_version':save_version,'verification':'installed_definition',
@@ -108,6 +120,9 @@ def install_catalog(game_dir=None,root_dir=None,save_version=None):
             images[node.attrib['name']]=(xml,node.attrib)
     folder=root/'assets/templates';folder.mkdir(parents=True,exist_ok=True);registry_path=folder/'registry.json'
     registry=json.loads(registry_path.read_text(encoding='utf-8')) if registry_path.exists() else {}
+    if invalidate_existing:
+        registry={name:item for name,item in registry.items()
+                  if not str(item.get('source_page','')).startswith('INSTALLED_GAME ')}
     atlas_cache={}
     for name in names:
         definition=by_name.get(name)

@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import importlib
 import pytest
 
@@ -25,6 +26,16 @@ def test_metadata_is_hash_scoped_and_not_an_executed_formula(catalog):
     assert len(catalog['swf_sha256'])==64
     assert catalog['execution_policy']=='DEFINITIONS_ONLY_NO_GAME_CODE_EXECUTION'
     assert len(catalog['definitions'])>500
+
+def test_supported_version_metadata_matches_only_inspected_literal_fields(catalog):
+    from pathlib import Path
+    support=json.loads((Path(__file__).resolve().parents[1]/'data/supported_game_versions.json').read_text())
+    version=next(item for item in support['versions'] if item['swf_sha256']==catalog['swf_sha256'])
+    compact={(row['id'],row['name'],row['kind'],tuple(row['icon_candidates']))
+             for row in version['definitions']}
+    inspected={(row['id'],row['name'],row['kind'],tuple(row['icon_candidates']))
+               for row in catalog['definitions']}
+    assert compact==inspected
 
 def test_parse_declarative_constant_assignment_does_not_accept_computed_value():
     ops=[{'op':'pushshort','args':[552],'resolved':None},
