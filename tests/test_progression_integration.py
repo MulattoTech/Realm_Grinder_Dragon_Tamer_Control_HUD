@@ -185,3 +185,137 @@ def test_launcher_prepares_a_fresh_checkout_before_opening_hud():
     tree=ast.parse(Path('launcher.py').read_text(encoding='utf-8'))
     node=next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=='main')
     assert any(isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id=='initialize' for n in ast.walk(node))
+
+
+def test_auto_clear_does_not_excavate_when_config_disables_it(monkeypatch):
+    import src.config as config
+    from src.progression_actions import ProgressionActions
+    monkeypatch.setattr(config,'load_config',lambda:{'selected_goal':'Dragon Tamer','auto_excavate':False})
+    actions=ProgressionActions.__new__(ProgressionActions)
+    actions.read=lambda:{'reincarnation':46,'has_egg':False}
+    actions.catalog=lambda:{}
+    calls=[]
+    actions.excavate=lambda *args:calls.append('excavate')
+    result=actions.auto_clear()
+    assert not result['success'] and result['status']=='BLOCKED'
+    assert calls==[]
+
+
+def test_auto_progression_does_not_reset_when_config_disables_it(monkeypatch):
+    import src.config as config
+    from src.progression_actions import ProgressionActions
+    from src.wiki_data import get_reincarnation_gem_requirement
+    monkeypatch.setattr(config,'load_config',lambda:{'auto_reincarnate':False,'auto_abdicate':False,
+        'auto_apply_build':False})
+    r=24
+    actions=ProgressionActions.__new__(ProgressionActions)
+    actions.read=lambda:{'reincarnation':r,'gems':get_reincarnation_gem_requirement(r),
+        'potential_gems':0}
+    calls=[]
+    actions.reincarnate=lambda:calls.append('reset')
+    actions.diagnose_build=lambda _state:{'build_verified':True}
+    actions.maintain_production=lambda:{'action':'OBSERVE'}
+    actions.route=SimpleNamespace()
+    result=actions.advance_reincarnation()
+    assert result['action']=='OBSERVE' and calls==[]
+
+
+def test_reincarnation_ignores_legacy_verified_boolean_without_reviewed_checklist(tmp_path):
+    import json
+    from src.progression_actions import ProgressionActions
+    from src.action_verification import TransactionRunner
+    before={'reincarnation':24,'gems':1e120,'save_fingerprint':'synthetic-current',
+        'save_timestamp':100.0,'raw_data':{'saveVersion':58},
+        'telemetry':{'consequential_actions_allowed':True,'pid':7,'process_start_time':9}}
+    (tmp_path/'permanent_milestone_audit.json').write_text(json.dumps(
+        {'reincarnation':24,'verified':True,'checks':[{'complete':True}]}),encoding='utf-8')
+    class Window:
+        def get_client_size(self):return (100,100)
+        def press_key(self,*_args,**_kwargs):pytest.fail('legacy evidence must not dispatch input')
+    actions=ProgressionActions.__new__(ProgressionActions)
+    actions.window=Window();actions.state_dir=tmp_path;actions.read=lambda:before
+    actions.load=lambda name: ({'save_version':58,'client_size':[100,100],
+        'reincarnations':[24],'verified_actions':['reincarnation'],
+        'actions':{'reincarnation':[{'key':'R'}]}}
+        if name=='ui_actions.json' else ProgressionActions.load(actions,name))
+    actions.backup=lambda:'synthetic-backup'
+    actions.runner=TransactionRunner(actions.read,tmp_path,cancelled=lambda:False,
+        backup=actions.backup,sleep=lambda _delay:None)
+    result=actions.reincarnate()
+    assert not result['success'] and result['status']=='BLOCKED'
+
+
+def test_reincarnation_dispatches_once_for_fresh_exact_reviewed_audit(tmp_path,monkeypatch):
+    import json
+    import src.progression_actions as progression
+    from src.progression_actions import ProgressionActions
+    from src.action_verification import TransactionRunner
+    checklist={'schema_version':1,'checklist_id':'synthetic-reviewed-v1','reviewed':True,
+        'save_versions':[58],'reincarnations':[24],
+        'checks':[{'id':'synthetic-condition','condition':{'field':'reincarnation','op':'eq','value':24}}]}
+    (tmp_path/'permanent_milestone_checklist.json').write_text(json.dumps(checklist),encoding='utf-8')
+    before={'reincarnation':24,'gems':1e120,'save_fingerprint':'synthetic-before',
+        'save_timestamp':100.0,'raw_data':{'saveVersion':58},
+        'telemetry':{'consequential_actions_allowed':True,'pid':7,'process_start_time':9}}
+    after={**before,'reincarnation':25,'save_fingerprint':'synthetic-after','save_timestamp':101.0}
+    current={'state':before}
+    class Window:
+        def __init__(self):self.keys=[]
+        def get_client_size(self):return (100,100)
+        def press_key(self,key,**_kwargs):self.keys.append(key);current['state']=after
+    window=Window()
+    monkeypatch.setattr(progression,'input_allowed',lambda _window:True)
+    actions=ProgressionActions.__new__(ProgressionActions)
+    actions.window=window;actions.state_dir=tmp_path
+    actions.read=lambda:current['state']
+    actions.load=lambda name: ({'save_version':58,'client_size':[100,100],
+        'reincarnations':[24],'verified_actions':['reincarnation'],
+        'actions':{'reincarnation':[{'key':'R'}]}}
+        if name=='ui_actions.json' else ProgressionActions.load(actions,name))
+    actions.backup=lambda:'synthetic-backup'
+    actions.runner=TransactionRunner(actions.read,tmp_path,cancelled=lambda:False,
+        backup=actions.backup,sleep=lambda _delay:None)
+    result=actions.reincarnate()
+    assert result['success'] and result['status']=='VERIFIED'
+    assert window.keys==['R']
+    audit=json.loads((tmp_path/'permanent_milestone_audit.json').read_text(encoding='utf-8'))
+    assert audit['snapshot_fingerprint']=='synthetic-before'
+    assert audit['save_version']==58 and audit['reincarnation']==24
+
+
+@pytest.mark.parametrize('checklist',[
+    None,
+    {'schema_version':1,'checklist_id':'unknown-v1','reviewed':True,
+     'save_versions':[58],'reincarnations':[24],
+     'checks':[{'id':'unknown-condition','condition':{'field':'reincarnation','op':'future-op','value':24}}]},
+    {'schema_version':1,'checklist_id':'stale-snapshot-v1','reviewed':True,
+     'save_versions':[58],'reincarnations':[24],
+     'checks':[{'id':'old-fingerprint','condition':{'field':'save_fingerprint','op':'eq','value':'old-save'}}]},
+])
+def test_missing_unknown_or_stale_checklist_evidence_sends_zero_input(tmp_path,monkeypatch,checklist):
+    import json
+    import src.progression_actions as progression
+    from src.progression_actions import ProgressionActions
+    from src.action_verification import TransactionRunner
+    before={'reincarnation':24,'gems':1e120,'save_fingerprint':'current-save',
+        'save_timestamp':100.0,'raw_data':{'saveVersion':58},
+        'telemetry':{'consequential_actions_allowed':True,'pid':7,'process_start_time':9}}
+    (tmp_path/'permanent_milestone_audit.json').write_text(json.dumps(
+        {'reincarnation':24,'verified':True,'checks':[{'complete':True}]}),encoding='utf-8')
+    if checklist is not None:
+        (tmp_path/'permanent_milestone_checklist.json').write_text(json.dumps(checklist),encoding='utf-8')
+    class Window:
+        def get_client_size(self):return (100,100)
+        def press_key(self,*_args,**_kwargs):pytest.fail('unverified evidence must not dispatch input')
+    actions=ProgressionActions.__new__(ProgressionActions)
+    actions.window=Window();actions.state_dir=tmp_path;actions.read=lambda:before
+    actions.load=lambda name: ({'save_version':58,'client_size':[100,100],
+        'reincarnations':[24],'verified_actions':['reincarnation'],
+        'actions':{'reincarnation':[{'key':'R'}]}}
+        if name=='ui_actions.json' else ProgressionActions.load(actions,name))
+    actions.backup=lambda:'synthetic-backup'
+    actions.runner=TransactionRunner(actions.read,tmp_path,cancelled=lambda:False,
+        backup=actions.backup,sleep=lambda _delay:None)
+    monkeypatch.setattr(progression,'input_allowed',lambda _window:True)
+    result=actions.reincarnate()
+    assert not result['success'] and result['status']=='BLOCKED'

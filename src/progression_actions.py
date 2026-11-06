@@ -13,6 +13,7 @@ from src.save_reader import SOL_PATH
 from src.wiki_data import get_recommended_build,get_reincarnation_gem_requirement
 from src.strategy_rules import selected_route
 from src.route_executor import RouteExecutor
+from src.milestone_audit import evaluate_milestone_audit,audit_matches_current
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -134,11 +135,14 @@ class ProgressionActions:
 
     def reincarnate(self):
         def ready(state):
-            audit=self.load('permanent_milestone_audit.json')
-            checks=audit.get('checks',[])
+            checklist=self.load('permanent_milestone_checklist.json')
+            audit=evaluate_milestone_audit(checklist,state)
+            write_json(self.state_dir/'permanent_milestone_audit.json',audit)
+            profile=self.load('ui_actions.json')
+            profile_reincarnations=profile.get('reincarnations',[])
             return (state['gems']>=get_reincarnation_gem_requirement(state['reincarnation']) and
-                    audit.get('reincarnation')==state['reincarnation'] and audit.get('verified') is True and
-                    bool(checks) and all(check.get('complete') is True for check in checks))
+                    state['reincarnation'] in profile_reincarnations and
+                    audit_matches_current(audit,state,checklist))
         return self._transaction('REINCARNATED','reincarnation',ready,reincarnation_verified)
 
     def deploy_template(self,template=None):
@@ -239,7 +243,10 @@ class ProgressionActions:
             return self.execute_named_goal(config.get('named_goal','Dragon Tamer'))
         stage=actual_dragon_stage(self.read(),self.catalog())
         if stage=='REACH_R46': return self.advance_reincarnation(decision)
-        if stage=='ACQUIRE_EGG': return self.excavate()
+        if stage=='ACQUIRE_EGG':
+            if not config.get('auto_excavate',True):
+                return blocked('Excavation is disabled by configuration','AUTO_EXCAVATE_DISABLED')
+            return self.excavate()
         names={'STAGE1_HATCH':'hatch','STAGE2_DRAKELING':'drakeling','STAGE3_DRAGON':'dragon','STAGE4_ELDER_DRAGON':'elder_dragon'}
         if stage in names: return self.purchase_milestone(names[stage])
         if stage=='COMPLETED':
