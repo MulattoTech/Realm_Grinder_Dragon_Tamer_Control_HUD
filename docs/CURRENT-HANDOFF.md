@@ -23,11 +23,15 @@ The original desktop shortcut still targets `C:\Tools\Dev\RealmGrinder\launcher.
 
 After installing that source into the existing shortcut path, `scripts/Verify-Repository.ps1` also passed on `main` at `af0aa88d0ae820bb3e2907b7f6bd0ade192e3550`: **417 passed** in the installed checkout and **412 passed, 5 skipped** in the clean archive.
 
+At `68ce7b1275d3c5956064a0e8dddd9f2e76d1c1ac`, the same verifier passed again: **417 passed** in the installed checkout and **412 passed, 5 skipped** in the clean archive. The HUD no longer shows the redundant and misleading “Auto-Climb R (Force Cycle)” control; the normal selected-goal and STOP controls remain. The Stoic compatibility-note search test now builds an isolated index from the bundled note instead of depending on an ignored downloaded database.
+
 The installed game was observed read-only at R24 with roughly `6.83e72` gems versus the 4.3.22 A0 R25 threshold `1e99`. No live input was sent, and no reset, purchase, Egg, Dragon stage, or achievement was verified. The available live state therefore cannot demonstrate the irreversible or later-stage flows. Windows actions require a visible game window and live semantic recognition; minimized input remains unsupported.
 
 ## Local installation safety checkpoint
 
 Before the updated HUD launch, `state/bot_config.json` at the original installation was copied to ignored `state/bot_config.before-safe-pause-20261106-053315.json`, then set to `paused=true`, `auto_abdicate=false`, `auto_reincarnate=false`, `auto_excavate=false`; `state/STOP` was created. `Install.ps1 -Dev` preserved this configuration and recognized the installed 4.3.22 game with zero network requests and zero game input. The existing desktop shortcut then launched the HUD. Its visible state reported `Bot Paused`, displayed STOP and Emergency Stop, and showed current R24 with Dragon counter requirements as UNKNOWN. No game click, purchase, or reset was performed.
+
+The installed checkout was fast-forwarded to `68ce7b1`, verified, and its HUD was restarted without restarting the game. The desktop shortcut target remains `C:\Tools\Dev\RealmGrinder\launcher.py`. At restart, config remained paused, STOP remained present, and auto-abdication, auto-reincarnation, and auto-excavation stayed disabled. The restart smoke reported HUD PID 68128 and game PID 45836.
 
 ## Remaining acceptance work
 
