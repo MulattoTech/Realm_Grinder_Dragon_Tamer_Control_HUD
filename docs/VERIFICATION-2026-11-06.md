@@ -1,5 +1,23 @@
 # Verification report - 2026-11-06
 
+## Offline runtime probe
+
+Code commit `6aea097cfd102281760fdebc2e23cc0b48363568` passed the full
+repository verifier: **443 passed, 5 skipped**, and clean archive **442 passed,
+6 skipped**. Bootstrap sent zero game input and made zero network requests.
+The controlled headless Edge/Ruffle probe used the unchanged installed SWF,
+separate browser storage, sandbox enabled, and loopback-only request routing.
+No saves were imported. It reproduced a black frame with AVM2 Error #1010 in
+`Translation.detectLocale`; engine load success did not imply game startup.
+
+A read-only bytecode trace using `tools/inspect_installed_metadata.py` identifies
+ABC0 method 55, static Translation.detectLocale. Offsets 14-23 read
+`flash.system.Capabilities.languages.length`; offsets 29-40 read element zero.
+This identifies the missing AIR property precisely. The current Ruffle probe
+does not establish compatibility, background gameplay, or minimized AIR input.
+All temporary probe browsers and loopback servers exited. Private evidence is
+stored beneath ignored `state/test-lab`; no game/runtime binaries are published.
+
 ## Scalar fixture export validation
 
 `scripts/Verify-Repository.ps1` passed on executable commit
