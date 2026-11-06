@@ -121,7 +121,9 @@ def template_dialog(frame):
     title=cv2.imread(str(ROOT/'assets/templates/template-dialog-title.png'),cv2.IMREAD_GRAYSCALE)
     if title is None:return None
     best=None
-    for scale in (frame.width/1433,):
+    # AIR sometimes keeps the modal at a native pixel size while scaling the
+    # surrounding page; also accept proportional scaling of the full viewport.
+    for scale in dict.fromkeys((frame.width/1433,1.0)):
         tw,th=round(title.shape[1]*scale),round(title.shape[0]*scale)
         if tw<8 or th<8 or tw>frame.width or th>frame.height//2:continue
         candidate=cv2.resize(title,(tw,th)) if scale!=1 else title
