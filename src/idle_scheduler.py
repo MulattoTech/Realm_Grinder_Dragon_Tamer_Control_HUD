@@ -60,7 +60,9 @@ class IdleScheduler:
 
         kind = str(outcome.get("kind", "")).lower()
         status = str(outcome.get("status", "")).upper()
-        backoff = kind in {"error", "blocked", "waiting"} or status in {"BLOCKED", "UNCERTAIN", "WAITING"}
+        backoff = kind in {"error", "blocked", "waiting"} or status in {
+            "BLOCKED", "UNCERTAIN", "WAITING", "OBSERVING"
+        }
         signature = (kind, status, outcome.get("action"), outcome.get("message"))
         if backoff and signature == self._previous_signature:
             self._repeat_count += 1

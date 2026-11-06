@@ -331,11 +331,17 @@ class DragonBot:
                 scheduler=IdleScheduler(CONFIG_FILE,STOP_FILE,SOL_PATH)
                 while stop_event is None or not stop_event.is_set():
                     watched=scheduler.snapshot()
-                    outcome={"kind":"cycle","status":"WAITING","action":"PAUSED","message":"Paused by config or STOP file"}
+                    pause_message='Paused by user via configuration or STOP file; resume explicitly to continue.'
+                    outcome={"kind":"waiting","status":"WAITING","action":"PAUSED","message":pause_message}
                     try:
                         # Pause is a cheap config/STOP read and must gate every cycle
                         # before state observation or an action can be dispatched.
-                        if not self.is_paused():
+                        if self.is_paused():
+                            if self.state.get('is_running',False) or self.state.get('next_expected_action')!=pause_message:
+                                self.state['is_running']=False
+                                self.state['next_expected_action']=pause_message
+                                self.save_state()
+                        else:
                             self.step()
                             result=self.state.get('last_action_result') or {}
                             if result.get('status') in ('BLOCKED','UNCERTAIN'):

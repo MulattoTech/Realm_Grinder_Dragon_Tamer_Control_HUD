@@ -42,6 +42,17 @@ def test_repeated_errors_are_bounded_by_safe_configured_ceiling(tmp_path):
     assert delays == [3, 6, 10, 10, 10, 10, 10, 10]
 
 
+def test_repeated_observing_results_back_off(tmp_path):
+    now = [0.0]
+    idle, _, _, _ = scheduler(tmp_path, lambda: now[0], lambda seconds: None)
+    config = {"cycle_delay_sec": 2, "scheduler_ceiling_sec": 12}
+    observing = {"status": "OBSERVING", "action": "WAITING", "message": "No safe action yet"}
+
+    assert idle.delay_after(observing, config) == 2
+    assert idle.delay_after(observing, config) == 4
+    assert idle.delay_after(observing, config) == 8
+
+
 def test_delay_settings_are_clamped_and_invalid_values_fall_back(tmp_path):
     now = [0.0]
     idle, _, _, _ = scheduler(tmp_path, lambda: now[0], lambda seconds: None)
@@ -107,6 +118,67 @@ def test_file_stat_errors_do_not_disable_bounded_wait_or_escape(tmp_path):
 
     assert idle.wait_for_change(0.5, watched) is None
     assert now[0] == 0.5
+
+
+def test_worker_persists_pause_once_then_resumes_through_existing_step(tmp_path, monkeypatch):
+    import src.state_machine as worker
+
+    paused = [False]
+    event = threading.Event()
+    writes = []
+    steps = []
+    wait_count = [0]
+
+    class Lease:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    class Scheduler:
+        def __init__(self, *args):
+            pass
+
+        def snapshot(self):
+            return len(steps)
+
+        def delay_after(self, outcome, config):
+            return 1
+
+        def wait_for_change(self, timeout, watched, *, stop_event=None):
+            wait_count[0] += 1
+            if wait_count[0] in (1, 2):
+                paused[0] = True
+            elif wait_count[0] == 3:
+                paused[0] = False
+            else:
+                event.set()
+            return None
+
+    monkeypatch.setattr(worker, "WorkerLease", Lease)
+    monkeypatch.setattr(worker, "IdleScheduler", Scheduler)
+    monkeypatch.setattr(worker, "require_interactive_session", lambda: None)
+    monkeypatch.setattr(worker, "load_config", lambda: {"paused": paused[0], "cycle_delay_sec": 1})
+    monkeypatch.setattr(worker, "STOP_FILE", str(tmp_path / "STOP"))
+
+    bot = worker.DragonBot.__new__(worker.DragonBot)
+    bot.state = {"is_running": True, "next_expected_action": "Working", "retry_count": 0}
+    bot.save_state = lambda: writes.append(dict(bot.state))
+
+    def step():
+        steps.append("dispatch")
+        bot.state["is_running"] = True
+        bot.state["next_expected_action"] = "Working"
+
+    bot.step = step
+    bot.run_loop(stop_event=event)
+
+    pause_writes = [row for row in writes if not row["is_running"]]
+    assert len(steps) == 2
+    assert len(pause_writes) == 1
+    assert "paused" in pause_writes[0]["next_expected_action"].lower()
+    assert bot.state["is_running"] is True
 
 
 def mutate_on_wait(seconds, changed, now, writes, config, stop, save):
