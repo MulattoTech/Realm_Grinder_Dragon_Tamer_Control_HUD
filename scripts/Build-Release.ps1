@@ -21,10 +21,25 @@ $dist = Join-Path $Root "dist"
 New-Item -ItemType Directory -Force -Path $dist | Out-Null
 $name = "Realm-Grinder-Dragon-Tamer-Control-HUD-v$Version-$short.zip"
 $artifact = Join-Path $dist $name
-if (Test-Path $artifact) { Remove-Item $artifact -Force }
-
-git archive --format=zip --prefix="Realm_Grinder_Dragon_Tamer_Control_HUD-$Version/" -o $artifact HEAD
-if ($LASTEXITCODE) { throw "git archive failed." }
+$temporaryArtifact = Join-Path $dist ("." + $name + "." + [Guid]::NewGuid().ToString("N") + ".tmp")
+$backupArtifact = Join-Path $dist ("." + $name + "." + [Guid]::NewGuid().ToString("N") + ".bak")
+try {
+    git archive --format=zip --prefix="Realm_Grinder_Dragon_Tamer_Control_HUD-$Version/" -o $temporaryArtifact HEAD
+    $archiveExitCode = $LASTEXITCODE
+    if ($archiveExitCode -ne 0) { throw "git archive failed with exit code $archiveExitCode." }
+    if (-not (Test-Path -LiteralPath $temporaryArtifact) -or (Get-Item -LiteralPath $temporaryArtifact).Length -eq 0) {
+        throw "git archive reported success but did not produce a non-empty archive."
+    }
+    if (Test-Path -LiteralPath $artifact) {
+        [System.IO.File]::Replace($temporaryArtifact, $artifact, $backupArtifact)
+        Remove-Item -LiteralPath $backupArtifact -Force
+    } else {
+        [System.IO.File]::Move($temporaryArtifact, $artifact)
+    }
+} finally {
+    if (Test-Path -LiteralPath $temporaryArtifact) { Remove-Item -LiteralPath $temporaryArtifact -Force }
+    if (Test-Path -LiteralPath $backupArtifact) { Remove-Item -LiteralPath $backupArtifact -Force }
+}
 $hash = (Get-FileHash $artifact -Algorithm SHA256).Hash.ToLowerInvariant()
 $manifest = [ordered]@{
     version = $Version
