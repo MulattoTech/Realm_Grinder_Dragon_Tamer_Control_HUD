@@ -60,6 +60,29 @@ Minimized input is an early priority, but the current semantic input path still
 requires visible pixels and unobscured controls. Keep those guards until an
 isolated-runtime experiment establishes a working alternative.
 
+### Background browser feasibility probe
+
+Using installed Edge with Playwright, a fresh private user-data directory and
+Chromium sandbox enabled, the normal Kongregate page and Play Now action reached
+the official `game239558.konggames.com` frame and rendered the Ruffle loader in
+headless mode. Direct navigation to the embed endpoint alone showed blank content.
+A longer follow-up was intercepted by the site's sign-up modal; no credentials,
+save import, force-click, or security bypass was attempted. All probe browser
+contexts were closed normally. Private reports/screenshots are under ignored
+`state/test-lab/browser-probes/81c377e2f18740e58a79d818b9480095`.
+
+This proves browser startup and loader rendering only, not game startup, save
+persistence, minimized native AIR operation, or autonomous gameplay. Next inspect
+whether the site offers normal guest continuation/dismissal, or select another
+supported isolated runtime; do not infer gameplay compatibility from the loader.
+
+Offline comparison using the normal decoder, actual installed binary identity and
+KnowledgeService selects Reach R42 for the R24 baseline and Spiky Rough Egg /
+excavate_for_egg for the R48 fixture. Neither is marked complete. An initial probe
+with incomplete identity metadata correctly failed closed; the recorded comparison
+uses `get_game_identity()` instead. Evidence is in the private lab's
+`planner-comparison.json`. No action executor or game input ran in this comparison.
+
 ## Current source and release state
 
 Canonical repository: `MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD` (public). The published `0.1.0-alpha.2` source is commit `ebd43d7df16db422f60cbff2554c7298d5998679`; this handoff also records the later installation smoke check. It is a development prerelease, not an end-to-end Dragon Tamer release. The release is [v0.1.0-alpha.2](https://github.com/MulattoTech/Realm_Grinder_Dragon_Tamer_Control_HUD/releases/tag/v0.1.0-alpha.2).
