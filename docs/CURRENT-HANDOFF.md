@@ -2,6 +2,24 @@
 
 Date: 2026-11-06
 
+## User-requested development stop
+
+Development stopped at the user's request after finishing the current verified
+slice. Code `f7beff12b4b8e3f789c9917a720af59c223ccea3` passed the required
+verifier: 457 passed / 5 skipped in source, 456 passed / 6 skipped in the clean
+archive; bootstrap made zero network requests and sent zero game input. No
+development worker or automatic continuation should be restarted without a new
+user instruction. The HUD remains usable but paused, with STOP and resets off.
+
+Outstanding: full autonomous progression is not complete. R24 research remains
+blocked; purchases/resets are not proven minimized; Dragon Tamer is unverified.
+Last read-only research lead, not implemented: SpellcraftConjuration is a
+ResearchUpgrade subclass (initializer 3799, parent initializer 1904), whose
+methods 3792/3795 encode/display 10000 Max Mana. Earlier notes describing it as
+an ordinary upgrade were incorrect. Its computed save-ID linkage and faction
+unlock condition still need resolution before replacing the pending wiki recipe.
+Preserve the current fail-closed behavior until that work is explicitly resumed.
+
 ## Read-only memory probe correction
 
 `tools/probe_live_memory.py` no longer launches a missing game or calls
