@@ -1,4 +1,5 @@
 import time
+import pytest
 
 from src.action_verification import ui_action_verified
 from src.live_state import LiveStateProvider
@@ -43,3 +44,13 @@ def test_ui_calibration_is_bound_to_installed_binary():
     assert not ui_action_verified(profile, 'reincarnation', state)
     state.pop('game_identity')
     assert not ui_action_verified(profile, 'reincarnation', state)
+
+
+@pytest.mark.parametrize('supported,schema', [(False, 58), (True, 59), (True, None)])
+def test_unknown_binary_or_save_schema_blocks_actions(tmp_path, supported, schema):
+    identity = {'supported': supported, 'swf_sha256': 'a'*64, 'save_version': schema}
+    saved = {'reincarnation': 24, 'save_timestamp': time.time(),
+             'save_fingerprint': 'snapshot', 'raw_data': {'saveVersion': 58}}
+    provider = LiveStateProvider(lambda: saved, NoMemory(), tmp_path,
+                                 identity_reader=lambda: identity)
+    assert provider.get()['telemetry']['consequential_actions_allowed'] is False

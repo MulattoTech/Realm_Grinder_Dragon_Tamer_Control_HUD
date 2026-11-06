@@ -19,7 +19,12 @@ class LiveStateProvider:
                  max_save_age=90.0, max_memory_age=2.0, identity_reader=None):
         self.save_reader = save_reader
         from src.game_identity import get_game_identity
-        self.identity_reader = identity_reader or get_game_identity
+        if identity_reader is None:
+            from src.bootstrap import find_game_directory
+            game_dir = find_game_directory()
+            self.identity_reader = lambda: get_game_identity(game_dir)
+        else:
+            self.identity_reader = identity_reader
         self.state_dir = Path(state_dir)
         # Heap discovery is an explicit diagnostic, never ordinary HUD polling.
         self.memory = memory if memory is not None else MemoryProvider(self.state_dir, discovery_enabled=False)
@@ -101,11 +106,16 @@ class LiveStateProvider:
             else:
                 self.fallback_count += 1
             health = dict(health)
+            identity = state['game_identity']
+            version_matches = (identity.get('supported') is True and
+                               isinstance(identity.get('save_version'), int) and
+                               identity['save_version'] == state.get('raw_data', {}).get('saveVersion'))
             health.update(timestamp=sampled_at, save_provider_health='STALE_ERROR' if save_error else
                           ('HEALTHY' if save_healthy else 'STALE'), save_error=save_error,
                           last_save_read=now, last_save_change=timestamp, save_age_seconds=age,
                           fallback_count=self.fallback_count, rejected_memory_fields=rejected,
-                          consequential_actions_allowed=bool(save_healthy and health.get('process_connected')),
+                          game_version_status='SUPPORTED' if version_matches else 'UNSUPPORTED_BINARY_OR_SAVE_SCHEMA',
+                          consequential_actions_allowed=bool(save_healthy and version_matches and health.get('process_connected')),
                           vision_dependency='NONE_FOR_TELEMETRY')
             state['provenance'], state['telemetry'] = provenance, health
             state=self.quest_observer.observe(state)

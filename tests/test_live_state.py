@@ -10,13 +10,18 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 
+@pytest.fixture(autouse=True)
+def known_game_identity(monkeypatch):
+    monkeypatch.setattr('src.game_identity.get_game_identity', lambda *args: {
+        'supported': True, 'swf_sha256': 'a'*64, 'save_version': 58, 'game_version': 'test'})
+
 def normalizer():
     module = importlib.import_module('src.save_reader')
     assert hasattr(module, 'normalize_save_data'), 'Explicit save semantics are missing'
     return module.normalize_save_data
 
 def sample():
-    return {'reincarnation': 24, 'gems': 2.4e68, 'coins': 1e130, 'mana': 812.0,
+    return {'saveVersion': 58, 'reincarnation': 24, 'gems': 2.4e68, 'coins': 1e130, 'mana': 812.0,
             'alignment': 2, 'faction': 5, 'excavations': 1500,
             'stats': [{'stats': 1e140}] + [{}]*11 + [{'stats': 23590}],
             'buildings': {'9': {'q': 100}},
