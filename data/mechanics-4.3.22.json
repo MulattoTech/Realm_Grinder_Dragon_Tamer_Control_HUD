@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "game_version": "4.3.22",
+  "save_version": 58,
+  "swf_sha256": "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b",
+  "evidence_kind": "static SWF method and call-site analysis; no live save or UI action",
+  "source_note": "Compact facts extracted from ignored local state/installed-4.3.22-mechanics.json. Raw disassembly and game files are not included.",
+  "reincarnation_requirement": {
+    "method_id": 6899,
+    "name": "getReincarnationReq",
+    "formal_parameters": 0,
+    "ascension_property": "Game.:,P (getter method 1372)",
+    "reincarnation_property": "Game.:8!H (getter method 1370)",
+    "a0": {
+      "formula": "1e27 * 1000^R",
+      "supported_reincarnation_range": "0 <= R < 100",
+      "examples": {
+        "24": "1e99",
+        "40": "1e147"
+      }
+    },
+    "a1": {
+      "formula": "1e27 * 100^(R - 40)",
+      "supported_reincarnation_range": "40 <= R < 100",
+      "examples": {
+        "40": "1e27",
+        "46": "1e39"
+      }
+    },
+    "out_of_scope": "Unsupported ascension or reincarnation inputs return an infinite threshold in the helper."
+  },
+  "dragon_identifiers": {
+    "egg_trophy": 211,
+    "hatch_upgrade": 604,
+    "drakeling_upgrade": 605,
+    "dragon_upgrade": 606,
+    "elder_dragon_upgrade": 607,
+    "dragon_tamer_trophy": 210,
+    "dragon_tamer_upgrade": 613
+  },
+  "dragon_progression": {
+    "egg": {
+      "minimum_reincarnation": 42,
+      "minimum_excavations": 1500,
+      "method_fact": "Egg trophy condition reads current reincarnation and inherited excavation requirement 1500."
+    },
+    "hatch": {
+      "upgrade_id": 604,
+      "minimum_reincarnation": 42,
+      "full_stat_id": 81,
+      "minimum_full_stat": 7200,
+      "initial_wait": "The purchase threshold is stat 81 >= 7200. The stat gameplay updater and whether egg acquisition starts or resets it are unknown."
+    },
+    "drakeling": {
+      "upgrade_id": 605,
+      "minimum_reincarnation": 44,
+      "full_stat_id": 81,
+      "minimum_full_stat": 7200,
+      "on_purchase": "Resets stat 81."
+    },
+    "dragon": {
+      "upgrade_id": 606,
+      "minimum_reincarnation": 46,
+      "full_stat_id": 81,
+      "minimum_full_stat": 7200,
+      "faction_field": 0,
+      "get_assistants_num_minimum": 5000,
+      "on_purchase": "Resets stat 81."
+    },
+    "elder_dragon": {
+      "upgrade_id": 607,
+      "minimum_reincarnation": 48,
+      "full_stat_id": 81,
+      "minimum_full_stat": 7200,
+      "maximum_mana_minimum": 60000,
+      "on_purchase_trophy_id": 210
+    },
+    "stat_counter_source": {
+      "get_full_stat_method_id": 1706,
+      "save_load_method_ids": [1342, 1345],
+      "calculation": "stats[81].stats + stats[81].statsReset + stats[81].statsRei",
+      "rule_field": "dragon_quest_counter",
+      "unknown": "The gameplay updater for stat 81 and the initial egg wait start semantics are not established."
+    }
+  },
+  "static_cost_literals": {
+    "status": "STATIC_METHOD_OBSERVATION_EFFECTIVE_UI_PRICE_UNVERIFIED",
+    "upgrade_coin_requirements": {
+      "604": 1e58,
+      "605": 1e64,
+      "606": 1e70,
+      "607": 1e76
+    },
+    "faction_coin_requirements_by_upgrade": {
+      "604": {"each_faction_id": [0, 1, 2, 3, 4, 5, 9, 10], "amount": 1e9},
+      "605": {"each_faction_id": [0, 1, 2, 3, 4, 5, 9, 10], "amount": 1e12},
+      "606": {"each_faction_id": [0, 1, 2, 3, 4, 5, 9, 10], "amount": 1e15},
+      "607": {"each_faction_id": [0, 1, 2, 3, 4, 5, 9, 10], "amount": 1e18}
+    },
+    "note": "Constructor coin literals and helper1703 faction-coin literals are statically observed. UI-effective prices, display semantics, live availability and purchase success are not proven; these observations are not used as executable resource budgets."
+  },
+  "unknowns": [
+    "Egg acquisition chance and the gameplay updater/start semantics for stat 81.",
+    "Gameplay updater for stat 81 and runtime mapping for getAssistantsNum().",
+    "Live stage availability and effective UI prices for the static constructor/helper cost literals.",
+    "Actual trophy ownership and Steam achievement status."
+  ],
+  "limits": "Static mechanics evidence only. Rule evaluation is bound to this exact SWF hash and save schema. It does not certify runtime field mapping, purchase execution, a reset, trophy award, or Steam achievement."
+}

@@ -8,66 +8,70 @@ from typing import Dict, Any, List, Optional
 DRAGON_UNLOCK_STAGES = {
     0: {
         "name": "Spiky Rough Egg",
-        "type": "Quest Artifact",
+        "type": "Trophy / Quest Artifact",
         "id": 211,
-        "req_r": 46,
+        "req_r": 42,
         "req_excavations": 1500,
-        "chance_formula": "2%",
-        "description": "R46+, 1500+ Excavations. Required to begin Dragon progression."
+        "chance_formula": None,
+        "description": "Static condition requires R42+ and 1500+ excavations. Chance and acquisition timing are unknown."
     },
     1: {
         "name": "Hatch!",
         "type": "Stage 1 Upgrade",
-        "upgrade_id": 1244,
-        "time_gate_seconds": 12 * 3600,
-        "time_gate_description": "12 hours since obtaining Spiky Rough Egg",
-        "cost_coins": 1e64,
-        "cost_coins_fmt": "10 Vg (1e64)",
-        "cost_faction_coins": 1e7,
-        "cost_fc_fmt": "10 M (1e7) of each FC",
-        "description": "Hatches the spiky egg and reveals what is inside."
+        "upgrade_id": 604,
+        "req_r": 42,
+        "time_gate_seconds": 7200,
+        "time_gate_description": "Static purchase check: save stat 81 total >= 7200; counter updater is not known",
+        "cost_coins": None,
+        "cost_coins_fmt": "UNKNOWN",
+        "cost_faction_coins": None,
+        "cost_fc_fmt": "UNKNOWN",
+        "description": "4.3.22 upgrade ID and R42 threshold are statically identified; live availability is unproven."
     },
     2: {
         "name": "Drakeling",
         "type": "Stage 2 Upgrade",
-        "upgrade_id": 1245,
-        "time_gate_seconds": 12 * 3600,
-        "time_gate_description": "12 hours of active Hellfire Blast since Hatch!",
-        "cost_coins": 1e67,
-        "cost_coins_fmt": "10 Uvg (1e67)",
-        "cost_faction_coins": 1e8,
-        "cost_fc_fmt": "100 M (1e8) of each FC",
-        "note": "Do not use Research A25 as it can distort the Hellfire Blast activity counter.",
-        "description": "Grows baby dragon into a drakeling through fire breath mastery."
+        "upgrade_id": 605,
+        "req_r": 44,
+        "time_gate_seconds": 7200,
+        "time_gate_description": "Static purchase check: save stat 81 total >= 7200; counter updater is not known",
+        "cost_coins": None,
+        "cost_coins_fmt": "UNKNOWN",
+        "cost_faction_coins": None,
+        "cost_fc_fmt": "UNKNOWN",
+        "description": "4.3.22 onPurchase resets stat 81. Cost literals are static observations; effective UI price and availability are unproven."
     },
     3: {
         "name": "Dragon",
         "type": "Stage 3 Upgrade",
-        "upgrade_id": 1246,
-        "time_gate_seconds": 12 * 3600,
-        "time_gate_description": "12 hours since purchasing Drakeling",
-        "req_assistants": 3750,
-        "assistants_description": "3,750 Fairy Assistants (Fairy Chanting assists count)",
-        "cost_coins": 1e70,
-        "cost_coins_fmt": "10 Dvg (1e70)",
-        "cost_faction_coins": 1e9,
-        "cost_fc_fmt": "1 B (1e9) of each FC",
-        "description": "Grows drakeling into a mature Dragon with fairy assistant support."
+        "upgrade_id": 606,
+        "req_r": 46,
+        "time_gate_seconds": 7200,
+        "time_gate_description": "Static purchase check: save stat 81 total >= 7200; counter updater is not known",
+        "req_faction": 0,
+        "req_assistants": 5000,
+        "assistants_description": "Static getAssistantsNum() threshold; runtime field mapping is unknown",
+        "cost_coins": None,
+        "cost_coins_fmt": "UNKNOWN",
+        "cost_faction_coins": None,
+        "cost_fc_fmt": "UNKNOWN",
+        "description": "4.3.22 checks faction field 0 and at least 5,000 assistants; effective UI price and availability are unproven."
     },
     4: {
         "name": "Elder Dragon",
-        "type": "Stage 4 Upgrade / Dragon Tamer Trophy",
-        "upgrade_id": 1247,
-        "trophy_id": 466,
-        "time_gate_seconds": 12 * 3600,
-        "time_gate_description": "12 hours since purchasing Dragon",
-        "req_max_mana": 50000,
-        "max_mana_description": "50,000 Maximum Mana",
-        "cost_coins": 1e73,
-        "cost_coins_fmt": "10 Tvg (1e73)",
-        "cost_faction_coins": 1e10,
-        "cost_fc_fmt": "10 B (1e10) of each FC",
-        "description": "Unlocks Elder Dragon and awards the real in-game Dragon Tamer Trophy & Steam Achievement!"
+        "type": "Stage 4 Upgrade",
+        "upgrade_id": 607,
+        "trophy_id": 210,
+        "req_r": 48,
+        "time_gate_seconds": 7200,
+        "time_gate_description": "Static purchase check: save stat 81 total >= 7200; counter updater is not known",
+        "req_max_mana": 60000,
+        "max_mana_description": "Static maximum mana threshold; runtime measurement is not calibrated",
+        "cost_coins": None,
+        "cost_coins_fmt": "UNKNOWN",
+        "cost_faction_coins": None,
+        "cost_fc_fmt": "UNKNOWN",
+        "description": "4.3.22 upgrade and trophy IDs are identified; Steam achievement status is not checked."
     }
 }
 
@@ -191,13 +195,25 @@ def get_recommended_build(r: int, current_gems: float) -> Dict[str, Any]:
         return BUILDS_DATABASE["R40_46_DRUIDLINE_GOBLIN"]
 
 
-def get_reincarnation_gem_requirement(r: int) -> float:
-    """Returns exact required gems to reincarnate at reincarnation level r."""
-    if r < 40:
-        return 10.0 ** (27 + r * 3)
+def get_reincarnation_gem_requirement(r: int, ascension: int = 0) -> float:
+    """Return the 4.3.22 static threshold for supported A0/A1 reincarnations.
+
+    The old one-argument API keeps its A0 interpretation. Unknown ascensions and
+    out-of-range inputs fail closed with infinity, never a permissive estimate.
+    """
+    if (isinstance(r, bool) or not isinstance(r, int) or not 0 <= r < 100 or
+            isinstance(ascension, bool) or not isinstance(ascension, int)):
+        return float("inf")
+    if ascension == 0:
+        exponent = 27 + 3 * r
+    elif ascension == 1 and r >= 40:
+        exponent = 27 + 2 * (r - 40)
     else:
-        # A1 scaling
-        return 1e99
+        return float("inf")
+    try:
+        return 10.0 ** exponent
+    except OverflowError:
+        return float("inf")
 
 
 def load_knowledge_base() -> Dict[str, Any]:

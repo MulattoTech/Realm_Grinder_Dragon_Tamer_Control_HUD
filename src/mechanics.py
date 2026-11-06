@@ -113,14 +113,25 @@ class RuleBook:
     def _assess(self,rule,state):
         result={'name':rule['name'],'sources':rule.get('sources',[]),'owned':ownership(rule,state),
                 'conditions':[],'costs':[],'status':'READY','action':rule.get('action')}
-        if result['owned'] is True:result['status']='OWNED';return result
         if not rule.get('reviewed') or not rule.get('sources') or rule.get('conflicts'):
             result['status']='REFERENCE_ONLY';return result
         scope=rule.get('scope',{})
+        supported_hashes=scope.get('swf_sha256s')
+        if supported_hashes is not None:
+            identity=state.get('game_identity')
+            save_version=read_field(state,'raw_data.saveVersion')
+            if (not isinstance(identity,dict) or identity.get('supported') is not True or
+                identity.get('swf_sha256') not in supported_hashes or
+                identity.get('save_version') not in scope.get('save_versions',[]) or
+                save_version not in scope.get('save_versions',[])):
+                result['status']='UNSUPPORTED_GAME_VERSION';return result
+        if result['owned'] is True:result['status']='OWNED';return result
+        save_version=read_field(state,'game_identity.save_version')
+        if save_version is None:save_version=read_field(state,'raw_data.saveVersion')
         if ((scope.get('ascensions') is not None and state.get('ascension') not in scope['ascensions']) or
             ('min_r' in scope and state.get('reincarnation',-1)<scope['min_r']) or
             ('max_r' in scope and state.get('reincarnation',math.inf)>scope['max_r']) or
-            (scope.get('save_versions') and read_field(state,'raw_data.saveVersion') not in scope['save_versions'])):
+            (scope.get('save_versions') and save_version not in scope['save_versions'])):
             result['status']='UNSUPPORTED_STAGE';return result
         for condition in rule.get('conditions',[]):
             actual=read_field(state,condition.get('field',''))
@@ -156,7 +167,7 @@ class RuleBook:
                           'conditions':[],'costs':[],'reason':'No reviewed rule for the requested prerequisite'}
             else:
                 assessed=self._assess(rule,state)
-                if assessed['status']!='OWNED':
+                if assessed['status'] not in ('OWNED','UNSUPPORTED_GAME_VERSION'):
                     for dependency in rule.get('dependencies',[]):walk(dependency)
                     if any(step['status']!='OWNED' and step['name'] in rule.get('dependencies',[]) for step in steps):
                         assessed['prerequisite_status']=assessed['status'];assessed['status']='NEEDS_PREREQUISITE'

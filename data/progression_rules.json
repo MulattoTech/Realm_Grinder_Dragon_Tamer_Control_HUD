@@ -642,6 +642,82 @@
       }
     },
     {
+      "name": "Reach R42",
+      "ownership": {
+        "kind": "condition",
+        "condition": {
+          "field": "reincarnation",
+          "op": "gte",
+          "value": 42
+        }
+      },
+      "dependencies": [],
+      "conditions": [],
+      "costs": [],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "https://www.musicfamily.org/realm/Reincarnation/",
+          "interpretation": "Static 4.3.22 method evidence is in the compact artifact; wiki page is contextual only. Runtime reset eligibility is unproven.",
+          "evidence": "data/mechanics-4.3.22.json"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ],
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
+        ]
+      },
+      "action": {
+        "action": "reach_reincarnation",
+        "target_r": 42
+      }
+    },
+    {
+      "name": "Reach R44",
+      "ownership": {
+        "kind": "condition",
+        "condition": {
+          "field": "reincarnation",
+          "op": "gte",
+          "value": 44
+        }
+      },
+      "dependencies": [],
+      "conditions": [],
+      "costs": [],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "https://www.musicfamily.org/realm/Reincarnation/",
+          "interpretation": "Static 4.3.22 method evidence is in the compact artifact; wiki page is contextual only. Runtime reset eligibility is unproven.",
+          "evidence": "data/mechanics-4.3.22.json"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ],
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
+        ]
+      },
+      "action": {
+        "action": "reach_reincarnation",
+        "target_r": 44
+      }
+    },
+    {
       "name": "Reach R46",
       "ownership": {
         "kind": "condition",
@@ -657,19 +733,64 @@
       "reviewed": true,
       "sources": [
         {
-          "url": "http://musicfamily.org/realm/Reincarnation/",
-          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+          "url": "https://www.musicfamily.org/realm/Reincarnation/",
+          "interpretation": "Static 4.3.22 method evidence is in the compact artifact; wiki page is contextual only. Runtime reset eligibility is unproven.",
+          "evidence": "data/mechanics-4.3.22.json"
         }
       ],
       "scope": {
         "ascensions": [
           0,
           1
+        ],
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
         ]
       },
       "action": {
         "action": "reach_reincarnation",
         "target_r": 46
+      }
+    },
+    {
+      "name": "Reach R48",
+      "ownership": {
+        "kind": "condition",
+        "condition": {
+          "field": "reincarnation",
+          "op": "gte",
+          "value": 48
+        }
+      },
+      "dependencies": [],
+      "conditions": [],
+      "costs": [],
+      "reviewed": true,
+      "sources": [
+        {
+          "url": "https://www.musicfamily.org/realm/Reincarnation/",
+          "interpretation": "Static 4.3.22 method evidence is in the compact artifact; wiki page is contextual only. Runtime reset eligibility is unproven.",
+          "evidence": "data/mechanics-4.3.22.json"
+        }
+      ],
+      "scope": {
+        "ascensions": [
+          0,
+          1
+        ],
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
+        ]
+      },
+      "action": {
+        "action": "reach_reincarnation",
+        "target_r": 48
       }
     },
     {
@@ -683,21 +804,28 @@
         }
       },
       "dependencies": [
-        "Reach R46"
+        "Reach R42"
       ],
       "conditions": [],
       "costs": [],
       "reviewed": true,
       "sources": [
         {
-          "url": "http://musicfamily.org/realm/DragonFaction/",
-          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+          "url": "https://www.musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Static 4.3.22 method evidence is in the compact artifact; wiki page is contextual only. Runtime availability and purchase remain unproven.",
+          "evidence": "data/mechanics-4.3.22.json"
         }
       ],
       "scope": {
         "ascensions": [
           0,
           1
+        ],
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
         ]
       },
       "action": {
@@ -712,27 +840,48 @@
         "id": 211
       },
       "dependencies": [
-        "Reach R46",
+        "Reach R42",
         "Reach 1500 excavations"
       ],
-      "conditions": [],
+      "conditions": [
+        {
+          "field": "reincarnation",
+          "op": "gte",
+          "value": 42
+        },
+        {
+          "field": "excavations",
+          "op": "gte",
+          "value": 1500
+        }
+      ],
       "costs": [],
       "reviewed": true,
       "sources": [
         {
-          "url": "http://musicfamily.org/realm/DragonFaction/",
-          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+          "url": "https://www.musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Static 4.3.22 method evidence is in the compact artifact; wiki page is contextual only. Runtime availability and purchase remain unproven.",
+          "evidence": "data/mechanics-4.3.22.json"
         }
       ],
       "scope": {
         "ascensions": [
           0,
           1
+        ],
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
         ]
       },
       "action": {
         "action": "excavate_for_egg"
-      }
+      },
+      "notes": [
+        "Egg 211 is a trophy, distinct from Dragon Tamer trophy 210. Egg chance and excavation procedure are not established here."
+      ]
     },
     {
       "name": "Hatch!",
@@ -745,54 +894,23 @@
       ],
       "conditions": [
         {
-          "field": "quest.egg_elapsed_seconds",
+          "field": "reincarnation",
           "op": "gte",
-          "value": 43200
+          "value": 42
+        },
+        {
+          "field": "dragon_quest_counter",
+          "op": "gte",
+          "value": 7200
         }
       ],
-      "costs": [
-        {
-          "field": "coins",
-          "amount": 1e+64
-        },
-        {
-          "field": "raw_data.factionCoins.0.factionCoins",
-          "amount": 10000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.1.factionCoins",
-          "amount": 10000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.2.factionCoins",
-          "amount": 10000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.3.factionCoins",
-          "amount": 10000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.4.factionCoins",
-          "amount": 10000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.5.factionCoins",
-          "amount": 10000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.9.factionCoins",
-          "amount": 10000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.10.factionCoins",
-          "amount": 10000000.0
-        }
-      ],
+      "costs": [],
       "reviewed": true,
       "sources": [
         {
-          "url": "http://musicfamily.org/realm/DragonFaction/",
-          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+          "url": "https://www.musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Static 4.3.22 method evidence is in the compact artifact; wiki page is contextual only. Runtime availability and purchase remain unproven.",
+          "evidence": "data/mechanics-4.3.22.json"
         }
       ],
       "scope": {
@@ -800,15 +918,20 @@
           0,
           1
         ],
-        "min_r": 46
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
+        ]
       },
       "action": {
         "action": "purchase_dragon_stage",
         "target": "Hatch!"
       },
-      "cost_certainty": "WIKI_ESTIMATE_REQUIRES_GAME_AVAILABILITY",
       "notes": [
-        "Wiki prices may differ from installed updates; ownership change, not the cost estimate, proves a purchase."
+        "Static purchase method checks save stat 81 total >= 7200. The gameplay updater and initial egg-start semantics remain unknown.",
+        "Static constructor/helper cost literals are recorded in data/mechanics-4.3.22.json; effective UI price and live availability are unverified."
       ]
     },
     {
@@ -818,58 +941,28 @@
         "id": 605
       },
       "dependencies": [
+        "Reach R44",
         "Hatch!"
       ],
       "conditions": [
         {
-          "field": "hellfire_since_hatch",
+          "field": "reincarnation",
           "op": "gte",
-          "value": 43200
+          "value": 44
+        },
+        {
+          "field": "dragon_quest_counter",
+          "op": "gte",
+          "value": 7200
         }
       ],
-      "costs": [
-        {
-          "field": "coins",
-          "amount": 1e+67
-        },
-        {
-          "field": "raw_data.factionCoins.0.factionCoins",
-          "amount": 100000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.1.factionCoins",
-          "amount": 100000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.2.factionCoins",
-          "amount": 100000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.3.factionCoins",
-          "amount": 100000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.4.factionCoins",
-          "amount": 100000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.5.factionCoins",
-          "amount": 100000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.9.factionCoins",
-          "amount": 100000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.10.factionCoins",
-          "amount": 100000000.0
-        }
-      ],
+      "costs": [],
       "reviewed": true,
       "sources": [
         {
-          "url": "http://musicfamily.org/realm/DragonFaction/",
-          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+          "url": "https://www.musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Static 4.3.22 method evidence is in the compact artifact; wiki page is contextual only. Runtime availability and purchase remain unproven.",
+          "evidence": "data/mechanics-4.3.22.json"
         }
       ],
       "scope": {
@@ -877,15 +970,20 @@
           0,
           1
         ],
-        "min_r": 46
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
+        ]
       },
       "action": {
         "action": "purchase_dragon_stage",
         "target": "Drakeling"
       },
-      "cost_certainty": "WIKI_ESTIMATE_REQUIRES_GAME_AVAILABILITY",
       "notes": [
-        "Wiki prices may differ from installed updates; ownership change, not the cost estimate, proves a purchase."
+        "Static purchase method checks save stat 81 total >= 7200 and purchase resets stat 81. The gameplay updater is not established.",
+        "Static constructor/helper cost literals are recorded in data/mechanics-4.3.22.json; effective UI price and live availability are unverified."
       ]
     },
     {
@@ -895,63 +993,38 @@
         "id": 606
       },
       "dependencies": [
+        "Reach R46",
         "Drakeling"
       ],
       "conditions": [
         {
-          "field": "quest.drakeling_elapsed_seconds",
+          "field": "reincarnation",
           "op": "gte",
-          "value": 43200
+          "value": 46
         },
         {
-          "field": "fairy_assistants",
+          "field": "dragon_quest_counter",
           "op": "gte",
-          "value": 3750
+          "value": 7200
+        },
+        {
+          "field": "faction",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "field": "assistants_num",
+          "op": "gte",
+          "value": 5000
         }
       ],
-      "costs": [
-        {
-          "field": "coins",
-          "amount": 1e+70
-        },
-        {
-          "field": "raw_data.factionCoins.0.factionCoins",
-          "amount": 1000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.1.factionCoins",
-          "amount": 1000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.2.factionCoins",
-          "amount": 1000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.3.factionCoins",
-          "amount": 1000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.4.factionCoins",
-          "amount": 1000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.5.factionCoins",
-          "amount": 1000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.9.factionCoins",
-          "amount": 1000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.10.factionCoins",
-          "amount": 1000000000.0
-        }
-      ],
+      "costs": [],
       "reviewed": true,
       "sources": [
         {
-          "url": "http://musicfamily.org/realm/DragonFaction/",
-          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+          "url": "https://www.musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Static 4.3.22 method evidence is in the compact artifact; wiki page is contextual only. Runtime availability and purchase remain unproven.",
+          "evidence": "data/mechanics-4.3.22.json"
         }
       ],
       "scope": {
@@ -959,15 +1032,20 @@
           0,
           1
         ],
-        "min_r": 46
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
+        ]
       },
       "action": {
         "action": "purchase_dragon_stage",
         "target": "Dragon"
       },
-      "cost_certainty": "WIKI_ESTIMATE_REQUIRES_GAME_AVAILABILITY",
       "notes": [
-        "Wiki prices may differ from installed updates; ownership change, not the cost estimate, proves a purchase."
+        "Static purchase method checks faction field 0, getAssistantsNum() >= 5000, save stat 81 total >= 7200, and resets stat 81. The gameplay updater is not established.",
+        "Static constructor/helper cost literals are recorded in data/mechanics-4.3.22.json; effective UI price and live availability are unverified."
       ]
     },
     {
@@ -977,63 +1055,33 @@
         "id": 607
       },
       "dependencies": [
+        "Reach R48",
         "Dragon"
       ],
       "conditions": [
         {
-          "field": "quest.dragon_elapsed_seconds",
+          "field": "reincarnation",
           "op": "gte",
-          "value": 43200
+          "value": 48
+        },
+        {
+          "field": "dragon_quest_counter",
+          "op": "gte",
+          "value": 7200
         },
         {
           "field": "mana_max",
           "op": "gte",
-          "value": 50000
+          "value": 60000
         }
       ],
-      "costs": [
-        {
-          "field": "coins",
-          "amount": 1e+73
-        },
-        {
-          "field": "raw_data.factionCoins.0.factionCoins",
-          "amount": 10000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.1.factionCoins",
-          "amount": 10000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.2.factionCoins",
-          "amount": 10000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.3.factionCoins",
-          "amount": 10000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.4.factionCoins",
-          "amount": 10000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.5.factionCoins",
-          "amount": 10000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.9.factionCoins",
-          "amount": 10000000000.0
-        },
-        {
-          "field": "raw_data.factionCoins.10.factionCoins",
-          "amount": 10000000000.0
-        }
-      ],
+      "costs": [],
       "reviewed": true,
       "sources": [
         {
-          "url": "http://musicfamily.org/realm/DragonFaction/",
-          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+          "url": "https://www.musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Static 4.3.22 method evidence is in the compact artifact; wiki page is contextual only. Runtime availability and purchase remain unproven.",
+          "evidence": "data/mechanics-4.3.22.json"
         }
       ],
       "scope": {
@@ -1041,15 +1089,20 @@
           0,
           1
         ],
-        "min_r": 46
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
+        ]
       },
       "action": {
         "action": "purchase_dragon_stage",
         "target": "Elder Dragon"
       },
-      "cost_certainty": "WIKI_ESTIMATE_REQUIRES_GAME_AVAILABILITY",
       "notes": [
-        "Wiki prices may differ from installed updates; ownership change, not the cost estimate, proves a purchase."
+        "Static purchase method checks save stat 81 total >= 7200 and max mana >= 60000. The gameplay updater is not established.",
+        "Static constructor/helper cost literals are recorded in data/mechanics-4.3.22.json; effective UI price and live availability are unverified."
       ]
     },
     {
@@ -1066,20 +1119,30 @@
       "reviewed": true,
       "sources": [
         {
-          "url": "http://musicfamily.org/realm/DragonFaction/",
-          "interpretation": "Documented prerequisite/cost; actual purchase success is verified in the game"
+          "url": "https://www.musicfamily.org/realm/DragonFaction/",
+          "interpretation": "Static 4.3.22 method evidence is in the compact artifact; wiki page is contextual only. Runtime availability and purchase remain unproven.",
+          "evidence": "data/mechanics-4.3.22.json"
         }
       ],
       "scope": {
         "ascensions": [
           0,
           1
+        ],
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
         ]
       },
       "action": {
         "action": "verify_trophy",
         "target": 210
-      }
+      },
+      "notes": [
+        "Trophy 210 is distinct from upgrade 613, also named Dragon Tamer."
+      ]
     }
   ],
   "formulas": [
@@ -1098,7 +1161,15 @@
       "source": "http://musicfamily.org/realm/Research/"
     },
     {
-      "name": "Pre-ascension next reincarnation gems",
+      "name": "Ruby excavation milestone",
+      "expression": "25 * n * (n + 1)",
+      "variables": {
+        "n": "ruby_number"
+      },
+      "source": "https://realm-grinder.fandom.com/wiki/Excavations"
+    },
+    {
+      "name": "A0 reincarnation gem requirement (static 4.3.22 path)",
       "expression": "10 ^ (27 + 3 * r)",
       "variables": {
         "r": "reincarnation"
@@ -1107,18 +1178,38 @@
         "ascensions": [
           0
         ],
-        "max_r": 39
+        "min_r": 0,
+        "max_r": 99,
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
+        ]
       },
-      "source": "http://musicfamily.org/realm/Reincarnation/"
+      "source": "Installed 4.3.22 SWF static method 6899 getReincarnationReq; local evidence state/installed-4.3.22-mechanics.json"
     },
     {
-      "name": "Ruby excavation milestone",
-      "expression": "25 * n * (n + 1)",
+      "name": "A1 reincarnation gem requirement (static 4.3.22 path)",
+      "expression": "10 ^ (27 + 2 * (r - 40))",
       "variables": {
-        "n": "ruby_number"
+        "r": "reincarnation"
       },
-      "source": "https://realm-grinder.fandom.com/wiki/Excavations"
+      "scope": {
+        "ascensions": [
+          1
+        ],
+        "min_r": 40,
+        "max_r": 99,
+        "swf_sha256s": [
+          "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b"
+        ],
+        "save_versions": [
+          58
+        ]
+      },
+      "source": "Installed 4.3.22 SWF static method 6899 getReincarnationReq; local evidence state/installed-4.3.22-mechanics.json"
     }
   ],
-  "policy": "Reviewed structural recipes, not a claim that every wiki formula or historical balance value matches the installed game."
+  "policy": "4.3.22 method-derived facts are static evidence only. Rules require exact supported SWF identity. Unmapped runtime measurements and unresolved costs/timing remain UNKNOWN; this is not full executable mechanics coverage."
 }
