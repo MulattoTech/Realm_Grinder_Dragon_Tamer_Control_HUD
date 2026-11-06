@@ -84,7 +84,8 @@ def control_point(name, width, height, faction=None):
     if width < round(_ICON_REFERENCE_SIZE[0] * _MIN_VIEWPORT_SCALE) or \
             height < round(_ICON_REFERENCE_SIZE[1] * _MIN_VIEWPORT_SCALE):
         raise ValueError('Client is too small for the calibrated layout')
-    points = {'buy_all_upgrades': (157 if faction==11 else 297,59), 'load_template':(297,59), 'buy_all_buildings': (width-361,height-89),
+    building_buy_all_bottom = round((669 - 580) * width / 976)
+    points = {'buy_all_upgrades': (157 if faction==11 else 297,59), 'load_template':(297,59), 'buy_all_buildings': (width-361,height-building_buy_all_bottom),
               'realm': (min(560,width-410),min(340,height-170)),
               'abdication': (215,25), 'reincarnation': (390,25), 'upgrades_tab': (40,110)}
     if name not in points:

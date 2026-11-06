@@ -50,7 +50,12 @@ def test_basic_ui_controls_anchor_to_correct_panes():
     assert coords('buy_all_upgrades',976,669)==(297,59)
     assert coords('buy_all_upgrades',1280,752)==(297,59)
     assert coords('buy_all_buildings',976,669)==(615,580)
-    assert coords('buy_all_buildings',1280,752)==(919,663)
+    assert coords('buy_all_buildings',1280,752)==(919,635)
+    # Live 1433x822 capture: the Buildings Buy All button is at (1072, 695).
+    # Keep the dispatched point inside the observed button bounds (y=673..717).
+    x, y = coords('buy_all_buildings',1433,822)
+    assert x == 1072
+    assert 673 <= y <= 717
 
 
 def test_single_target_purchase_proof_rejects_unrelated_many_upgrades():
