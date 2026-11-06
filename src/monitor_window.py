@@ -539,14 +539,6 @@ class ModernDragonTrackerApp:
         r_btn_row = tk.Frame(r_card, bg=self.c_card)
         r_btn_row.pack(fill="x", padx=8, pady=(2, 4))
 
-        self.btn_clear_r = tk.Button(
-            r_btn_row, text="🟣 Auto-Climb R (Force Cycle)", font=("Segoe UI", 7, "bold"),
-            bg=self.c_purple, fg="white", activebackground="#9b59b6", activeforeground="white",
-            relief="flat", padx=6, pady=2, cursor="hand2", command=self.action_clear_reincarnation
-        )
-        self.btn_clear_r.pack(side="left", padx=(0, 4))
-        self.bind_hover(self.btn_clear_r, "Auto-Climb R: (Manual override) Immediately executes production push, build deployment, or reincarnation for current R.")
-
         self.btn_abdicate = tk.Button(
             r_btn_row, text="💫 Abdicate Now (Claim Gems)", font=("Segoe UI", 7, "bold"),
             bg="#16a085", fg="white", activebackground="#1abc9c", activeforeground="white",
@@ -1083,9 +1075,6 @@ class ModernDragonTrackerApp:
         self.start_selected_path()
 
     def action_fast_track(self):
-        self.start_selected_path()
-
-    def action_clear_reincarnation(self):
         self.start_selected_path()
 
     def action_manual_abdicate(self):

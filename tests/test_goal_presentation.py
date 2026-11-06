@@ -175,3 +175,5 @@ def test_controls_use_plain_language_without_always_on_claims():
     assert 'skynet' not in visible_text
     assert 'ultron' not in visible_text
     assert 'turbo' not in visible_text
+    assert 'auto-climb' not in visible_text
+    assert 'force cycle' not in visible_text

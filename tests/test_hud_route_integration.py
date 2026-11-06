@@ -1,5 +1,6 @@
 from pathlib import Path
 import ast
+import json
 
 def source():return Path('src/monitor_window.py').read_text(encoding='utf-8')
 
@@ -51,7 +52,16 @@ def test_hud_clarifies_build_only_pause_boundary_without_blocking_start():
     assert 'select Named goal for explicit' in text
     assert "config['paused']=False" in text
 
-def test_stoic_source_conflict_is_explicit_in_reference_index():
+def test_bundled_stoic_compatibility_note_is_searchable(tmp_path):
     from src.source_knowledge import KnowledgeStore
-    rows=KnowledgeStore().search('Stoic Resistance installed 4.3.11')
-    assert rows and any('1e16' in row['text'] for row in rows)
+    repo=Path(__file__).resolve().parents[1]
+    note=json.loads((repo/'data'/'compatibility_notes.json').read_text(encoding='utf-8'))['notes'][0]
+    store=KnowledgeStore(tmp_path/'knowledge.sqlite3')
+    store.ingest(note['title'],note['source_url'],note['text'],origin=note['origin'],captured_at=note['captured_at'])
+
+    rows=store.search('Stoic Resistance installed 4.3.11')
+
+    assert len(rows)==1
+    assert '1e16 coins, not 1e16 faction coins' in rows[0]['text']
+    assert 'Older wiki effect descriptions differ' in rows[0]['text']
+    assert rows[0]['origin']=='bundled_development_observation'
