@@ -71,6 +71,44 @@ def test_unverified_faction_template_stays_fail_closed(tmp_path,monkeypatch):
 
     assert result['status']=='BLOCKED' and result['action']=='FACTION_UNVERIFIED'
 
+
+def test_collect_waits_for_delayed_fresh_save_with_coin_growth(tmp_path,monkeypatch):
+    import src.config as config
+    import src.route_executor as module
+
+    monkeypatch.setattr(config,'load_config',lambda:{'auto_click_realm':False,
+        'auto_buy_buildings':True,'auto_buy_upgrades':False,'auto_spells':False})
+    monkeypatch.setattr(module,'input_allowed',lambda _window:True)
+    clicks=[]
+    class UI:
+        def __init__(self,*_args):pass
+        def click_control(self,name):clicks.append(name)
+    monkeypatch.setattr(module,'SemanticUI',UI)
+    monkeypatch.setattr('src.spell_policy.plan_spells',lambda _state:{'casts':[]})
+
+    before={'coins_this_game':100,'reincarnation':24,'save_fingerprint':'before',
+        'telemetry':{'consequential_actions_allowed':True,'pid':8,'process_start_time':99}}
+    after={**before,'coins_this_game':150,'save_fingerprint':'after'}
+    elapsed=[0.0]
+    reads=[0]
+    class Actions:
+        state_dir=tmp_path
+        window=object()
+        def read(self):
+            reads[0]+=1
+            return after if elapsed[0]>=1 else before
+
+    executor=module.RouteExecutor(Actions())
+    monkeypatch.setattr(module.time,'monotonic',lambda:elapsed[0])
+    monkeypatch.setattr(module.time,'sleep',lambda seconds:elapsed.__setitem__(0,elapsed[0]+seconds))
+
+    result=executor.collect()
+
+    assert result['success'] and result['status']=='VERIFIED'
+    assert result['before']['coins_this_game']==100
+    assert result['after']['coins_this_game']==150
+    assert reads[0]>=3 and clicks==['buy_all_buildings']
+
 def test_progression_setup_delegates_to_selected_route():
     import ast
     tree=ast.parse(Path('src/progression_actions.py').read_text(encoding='utf-8'))

@@ -38,3 +38,9 @@ The installed checkout was fast-forwarded to `68ce7b1`, verified, and its HUD wa
 ## Remaining acceptance work
 
 Keep actual progression marked partial until the counter updater, reset review/calibration, purchases, and trophy outcome are evidenced. Do not bypass reset gates or claim minimized automation.
+
+## 2026-11-06 collection observation follow-up
+
+The 15-second Goblin production check ended with `OBSERVING` on each collection cycle. The save history showed run coins rising from about `1.252e12` to `1.683e12` during that period, but the collector read only once immediately after dispatch. A regression reproduced the delayed-save timing and failed against the old collector. The collector now polls for up to eight seconds for a fresh save from the same game process with higher run coins, then records the before/after coins and save fingerprints. This proves observed production during the collection window; it does not attribute all passive production to a particular click.
+
+The new delayed-save regression and affected route/progression/action-verification suites pass (**68 passed**). The initial repository verification passed both test suites but stopped at its clean-worktree release gate; rerun it after committing, then install and verify the exact commit. The installed helper remains paused with STOP present and all reset permissions off. No new live action has been sent, and R24/Dragon Tamer remain partial.

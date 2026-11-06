@@ -113,10 +113,30 @@ class RouteExecutor:
                 for cast in policy['casts']:
                     if not input_allowed(self.actions.window):break
                     self.actions.window.press_key(cast['key'],delay_after=.1)
-        after=self.actions.read()
-        observed=fresh_transition(before,after) and (after.get('coins_this_game',0)>before.get('coins_this_game',0))
+        deadline=time.monotonic()+8.0
+        after=before
+        identity=tuple(before.get('telemetry',{}).get(k) for k in ('pid','process_start_time'))
+        while True:
+            try:
+                after=self.actions.read()
+            except (OSError,ValueError):
+                after=before
+            if tuple(after.get('telemetry',{}).get(k) for k in ('pid','process_start_time')) != identity:
+                break
+            if fresh_transition(before,after) and after.get('coins_this_game',0)>before.get('coins_this_game',0):
+                break
+            if time.monotonic()>=deadline:
+                break
+            time.sleep(.25)
+        observed=(tuple(after.get('telemetry',{}).get(k) for k in ('pid','process_start_time')) == identity
+                  and fresh_transition(before,after)
+                  and after.get('coins_this_game',0)>before.get('coins_this_game',0))
         return {'success':observed,'status':'VERIFIED' if observed else 'OBSERVING',
-                'action':'COLLECT_RESOURCES','message':'Building/coin setup input sent; waiting for measured production',
+                'action':'COLLECT_RESOURCES',
+                'message':('Fresh save showed increased run coins during collection window' if observed else
+                           'Collection input sent; no fresh save with increased run coins observed yet'),
+                'before':{'coins_this_game':before.get('coins_this_game'),'save_fingerprint':before.get('save_fingerprint')},
+                'after':{'coins_this_game':after.get('coins_this_game'),'save_fingerprint':after.get('save_fingerprint')},
                 'target_coins':(step or {}).get('target_coins')}
 
     def run_once(self):

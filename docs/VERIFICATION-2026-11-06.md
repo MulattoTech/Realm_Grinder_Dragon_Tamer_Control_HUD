@@ -47,3 +47,13 @@ Follow-up checked at 2026-11-06 12:43 UTC on `codex/live-viewport-scaling`, base
 - The original desktop shortcut still points to `C:\Tools\Dev\RealmGrinder\launcher.py`; the installed checkout is at `2aa0118` and the one live purchase ran from that checkout. No new GitHub release has been created.
 
 Status remains PARTIAL: visual recognition and two background purchase transitions are demonstrated, but progression toward R42, reset handling, Dragon milestones, trophy/achievement completion, minimized support, and a new GitHub release are not established.
+
+## Delayed production-save observation follow-up
+
+Checked at 2026-11-06 13:09 UTC on `codex/live-viewport-scaling`, based on `main` at `35be6c50b7c02a37980e959b2d33952e36b44edb`.
+
+- The latest bounded Goblin production attempt logged `COLLECT_RESOURCES` as `OBSERVING`. Local progression history showed `coins_this_game` rising from about `1.252e12` to `1.683e12`; the collector previously read only once immediately after dispatch, so a save update that arrived later in the cycle could be missed.
+- Added an eight-second bounded observation loop. It reports `VERIFIED` only after a fresh save fingerprint from the same process shows higher run coins, and includes before/after values and fingerprints. The message explicitly describes an observed increase during the collection window, not a causal guarantee that a particular click produced all of it.
+- The regression failed before the change and passed afterward. Affected local suites: **68 passed**.
+- Initial `scripts/Verify-Repository.ps1` run: source suite **417 passed, 5 skipped**; clean archive suite **416 passed, 5 skipped**. The script then returned nonzero because its final release check requires a committed clean worktree; this run is not recorded as full verifier PASS.
+- No live action was sent for this change. The installed helper remains on `35be6c5`, paused with STOP present, and reset permissions disabled. Dragon Tamer acceptance remains PARTIAL.
