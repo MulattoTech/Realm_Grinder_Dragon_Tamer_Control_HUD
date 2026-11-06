@@ -24,11 +24,11 @@ def test_unknown_template_tokens_never_pass_validation():
     assert not result['verified'] and result['unresolved_tokens']==['FR2','NOPE999','SP:Invented Spell']
 
 
-def test_research_template_uses_branch_value_ids_not_plain_number():
+def test_research_template_uses_serialized_research_ids_not_display_upgrade_ids():
     result=api().compile_template('S50,C105,D55,E80,A10,W25',api().load_reference_ids(),58,identity())
     assert result['verified'] and len(result['required_upgrade_ids'])==6
-    assert result['required_upgrade_ids'][0]==300
-    assert 130002 not in result['required_upgrade_ids']
+    assert result['required_upgrade_ids']==[130002,126305,127504,128305,124801,132202]
+    assert 300 not in result['required_upgrade_ids']
 
 
 def identity():

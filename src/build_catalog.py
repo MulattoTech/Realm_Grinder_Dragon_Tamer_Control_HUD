@@ -54,6 +54,12 @@ def _supported_definitions(game_identity):
 def compile_template(template,catalog,save_version,game_identity=None):
     required=[];spells=[];unknown=[]
     definitions=_supported_definitions(game_identity)
+    supported_research_ids=set()
+    if definitions:
+        versions=json.loads((ROOT/'data'/'supported_game_versions.json').read_text(encoding='utf-8')).get('versions',[])
+        supported_research_ids=set(next((item.get('research_ids',[]) for item in versions
+            if item.get('swf_sha256')==game_identity.get('swf_sha256') and
+               item.get('save_version')==game_identity.get('save_version')),[]))
     source_names={}
     for name,identifier in catalog.get('names',{}).items():
         if identifier in source_names:
@@ -71,9 +77,15 @@ def compile_template(template,catalog,save_version,game_identity=None):
             else:spells.append(identifier)
         else:
             source_id=catalog.get('codes',{}).get(token)
+            identity_version=game_identity.get('save_version') if isinstance(game_identity,dict) else None
+            if re.fullmatch(r'[SCDEAWF]\d+',token):
+                if source_id in supported_research_ids and identity_version==save_version:
+                    required.append(source_id)
+                else:
+                    unknown.append(token)
+                continue
             name=source_names.get(source_id) if source_id is not None else None
             candidates=installed_names.get(name,[]) if name else []
-            identity_version=game_identity.get('save_version') if isinstance(game_identity,dict) else None
             if len(candidates)!=1 or identity_version!=save_version:
                 unknown.append(token)
             else:
