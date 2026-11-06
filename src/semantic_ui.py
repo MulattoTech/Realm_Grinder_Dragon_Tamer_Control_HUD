@@ -9,6 +9,14 @@ import cv2
 import numpy as np
 from src.action_verification import upgrade_owned
 ROOT = Path(__file__).resolve().parents[1]
+_ICON_REFERENCE_SIZE = (976, 669)
+_MIN_VIEWPORT_SCALE = 0.5
+
+
+def _viewport_scale(width, height):
+    """Estimate uniform UI scale from the 976x669 client-area fixture."""
+    ref_width, ref_height = _ICON_REFERENCE_SIZE
+    return max(0.25, (width / ref_width + height / ref_height) / 2)
 
 
 def locate_icon(frame, icon_path, threshold=0.84, full_frame=False):
@@ -16,11 +24,19 @@ def locate_icon(frame, icon_path, threshold=0.84, full_frame=False):
         raise ValueError('Cannot identify UI targets from a synthetic status frame')
     image = cv2.cvtColor(np.asarray(frame), cv2.COLOR_RGB2BGR)
     height, width = image.shape[:2]
-    if width < 760 or height < 500:
+    if width < round(_ICON_REFERENCE_SIZE[0] * _MIN_VIEWPORT_SCALE) or \
+            height < round(_ICON_REFERENCE_SIZE[1] * _MIN_VIEWPORT_SCALE):
         return None
-    top, bottom, left, right = 110, height - 104, 86, min(519, width)
-    if full_frame:top,bottom,left,right=20,height-20,20,width-20
+    sx, sy = width / _ICON_REFERENCE_SIZE[0], height / _ICON_REFERENCE_SIZE[1]
+    scale = _viewport_scale(width, height)
+    top, bottom = round(110 * sy), height - round(104 * sy)
+    left, right = round(86 * sx), min(round(519 * sx), width)
+    if full_frame:
+        top, bottom = round(20 * sy), height - round(20 * sy)
+        left, right = round(20 * sx), width - round(20 * sx)
     area = image[top:bottom, left:right]
+    if area.size == 0:
+        return None
     icon = cv2.imread(str(icon_path), cv2.IMREAD_UNCHANGED)
     if icon is None:
         raise FileNotFoundError(str(icon_path))
@@ -28,8 +44,11 @@ def locate_icon(frame, icon_path, threshold=0.84, full_frame=False):
         alpha = icon[:, :, 3].astype(float) / 255
         icon = (icon[:, :, :3] * alpha[:, :, None] + 18 * (1-alpha[:, :, None])).astype(np.uint8)
     best = None
-    for size in (48, 50, 52, 54, 56):
+    for base_size in (48, 50, 52, 54, 56):
+        size = max(16, round(base_size * scale))
         template = cv2.resize(icon, (size, size))[7:-7, 7:-7]
+        if template.shape[0] > area.shape[0] or template.shape[1] > area.shape[1]:
+            continue
         response = cv2.matchTemplate(area, template, cv2.TM_CCOEFF_NORMED)
         _, score, _, point = cv2.minMaxLoc(response)
         if not math.isfinite(score):
@@ -37,24 +56,30 @@ def locate_icon(frame, icon_path, threshold=0.84, full_frame=False):
         center = (left + point[0] + template.shape[1]//2, top + point[1] + template.shape[0]//2)
         suppressed = response.copy()
         x, y = point
-        suppressed[max(0,y-24):y+25, max(0,x-24):x+25] = -1
+        radius = max(8, round(24 * scale))
+        suppressed[max(0,y-radius):y+radius+1, max(0,x-radius):x+radius+1] = -1
         if best is None or score > best['score']:
             best = {'x': center[0], 'y': center[1], 'score': float(score),
-                    'margin': float(score-suppressed.max()), 'size': size}
+                    'margin': float(score-suppressed.max()), 'size': size,
+                    'client_size': (width, height)}
     if best is None or best['score'] < threshold or best['margin'] < 0.035:
         return None
     return best
 
 
 def control_point(name, width, height, faction=None):
-    if width < 760 or height < 500:
+    if width < round(_ICON_REFERENCE_SIZE[0] * _MIN_VIEWPORT_SCALE) or \
+            height < round(_ICON_REFERENCE_SIZE[1] * _MIN_VIEWPORT_SCALE):
         raise ValueError('Client is too small for the calibrated layout')
     points = {'buy_all_upgrades': (157 if faction==11 else 297,59), 'load_template':(297,59), 'buy_all_buildings': (width-361,height-89),
               'realm': (min(560,width-410),min(340,height-170)),
               'abdication': (215,25), 'reincarnation': (390,25), 'upgrades_tab': (40,110)}
     if name not in points:
         raise ValueError('Unknown semantic control: '+name)
-    return points[name]
+    point=points[name]
+    if not (0 <= point[0] < width and 0 <= point[1] < height):
+        raise ValueError('Calibrated control does not fit the client viewport')
+    return point
 
 
 def purchase_delta(before, after, known, expected):
@@ -184,14 +209,24 @@ def locate_reset_control(frame,operation):
 
 
 def unpurchased_collapsed(frame):
-    if frame.info.get('capture_kind')=='SYNTHETIC_STATUS' or frame.width<760:return False
-    image=cv2.cvtColor(np.asarray(frame),cv2.COLOR_RGB2GRAY)[80:115,475:510]
+    if frame.info.get('capture_kind')=='SYNTHETIC_STATUS' or \
+            frame.width < round(_ICON_REFERENCE_SIZE[0] * _MIN_VIEWPORT_SCALE):
+        return False
+    sx,sy=frame.width/_ICON_REFERENCE_SIZE[0],frame.height/_ICON_REFERENCE_SIZE[1]
+    left,top=round(475*sx),round(80*sy)
+    right,bottom=round(510*sx),round(115*sy)
+    image=cv2.cvtColor(np.asarray(frame),cv2.COLOR_RGB2GRAY)[top:bottom,left:right]
+    factor=_viewport_scale(frame.width,frame.height)
     scores={}
     for name in ('down','up'):
         path=ROOT/f'assets/templates/unpurchased-arrow-{name}.png'
         if not path.exists():raise ValueError('Missing UI calibration anchor; run tools/bootstrap.py on the supported game version')
         icon=cv2.imread(str(path),cv2.IMREAD_GRAYSCALE)
-        if icon is None or icon.shape[0]>image.shape[0] or icon.shape[1]>image.shape[1]:
+        if icon is None:
+            raise ValueError('Invalid UI calibration anchor dimensions')
+        icon=cv2.resize(icon,(max(1,round(icon.shape[1]*factor)),
+                              max(1,round(icon.shape[0]*factor))))
+        if icon.shape[0]>image.shape[0] or icon.shape[1]>image.shape[1]:
             raise ValueError('Invalid UI calibration anchor dimensions')
         scores[name]=cv2.minMaxLoc(cv2.matchTemplate(image,icon,cv2.TM_CCOEFF_NORMED))[1]
     return bool(scores['down']>.95 and scores['down']>scores['up']+.05)
@@ -212,14 +247,29 @@ class SemanticUI:
         if self.cancelled() or not self.window.find_window():
             raise RuntimeError('Input is paused or the target is absent')
 
+    def _click_at_size(self, point, client_size, delay_after):
+        """Dispatch only while the visible client still matches the target frame."""
+        self.require_ready()
+        if self.window.is_minimized():
+            raise RuntimeError('Semantic input requires real game pixels')
+        if tuple(self.window.get_client_size()) != tuple(client_size):
+            raise RuntimeError('Window resized since target discovery')
+        self.require_ready()
+        self.window.click(*point, delay_after=delay_after, auto_scale=False,
+                          expected_client_size=tuple(client_size))
+
     def scroll(self,delta):
         self.require_ready()
+        if self.window.is_minimized():
+            raise RuntimeError('Semantic scrolling requires a visible game window')
         import win32gui,win32con
         from src.input_controller import make_lparam
         # AIR routes wheel input using its last mouse position, not only lParam.
-        win32gui.PostMessage(self.window.hwnd,win32con.WM_MOUSEMOVE,0,make_lparam(400,300))
+        width,height=self.window.get_client_size()
+        point=(width//2,height//2)
+        win32gui.PostMessage(self.window.hwnd,win32con.WM_MOUSEMOVE,0,make_lparam(*point))
         time.sleep(.05)
-        screen=win32gui.ClientToScreen(self.window.hwnd,(400,300))
+        screen=win32gui.ClientToScreen(self.window.hwnd,point)
         win32gui.PostMessage(self.window.hwnd,win32con.WM_MOUSEWHEEL,(delta&0xffff)<<16,make_lparam(*screen))
         time.sleep(.3)
 
@@ -241,7 +291,9 @@ class SemanticUI:
             frame=self.window.capture();match=locate_icon(frame,path,full_frame=True)
             return dict(match,name=name,source=item,client_size=frame.size) if match else None
         if unpurchased_collapsed(frame):
-            self.window.click(490,97,delay_after=.25,auto_scale=False)
+            self._click_at_size((round(490*frame.width/_ICON_REFERENCE_SIZE[0]),
+                                 round(97*frame.height/_ICON_REFERENCE_SIZE[1])),
+                                frame.size,.25)
         self.scroll(2400)
         for index in range(max_scrolls+1):
             self.require_ready();frame=self.window.capture();match=locate_icon(frame,path)
@@ -250,10 +302,7 @@ class SemanticUI:
         return None
 
     def click_target(self, target):
-        self.require_ready()
-        if list(self.window.get_client_size()) != list(target['client_size']):
-            raise RuntimeError('Window resized since target discovery')
-        self.window.click(target['x'], target['y'], delay_after=0.2, auto_scale=False)
+        self._click_at_size((target['x'],target['y']),target['client_size'],0.2)
 
     def click_reset_control(self,operation):
         """Open a reset confirmation only from a matched live reset-button label."""
@@ -261,10 +310,7 @@ class SemanticUI:
         if self.window.is_minimized():raise RuntimeError('Reset confirmation requires real game pixels')
         frame=self.window.capture();target=locate_reset_control(frame,operation)
         if target is None:raise RuntimeError(f'{operation} button label was not verified; no input was sent')
-        if list(self.window.get_client_size())!=list(target['client_size']):
-            raise RuntimeError('Window resized since reset-button discovery')
-        self.require_ready()
-        self.window.click(*target['point'],delay_after=0.2,auto_scale=False)
+        self._click_at_size(target['point'],target['client_size'],0.2)
         return target
 
     def confirm_abdication(self):
@@ -274,21 +320,24 @@ class SemanticUI:
         frame=self.window.capture();dialog=locate_abdication_dialog(frame)
         if dialog is None:
             raise RuntimeError('Abdication confirmation dialog was not verified; no confirmation was sent')
-        size=list(frame.size)
-        if list(self.window.get_client_size())!=size:
-            raise RuntimeError('Window resized since Abdication dialog recognition')
-        self.require_ready()
-        self.window.click(*dialog['confirm'],delay_after=0.3,auto_scale=False)
+        self._click_at_size(dialog['confirm'],frame.size,0.3)
         return dialog
 
     def click_control(self,name):
         self.require_ready()
+        if self.window.is_minimized():
+            raise RuntimeError('Semantic control input requires real game pixels')
+        frame=self.window.capture()
+        if frame.info.get('capture_kind') == 'SYNTHETIC_STATUS':
+            raise RuntimeError('Semantic control input requires real game pixels')
+        if tuple(frame.size) != tuple(self.window.get_client_size()):
+            raise RuntimeError('Window resized while capturing semantic control')
         from src.save_reader import get_current_game_state
         state=get_current_game_state()
         point=control_point(name,*self.window.get_client_size(),faction=state['faction'])
-        if not self.window.is_minimized() and template_dialog(self.window.capture()):
+        if template_dialog(frame):
             raise RuntimeError('A template dialog is open; normal production clicks are blocked')
-        self.window.click(*point,delay_after=.1,auto_scale=False)
+        self._click_at_size(point,frame.size,.1)
 
 
     def enter_mercenary_template(self,template):
@@ -297,18 +346,20 @@ class SemanticUI:
         if not template or len(template)>4096 or any(ord(ch)<32 for ch in template):raise ValueError('Invalid template string')
         from src.save_reader import get_current_game_state
         if get_current_game_state()['faction']!=11:raise RuntimeError('Mercenary template requested outside Mercenary affiliation')
-        dialog=template_dialog(self.window.capture())
+        frame=self.window.capture();dialog=template_dialog(frame)
         if dialog:
-            self.window.click(*dialog['close'],delay_after=.2,auto_scale=False)
+            self._click_at_size(dialog['close'],frame.size,.2)
         self.click_control('load_template');time.sleep(.3)
-        dialog=template_dialog(self.window.capture())
+        frame=self.window.capture();dialog=template_dialog(frame)
         if dialog is None:raise RuntimeError('Template Import dialog was not verified; no text was sent')
-        self.window.click(*dialog['input'],delay_after=.1,auto_scale=False)
+        self._click_at_size(dialog['input'],frame.size,.1)
         for character in template:
             self.require_ready();self.window.type_text(character,delay_between=.003)
         time.sleep(.15)
         self.window.capture().save(ROOT/'screenshots/last-template-entry.png')
-        self.require_ready();self.window.click(*dialog['import'],delay_after=.3,auto_scale=False)
+        self.require_ready();frame=self.window.capture();dialog=template_dialog(frame)
+        if dialog is None:raise RuntimeError('Template Import dialog changed before import; no input was sent')
+        self._click_at_size(dialog['import'],frame.size,.3)
         frame=self.window.capture();remaining=template_dialog(frame)
-        if remaining:self.window.click(*remaining['close'],delay_after=.2,auto_scale=False)
+        if remaining:self._click_at_size(remaining['close'],frame.size,.2)
         return {'dialog':dialog,'normal_ui_import':True}

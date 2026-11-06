@@ -1,8 +1,8 @@
 """
-High-Performance Win32 Input Controller for Realm Grinder Automation.
-Provides accurate background message dispatch (PostMessageW) with proper
-scan codes, transition flags, virtual key mapping, and dynamic DPI/size scaling.
-Operates seamlessly whether the game window is active, background, or minimized.
+Win32 Input Controller for Realm Grinder Automation.
+Dispatches client-coordinate messages with scan codes and transition flags.
+PostMessage acceptance does not prove that the game processed an event;
+behavior can vary with window state, focus, DPI, and the game runtime.
 """
 
 import time
@@ -67,8 +67,8 @@ def scale_coord(base_x: int, base_y: int, curr_w: int, curr_h: int, base_w: int 
 
 class InputController:
     """
-    Direct Win32 message dispatcher for background / minimized game automation.
-    Thread-safe, non-blocking, and never steals user focus.
+    Direct Win32 message dispatcher. It does not restore or focus the target,
+    and does not certify delivery or game-side effect of a posted message.
     """
 
     @staticmethod

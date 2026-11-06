@@ -205,7 +205,8 @@ def test_semantic_reset_click_needs_pixels_and_live_input_gate():
     window=Window();ui=SemanticUI(window,lambda:False)
     target=ui.click_reset_control('abdication')
     assert target['point']==(215,20)
-    assert window.clicks==[((215,20),{'delay_after':0.2,'auto_scale':False})]
+    assert window.clicks==[((215,20),{'delay_after':0.2,'auto_scale':False,
+                                     'expected_client_size':(1180,810)})]
     guarded=Window();cancelled=SemanticUI(guarded,lambda:True)
     with pytest.raises(RuntimeError,match='paused or the target is absent'):
         cancelled.click_reset_control('abdication')
@@ -229,7 +230,8 @@ def test_abdication_confirm_requires_full_dialog_pixel_match():
     window=Window(frame);ui=SemanticUI(window,lambda:False)
     dialog=ui.confirm_abdication()
     assert dialog['confirm']==(572,459)
-    assert window.clicks==[((572,459),{'delay_after':0.3,'auto_scale':False})]
+    assert window.clicks==[((572,459),{'delay_after':0.3,'auto_scale':False,
+                                      'expected_client_size':(1280,752)})]
     missing=Image.new('RGB',(1280,752),(22,22,24));missing.paste(
         Image.open(root/'abdication-title.png').convert('RGB'),origin)
     guarded=Window(missing)
