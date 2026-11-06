@@ -98,32 +98,29 @@ def _make_app_mock():
 
 
 
-def test_automate_goal_clears_stop_and_unpauses(tmp_path):
-    """action_automate_straight_to_goal must remove STOP file and set paused=False."""
-    stop_path = tmp_path / 'STOP'
-    stop_path.write_text('test stop')
-
-    saved = []
-    def fake_save_config(c):
-        saved.append(dict(c))
-
+def test_automate_goal_uses_start_admission_and_reports_success():
+    """The shortcut must use Start's admission path and only claim active on success."""
     from src.monitor_window import ModernDragonTrackerApp
     mock_app = _make_app_mock()
-    mock_app.clearer.window.hwnd = None
-    mock_app.clearer.window.find_window.return_value = False
-
+    mock_app.start_selected_path.return_value = True
+    mock_app.automate_status_lbl = MagicMock()
     with patch('src.monitor_window.load_config',
-               return_value={'selected_goal': 'Dragon Tamer', 'paused': True}), \
-         patch('src.monitor_window.save_config', side_effect=fake_save_config), \
-         patch('src.monitor_window.require_interactive_session'), \
-         patch('src.monitor_window.win32gui') as mock_win32, \
-         patch('src.monitor_window.STOP_FILE', str(stop_path)):
-        mock_win32.IsWindow.return_value = False
-        ModernDragonTrackerApp.action_automate_straight_to_goal(mock_app)
+               return_value={'selected_goal': 'Dragon Tamer', 'paused': False}), \
+         patch('src.monitor_window.win32gui'):
+        assert ModernDragonTrackerApp.action_automate_straight_to_goal(mock_app) is True
+    mock_app.start_selected_path.assert_called_once_with()
+    assert 'Active' in mock_app.automate_status_lbl.configure.call_args.kwargs['text']
 
-    assert not stop_path.exists(), 'STOP file should be removed after action_automate_straight_to_goal'
-    assert saved, 'save_config should have been called'
-    assert saved[-1].get('paused') is False, 'paused must be False after automate action'
+
+def test_automate_goal_does_not_claim_active_when_start_admission_fails():
+    from src.monitor_window import ModernDragonTrackerApp
+    mock_app = _make_app_mock()
+    mock_app.start_selected_path.return_value = False
+    mock_app.automate_status_lbl = MagicMock()
+    assert ModernDragonTrackerApp.action_automate_straight_to_goal(mock_app) is False
+    mock_app.start_selected_path.assert_called_once_with()
+    assert all('Active' not in str(call.kwargs.get('text', ''))
+               for call in mock_app.automate_status_lbl.configure.call_args_list)
 
 
 def test_automate_goal_blocked_by_non_interactive_session():
@@ -135,12 +132,89 @@ def test_automate_goal_blocked_by_non_interactive_session():
         raise RuntimeError('Not an interactive desktop session')
 
     with patch('src.monitor_window.require_interactive_session', side_effect=raise_session):
-        ModernDragonTrackerApp.action_automate_straight_to_goal(mock_app)
+        result = ModernDragonTrackerApp.start_selected_path(mock_app)
 
-    # set_feedback should have been called with an error message
+    assert result is False
     mock_app.set_feedback.assert_called()
     args = mock_app.set_feedback.call_args[0]
-    assert 'blocked' in args[0].lower() or 'Automate blocked' in args[0]
+    assert 'blocked' in args[0].lower()
+
+
+def test_start_connection_failure_keeps_stop_and_does_not_unpause(tmp_path):
+    from src.monitor_window import ModernDragonTrackerApp
+    mock_app = _make_app_mock()
+    mock_app.save_selected_path = MagicMock()
+    stop_path = tmp_path / 'STOP'
+    stop_path.write_text('paused')
+    state_file = tmp_path / 'state' / 'dragon_tamer_state.json'
+    state_file.parent.mkdir()
+    saved = []
+    with patch('src.monitor_window.require_interactive_session'), \
+         patch('src.monitor_window.get_live_game_state', return_value={'telemetry': {'process_connected': False}}), \
+         patch('src.monitor_window.load_config', return_value={'paused': True}), \
+         patch('src.monitor_window.save_config', side_effect=lambda cfg: saved.append(dict(cfg))), \
+         patch('src.monitor_window.STATE_FILE', str(state_file)), \
+         patch('src.monitor_window.STOP_FILE', str(stop_path)):
+        result = ModernDragonTrackerApp.start_selected_path(mock_app)
+
+    assert result is False
+    assert stop_path.exists()
+    assert not saved
+
+
+def test_automate_goal_stays_paused_for_unresolved_pending_action(tmp_path):
+    from src.monitor_window import ModernDragonTrackerApp
+    mock_app = _make_app_mock()
+    mock_app.save_selected_path = MagicMock()
+    mock_app.start_selected_path.side_effect = lambda: ModernDragonTrackerApp.start_selected_path(mock_app)
+    mock_app.clearer.window.is_minimized.return_value = True
+    mock_app.root = MagicMock()
+    stop_path = tmp_path / 'STOP'
+    stop_path.write_text('paused')
+    state_dir = tmp_path / 'state'
+    state_dir.mkdir()
+    state_file = state_dir / 'dragon_tamer_state.json'
+    (state_dir / 'pending_action.json').write_text(json.dumps({
+        'id': 'action-1', 'action': 'UNKNOWN_ACTION', 'status': 'UNCERTAIN',
+    }))
+    saved = []
+    with patch('src.monitor_window.require_interactive_session'), \
+         patch('src.monitor_window.get_live_game_state', return_value=fresh_state()), \
+         patch('src.monitor_window.load_config', return_value={'paused': True, 'require_minimized': True}), \
+         patch('src.monitor_window.save_config', side_effect=lambda cfg: saved.append(dict(cfg))), \
+         patch('src.action_verification.reconcile_known_template_no_text', return_value=False), \
+         patch('src.monitor_window.STATE_FILE', str(state_file)), \
+         patch('src.monitor_window.STOP_FILE', str(stop_path)), \
+         patch('src.monitor_window.messagebox.showwarning'):
+        result = ModernDragonTrackerApp.action_automate_straight_to_goal(mock_app)
+
+    assert result is False
+    assert stop_path.exists()
+    assert not saved
+    assert all('Active' not in str(call.kwargs.get('text', ''))
+               for call in mock_app.automate_status_lbl.configure.call_args_list)
+
+
+def test_start_window_geometry_failure_does_not_unpause_or_clear_stop(tmp_path):
+    from src.monitor_window import ModernDragonTrackerApp
+    mock_app = _make_app_mock()
+    mock_app.save_selected_path = MagicMock()
+    mock_app.clearer.window.is_minimized.return_value = False
+    stop_path = tmp_path / 'STOP'
+    stop_path.write_text('paused')
+    state_file = tmp_path / 'state' / 'dragon_tamer_state.json'
+    state_file.parent.mkdir()
+    with patch('src.monitor_window.require_interactive_session'), \
+         patch('src.monitor_window.get_live_game_state', return_value=fresh_state()), \
+         patch('src.monitor_window.load_config', return_value={'paused': True, 'require_minimized': True}), \
+         patch('src.monitor_window.save_config') as save, \
+         patch('src.monitor_window.STATE_FILE', str(state_file)), \
+         patch('src.monitor_window.STOP_FILE', str(stop_path)):
+        result = ModernDragonTrackerApp.start_selected_path(mock_app)
+
+    assert result is False
+    assert stop_path.exists()
+    save.assert_not_called()
 
 
 

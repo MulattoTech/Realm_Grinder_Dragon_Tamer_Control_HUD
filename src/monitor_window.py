@@ -822,36 +822,74 @@ class ModernDragonTrackerApp:
         self.update_state()
 
     def start_selected_path(self):
-        require_interactive_session()
-        self.save_selected_path()
-        state=get_live_game_state()
+        try:
+            require_interactive_session()
+        except Exception as exc:
+            self.set_feedback(f'Start blocked: {exc}',self.c_red)
+            return False
+        try:
+            self.save_selected_path()
+        except Exception as exc:
+            self.set_feedback(f'Start blocked while saving goal settings: {exc}',self.c_red)
+            return False
+        try:
+            state=get_live_game_state()
+        except Exception as exc:
+            self.set_feedback(f'Start blocked: could not read current game state ({exc}).',self.c_red)
+            return False
         if not state.get('telemetry',{}).get('process_connected'):
             self.set_feedback('Start blocked: Realm Grinder is not connected on this desktop.',self.c_red)
-            return
+            return False
         config=load_config()
-        if config.get('require_minimized',True) and not self.clearer.window.is_minimized():
-            self.set_feedback('Enable visible-window input in Build Advisor, or minimize the game for mapped actions.',self.c_amber)
-            return
+        try:
+            if config.get('require_minimized',True) and not self.clearer.window.is_minimized():
+                self.set_feedback('Enable visible-window input in Build Advisor, or minimize the game for mapped actions.',self.c_amber)
+                return False
+        except Exception as exc:
+            self.set_feedback(f'Start blocked: game window could not be validated ({exc}).',self.c_amber)
+            return False
         pending_path=os.path.join(os.path.dirname(STATE_FILE),'pending_action.json')
         if os.path.exists(pending_path):
-            pending=json.load(open(pending_path,encoding='utf-8'))
+            try:
+                with open(pending_path,encoding='utf-8') as pending_file:
+                    pending=json.load(pending_file)
+                if not isinstance(pending,dict) or not isinstance(pending.get('status'),str):
+                    raise ValueError('pending action record has no valid status')
+            except (OSError,ValueError,TypeError) as exc:
+                self.set_feedback(f'Start blocked: pending action record is unreadable ({exc}).',self.c_amber)
+                return False
             if pending.get('status') in ('UNCERTAIN','DISPATCHED'):
                 from src.action_verification import reconcile_known_template_no_text
-                if reconcile_known_template_no_text(pending_path,state):
+                try:
+                    reconciled=reconcile_known_template_no_text(pending_path,state)
+                except Exception as exc:
+                    self.set_feedback(f'Start blocked: pending action could not be reconciled ({exc}).',self.c_amber)
+                    return False
+                if reconciled:
                     self.set_feedback('Recorded the old template attempt as no text sent. Review goal settings, then click Start again.',self.c_amber)
                     messagebox.showinfo('Template attempt reconciled',
                         'The recorded error occurred before the template text field was clicked or any characters were typed. '
                         'The original transaction and backup were retained. The bot is still paused; review the selected goal, then click Start again.',
                         parent=self.root)
-                    return
-                pending=json.load(open(pending_path,encoding='utf-8'))
+                    return False
+                try:
+                    with open(pending_path,encoding='utf-8') as pending_file:
+                        pending=json.load(pending_file)
+                    if not isinstance(pending,dict) or not isinstance(pending.get('status'),str):
+                        raise ValueError('pending action record has no valid status')
+                except (OSError,ValueError,TypeError) as exc:
+                    self.set_feedback(f'Start blocked: pending action record is unreadable ({exc}).',self.c_amber)
+                    return False
                 if pending.get('status') not in ('UNCERTAIN','DISPATCHED'):
                     # Another process reconciled it while this handler was running.
                     pass
                 else:
                     self.set_feedback(f"Reconciliation required: {pending.get('action','unknown action')} ({pending.get('status')}).",self.c_amber)
                     messagebox.showwarning('Resume blocked: unresolved action',pending_action_summary(pending),parent=self.root)
-                    return
+                    return False
+            elif pending.get('status') not in ('VERIFIED','NO_EFFECT','RECONCILED_NO_TEMPLATE_TEXT'):
+                self.set_feedback(f"Start blocked: unrecognized pending action status ({pending.get('status')}).",self.c_amber)
+                return False
         if config.get('selected_goal')=='Build only' and config.get('named_goal') in ('Reach R46','Dragon Tamer'):
             self.set_feedback('Build only pauses after the current build is verified; explicit target tracking is available under Named goal.',self.c_amber)
         config['paused']=False
@@ -865,6 +903,7 @@ class ModernDragonTrackerApp:
             self.set_feedback(message,self.c_amber)
         else:self.set_feedback(message,self.c_cyan)
         self.update_state()
+        return True
 
     def on_build_selected(self, event):
         sel = self.builds_listbox.curselection()
@@ -982,12 +1021,12 @@ class ModernDragonTrackerApp:
 
         self.toggle_vars = {}
         toggles = [
-            ("auto_reincarnate", "Auto Reincarnate (when target gems reached)", True),
-            ("auto_abdicate", "Auto Abdicate (on significant gem increase)", True),
+            ("auto_reincarnate", "Auto Reincarnate (when target gems reached)", False),
+            ("auto_abdicate", "Auto Abdicate (on significant gem increase)", False),
             ("auto_spells", "Auto Spell Combo & Autocast Loop (keys 1-6)", True),
             ("auto_buy_buildings", "Auto Buy All Buildings", True),
             ("auto_buy_upgrades", "Auto Buy All Upgrades", True),
-            ("auto_excavate", "Auto Smart Excavations (R46 Egg hunt)", True),
+            ("auto_excavate", "Auto Smart Excavations (R46 Egg hunt)", False),
             ("auto_click_realm", "Auto Click Realm Background", True),
             ("auto_apply_build", "Auto Deploy Recommended Wiki Build", True),
             ("ultron_burst", "⚡ UltronBurst Protocol (First-Principles Renaissance)", True)
@@ -1214,21 +1253,24 @@ class ModernDragonTrackerApp:
     def action_automate_straight_to_goal(self):
         """1-Click 'Automate Straight to Goal' handler.
 
-        1. Verifies runtime eligibility (interactive session).
-        2. Sets the game window to non-intrusive background mode (SW_SHOWNOACTIVATE=4)
-           so Adobe AIR event loop runs at full speed without stealing focus.
-        3. Reads current goal from config (Dragon Tamer / Named goal / etc.).
-        4. Removes STOP file and unpauses the bot worker.
-        5. Updates feedback banner with the active objective.
+        Delegates all admission and resume state changes to Start/Resume, then
+        applies the existing non-focus-stealing window hint and updates the HUD.
 
         Safety constraints: READ-ONLY memory only; one worker owner (WorkerLease);
         never steals focus or restores minimized state.
         """
         try:
-            require_interactive_session()
+            started = self.start_selected_path()
         except Exception as exc:
             self.set_feedback(f'Automate blocked: {exc}', self.c_red)
-            return
+            return False
+        if not started:
+            if hasattr(self, 'automate_status_lbl'):
+                self.automate_status_lbl.configure(
+                    text='⛔ Not started | Start admission checks blocked automation.',
+                    fg=self.c_amber
+                )
+            return False
 
         # Show game window in background (non-intrusive) if it is findable
         try:
@@ -1252,14 +1294,7 @@ class ModernDragonTrackerApp:
         named = config.get('named_goal', 'Dragon Tamer')
         goal_display = named if goal == 'Named goal' else goal
 
-        config['paused'] = False
-        save_config(config)
         self.config = config
-        if os.path.exists(STOP_FILE):
-            try:
-                os.remove(STOP_FILE)
-            except Exception:
-                pass
 
         # Update feedback and automate button label
         msg = f'🚀 Automating straight to {goal_display}: Autonomous progression active.'
@@ -1270,6 +1305,7 @@ class ModernDragonTrackerApp:
                 fg=self.c_green
             )
         self.update_state()
+        return True
 
     def update_mana_bar(self):
         """Refresh the live volatile mana bar at 250ms intervals without blocking the UI thread."""

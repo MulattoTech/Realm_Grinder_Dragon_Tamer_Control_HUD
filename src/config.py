@@ -16,26 +16,40 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "auto_buy_buildings": True,
     "auto_click_realm": True,
     "auto_cast_spells": True,
-    "auto_abdicate": True,
-    "auto_reincarnate": True,
-    "auto_excavate": True,
+    "auto_abdicate": False,
+    "auto_reincarnate": False,
+    "auto_excavate": False,
     "cycle_delay_sec": 5.0,
     "abdicate_multiplier_threshold": 50.0,
     "ultron_burst": True
 }
 
+_OPTIONAL_BOOLEAN_DEFAULTS = {
+    "require_minimized": True,
+    "auto_spells": True,
+    "auto_apply_build": True,
+}
+
 
 def load_config() -> Dict[str, Any]:
+    cfg = DEFAULT_CONFIG.copy()
     if os.path.exists(CONFIG_FILE):
         try:
             with open(CONFIG_FILE, "r", encoding="utf-8-sig") as f:
                 data = json.load(f)
-                cfg = DEFAULT_CONFIG.copy()
-                cfg.update(data)
-                return cfg
+                if isinstance(data, dict):
+                    cfg.update(data)
         except Exception:
-            pass
-    return DEFAULT_CONFIG.copy()
+            return cfg
+    # JSON booleans are the only accepted representation for permission flags.
+    # In particular, non-empty strings such as "false" are truthy in Python.
+    for key, default in DEFAULT_CONFIG.items():
+        if type(default) is bool and type(cfg.get(key)) is not bool:
+            cfg[key] = default
+    for key, default in _OPTIONAL_BOOLEAN_DEFAULTS.items():
+        if key in cfg and type(cfg[key]) is not bool:
+            cfg[key] = default
+    return cfg
 
 
 def save_config(config: Dict[str, Any]):
