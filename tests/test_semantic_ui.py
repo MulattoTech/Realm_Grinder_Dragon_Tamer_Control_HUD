@@ -56,11 +56,6 @@ def test_basic_ui_controls_anchor_to_correct_panes():
     x, y = coords('buy_all_buildings',1433,822)
     assert x == 1072
     assert 673 <= y <= 717
-    assert coords('research_tab',1433,822)==(40,300)
-    assert coords('research_load_template',1433,822)==(398,18)
-    assert coords('buy_all_research',1433,822)==(305,47)
-    assert coords('research_tab',716,411)==(20,150)
-    assert coords('buy_all_research',716,411)==(152,24)
 
 
 def test_single_target_purchase_proof_rejects_unrelated_many_upgrades():
@@ -101,12 +96,17 @@ def test_template_dialog_is_identified_before_typing():
 def test_research_template_uses_visible_dialog_and_scaled_control_path(monkeypatch):
     from PIL import Image
     import src.semantic_ui as ui
-    import src.save_reader as save_reader
+    import src.live_state as live_state
     frame=Image.new('RGB',(1433,822));frame.info['capture_kind']='LIVE'
     dialog={'input':(717,238),'import':(717,663),'close':(937,114),'bounds':(497,115,937,707),'score':.99}
     recognitions=iter((None,dialog,dialog,None))
     monkeypatch.setattr(ui,'template_dialog',lambda _frame:next(recognitions))
-    monkeypatch.setattr(save_reader,'get_current_game_state',lambda:{'faction':3})
+    monkeypatch.setattr(live_state,'get_live_game_state',lambda:{'faction':3,'game_identity':{
+        'swf_sha256':'7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b','save_version':58}})
+    tab={'x':40,'y':300,'client_size':frame.size}
+    controls={'load_template':{'x':398,'y':18,'client_size':frame.size},
+              'buy_all':{'x':305,'y':47,'client_size':frame.size}}
+    monkeypatch.setattr(ui,'locate_research_tab',lambda _frame:tab)
     class Window:
         def __init__(self):self.clicks=[];self.typed=''
         def find_window(self):return True
@@ -116,10 +116,50 @@ def test_research_template_uses_visible_dialog_and_scaled_control_path(monkeypat
         def click(self,*point,**_kwargs):self.clicks.append(point)
         def type_text(self,value,**_kwargs):self.typed+=value
     window=Window();semantic=ui.SemanticUI(window,lambda:False)
+    control_state={'count':0}
+    def controls_for_frame(_frame):
+        control_state['count']+=1
+        return None if control_state['count']==1 else controls
+    monkeypatch.setattr(ui,'locate_research_controls',controls_for_frame)
     result=semantic.enter_research_template('S50,S105')
     assert result['normal_ui_import'] is True
     assert window.clicks==[(40,300),(398,18),(717,238),(717,663),(305,47)]
     assert window.typed=='S50,S105'
+
+
+def test_research_template_rejects_unverified_game_before_capture(monkeypatch):
+    import src.live_state as live_state
+    from src.semantic_ui import SemanticUI
+    monkeypatch.setattr(live_state,'get_live_game_state',lambda:{'faction':3,'game_identity':{
+        'swf_sha256':'unknown','save_version':58}})
+    class Window:
+        clicked=False
+        def find_window(self):return True
+        def is_minimized(self):return False
+        def capture(self):pytest.fail('Unsupported game must be rejected before UI capture')
+        def click(self,*_args,**_kwargs):self.clicked=True
+    window=Window()
+    with pytest.raises(RuntimeError,match='limited to the supported 4.3.22'):
+        SemanticUI(window,lambda:False).enter_research_template('S50')
+    assert not window.clicked
+
+
+def test_live_research_panel_controls_and_sidebar_scale_with_viewport():
+    from PIL import Image
+    opened=Path('screenshots/research-panel-open.png')
+    closed=Path('screenshots/research-panel-closed.png')
+    if not opened.exists() or not closed.exists():
+        pytest.skip('Private 4.3.22 Research UI captures are not present')
+    ui=api();panel=Image.open(opened);other=Image.open(closed)
+    controls=ui.locate_research_controls(panel)
+    assert controls and controls['load_template']['score']>.98 and controls['buy_all']['score']>.98
+    assert ui.locate_research_controls(other) is None
+    tab=ui.locate_research_tab(other)
+    assert tab and abs(tab['x']-40)<3 and abs(tab['y']-291)<3
+    smaller=panel.resize((round(panel.width*.5),round(panel.height*.5)))
+    scaled=ui.locate_research_controls(smaller)
+    assert scaled and abs(scaled['load_template']['x']-199)<3
+    assert abs(scaled['buy_all']['x']-152)<3
 
 
 def test_offline_production_close_requires_title_and_close_icon_pair():

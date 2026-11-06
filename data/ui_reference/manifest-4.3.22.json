@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "swf_sha256": "7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b",
+  "scope": "Small Research UI matching snippets captured from the locally installed 4.3.22 game; not game asset redistribution or proof of purchase.",
+  "copyright": "Game UI belongs to its respective rightsholders. These snippets are not relicensed as application code.",
+  "files": [
+    {
+      "file": "research-load-template-4322.png",
+      "sha256": "66da026cc39dd9d1d54841d38f9fcd4fca1ef8f4abb3a80b6bd790cefb75f148",
+      "bytes": 2702
+    },
+    {
+      "file": "research-buy-all-4322.png",
+      "sha256": "e7578024677d8fd5a97400b296120dd52c35dbee4fa5730cdce0058946746bf1",
+      "bytes": 1656
+    },
+    {
+      "file": "research-tab-4322.png",
+      "sha256": "c1810c04305af8e800a36c16e2ff17d8915d3f52cb0897cf2ee5973885cb5ec8",
+      "bytes": 1112
+    }
+  ]
+}

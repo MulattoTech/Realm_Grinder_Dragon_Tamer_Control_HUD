@@ -84,15 +84,7 @@ def initialize(root=ROOT,game_dir=None,refresh_installed=False):
     elif not verified:
         _invalidate_installed_catalogs(root)
     if verified:
-        anchors=ROOT/'data/ui_reference'
-        manifest=json.loads((anchors/'manifest.json').read_text(encoding='utf-8'))
-        if manifest['swf_sha256']==digest:
-            for item in manifest['files']:
-                data=(anchors/item['file']).read_bytes()
-                if hashlib.sha256(data).hexdigest()!=item['sha256']:
-                    raise ValueError('UI reference checksum mismatch: '+item['file'])
-                target=root/'assets/templates'/item['file']
-                if not target.exists():target.write_bytes(data)
+        install_ui_reference_assets(root,digest)
     from src.source_knowledge import KnowledgeStore
     knowledge=KnowledgeStore(root/'scraped_wiki/knowledge.sqlite3')
     notes=json.loads((ROOT/'data/compatibility_notes.json').read_text(encoding='utf-8'))
@@ -109,6 +101,22 @@ def initialize(root=ROOT,game_dir=None,refresh_installed=False):
             'instructions':'Open the HUD from the logged-on Windows desktop. Keep resets off until semantic reset validation passes.'}
     write_json(root/'state/bootstrap_report.json',report)
     return report
+
+
+def install_ui_reference_assets(root,digest):
+    """Install only small UI crops bound to the exact local game binary."""
+    anchors=ROOT/'data/ui_reference'
+    target_dir=Path(root)/'assets/templates'
+    target_dir.mkdir(parents=True,exist_ok=True)
+    for manifest_path in sorted(anchors.glob('manifest*.json')):
+        manifest=json.loads(manifest_path.read_text(encoding='utf-8'))
+        if manifest.get('swf_sha256')!=digest:continue
+        for item in manifest.get('files',[]):
+            data=(anchors/item['file']).read_bytes()
+            if hashlib.sha256(data).hexdigest()!=item['sha256'] or len(data)!=item['bytes']:
+                raise ValueError('UI reference checksum mismatch: '+item['file'])
+            target=target_dir/item['file']
+            if not target.exists() or target.read_bytes()!=data:target.write_bytes(data)
 
 
 def _definitions_for_identity(identity):

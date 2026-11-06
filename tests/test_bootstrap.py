@@ -50,6 +50,23 @@ def test_missing_game_version_does_not_make_ui_action_profiles_verified(tmp_path
     assert not profile.exists() or not json.loads(profile.read_text()).get('verified_actions')
 
 
+def test_ui_reference_assets_are_installed_only_for_the_exact_swf(tmp_path,monkeypatch):
+    import hashlib
+    import src.bootstrap as bootstrap
+    from src.atomic_store import write_json
+    source=tmp_path/'package';refs=source/'data/ui_reference';refs.mkdir(parents=True)
+    payload=b'calibration-anchor';(refs/'research-anchor.png').write_bytes(payload)
+    digest='a'*64
+    write_json(refs/'manifest-4.3.22.json',{'swf_sha256':digest,'files':[{
+        'file':'research-anchor.png','sha256':hashlib.sha256(payload).hexdigest(),'bytes':len(payload)}]})
+    monkeypatch.setattr(bootstrap,'ROOT',source)
+    target=tmp_path/'installed'
+    bootstrap.install_ui_reference_assets(target,'b'*64)
+    assert not (target/'assets/templates/research-anchor.png').exists()
+    bootstrap.install_ui_reference_assets(target,digest)
+    assert (target/'assets/templates/research-anchor.png').read_bytes()==payload
+
+
 def test_portable_reference_identifiers_do_not_require_scratch_directory():
     from src.build_catalog import load_reference_ids
     identifiers=load_reference_ids()

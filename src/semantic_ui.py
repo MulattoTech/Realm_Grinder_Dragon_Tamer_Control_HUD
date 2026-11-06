@@ -85,7 +85,7 @@ def control_point(name, width, height, faction=None):
             height < round(_ICON_REFERENCE_SIZE[1] * _MIN_VIEWPORT_SCALE):
         raise ValueError('Client is too small for the calibrated layout')
     building_buy_all_bottom = round((669 - 580) * width / 976)
-    points = {'buy_all_upgrades': (157 if faction==11 else 297,59), 'load_template':(297,59), 'research_load_template':(round(398*width/1433),round(18*height/822)), 'buy_all_research': (round(305*width/1433),round(47*height/822)), 'research_tab': (round(40*width/1433),round(300*height/822)), 'buy_all_buildings': (width-361,height-building_buy_all_bottom),
+    points = {'buy_all_upgrades': (157 if faction==11 else 297,59), 'load_template':(297,59), 'buy_all_buildings': (width-361,height-building_buy_all_bottom),
               'realm': (min(560,width-410),min(340,height-170)),
               'abdication': (215,25), 'reincarnation': (390,25), 'upgrades_tab': (40,110)}
     if name not in points:
@@ -138,6 +138,61 @@ def template_dialog(frame):
     return {'input':(left+round(220*scale),top+round(123*scale)),
             'import':(left+round(220*scale),top+round(548*scale)),
             'close':(left+width,top-round(1*scale)),'bounds':(left,top,left+width,top+height),'score':score}
+
+
+def _locate_research_anchor(frame,name,region):
+    if frame.info.get('capture_kind')=='SYNTHETIC_STATUS':return None
+    asset=ROOT/'assets/templates'/name
+    if not asset.is_file():return None
+    reference=ROOT/'data/ui_reference/manifest-4.3.22.json'
+    if not reference.is_file():return None
+    try:
+        manifest=json.loads(reference.read_text(encoding='utf-8'))
+        expected=next(item for item in manifest['files'] if item['file']==name)
+        raw=asset.read_bytes()
+    except (OSError,ValueError,KeyError,StopIteration):return None
+    if (manifest.get('swf_sha256')!='7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b' or
+            len(raw)!=expected['bytes'] or hashlib.sha256(raw).hexdigest()!=expected['sha256']):return None
+    gray=cv2.cvtColor(np.asarray(frame),cv2.COLOR_RGB2GRAY)
+    x0,y0,x1,y1=region(frame.width,frame.height)
+    area=gray[y0:y1,x0:x1]
+    if area.size==0:return None
+    anchor=cv2.imread(str(asset),cv2.IMREAD_GRAYSCALE)
+    if anchor is None:return None
+    sx,sy=frame.width/1433,frame.height/822
+    scales=sorted(set(round(value,4) for value in (sx,sy,(sx+sy)/2,1.0)))
+    best=None
+    for scale in scales:
+        tw,th=round(anchor.shape[1]*scale),round(anchor.shape[0]*scale)
+        if tw<8 or th<8 or tw>area.shape[1] or th>area.shape[0]:continue
+        needle=cv2.resize(anchor,(tw,th)) if scale!=1 else anchor
+        response=cv2.matchTemplate(area,needle,cv2.TM_CCOEFF_NORMED)
+        _,score,_,point=cv2.minMaxLoc(response)
+        suppressed=response.copy();x,y=point
+        rx=max(2,tw//2);ry=max(2,th//2)
+        suppressed[max(0,y-ry):y+ry+1,max(0,x-rx):x+rx+1]=-1
+        margin=float(score-suppressed.max())
+        if best is None or score>best['score']:
+            best={'x':x0+x+tw//2,'y':y0+y+th//2,'score':float(score),
+                  'margin':margin,'client_size':frame.size,'scale':scale}
+    if best is None or best['score']<.90 or best['margin']<.025:return None
+    return best
+
+
+def locate_research_tab(frame):
+    """Find the Research sidebar icon in live pixels at the current viewport size."""
+    return _locate_research_anchor(frame,'research-tab-4322.png',
+        lambda width,height:(0,round(height*.24),round(width*.12),round(height*.47)))
+
+
+def locate_research_controls(frame):
+    """Require both version-bound Research header controls before dispatch."""
+    top=lambda width,height:(0,0,width,round(height*.16))
+    load=_locate_research_anchor(frame,'research-load-template-4322.png',top)
+    buy=_locate_research_anchor(frame,'research-buy-all-4322.png',top)
+    if not load or not buy:return None
+    if not (load['y']<buy['y'] and load['x']>buy['x']):return None
+    return {'load_template':load,'buy_all':buy}
 
 
 def locate_offline_production_dialog(frame):
@@ -394,29 +449,47 @@ class SemanticUI:
         self.require_ready()
         if self.window.is_minimized():raise RuntimeError('Research template entry requires real game pixels')
         if not template or len(template)>4096 or any(ord(ch)<32 for ch in template):raise ValueError('Invalid template string')
-        from src.save_reader import get_current_game_state
-        state=get_current_game_state()
+        from src.live_state import get_live_game_state
+        state=get_live_game_state()
         if state.get('faction') in (None,11):raise RuntimeError('Research template requested outside a verified non-Mercenary faction')
+        identity=state.get('game_identity',{})
+        if identity.get('swf_sha256')!='7d8cfb3d967e8cc80971885d45e333c373482bcf5024b1dba59ca5497fc4d49b' or identity.get('save_version')!=58:
+            raise RuntimeError('Research template UI calibration is limited to the supported 4.3.22 game and save')
         frame=self.window.capture()
         if frame.info.get('capture_kind')=='SYNTHETIC_STATUS':raise RuntimeError('Research template entry requires real game pixels')
         if template_dialog(frame):raise RuntimeError('An unrelated template dialog is already open')
-        size=frame.size
-        point=control_point('research_tab',*size,faction=state['faction'])
-        self._click_at_size(point,size,.3)
-        frame=self.window.capture()
-        if frame.size!=size:raise RuntimeError('Game viewport changed while opening Research')
-        point=control_point('research_load_template',*size,faction=state['faction'])
-        self._click_at_size(point,size,.3)
+        controls=locate_research_controls(frame)
+        if controls is None:
+            tab=locate_research_tab(frame)
+            if tab is None:raise RuntimeError('Research sidebar icon was not recognized; no input was sent')
+            self.click_target(tab);time.sleep(.3)
+            frame=self.window.capture()
+            controls=locate_research_controls(frame)
+            if controls is None:raise RuntimeError('Research controls were not visible after opening the panel')
+        self.click_target(controls['load_template']);time.sleep(.3)
         frame=self.window.capture();dialog=template_dialog(frame)
         if dialog is None:raise RuntimeError('Research Template Import dialog was not verified; no text was sent')
         self._click_at_size(dialog['input'],frame.size,.1)
         for character in template:
-            self.require_ready();self.window.type_text(character,delay_between=.003)
+            self.require_ready()
+            if tuple(self.window.get_client_size())!=tuple(frame.size):
+                raise RuntimeError('Game viewport changed while entering the Research template')
+            self.window.type_text(character,delay_between=.003)
         time.sleep(.15)
         frame=self.window.capture();dialog=template_dialog(frame)
         if dialog is None:raise RuntimeError('Research template dialog changed before import; no input was sent')
         self._click_at_size(dialog['import'],frame.size,.3)
         frame=self.window.capture()
         if template_dialog(frame):raise RuntimeError('Research template dialog remained open after import')
-        self._click_at_size(control_point('buy_all_research',*frame.size,faction=state['faction']),frame.size,.3)
+        controls=locate_research_controls(frame)
+        if controls is None:raise RuntimeError('Research controls were not recognized after import; no purchase input was sent')
+        self.click_target(controls['buy_all']);time.sleep(.3)
         return {'normal_ui_import':True,'client_size':frame.size}
+
+    def research_entry_available(self):
+        """Check that a live Research panel or its sidebar target is recognizable."""
+        self.require_ready()
+        if self.window.is_minimized():return False
+        frame=self.window.capture()
+        if frame.info.get('capture_kind')=='SYNTHETIC_STATUS':return False
+        return locate_research_controls(frame) is not None or locate_research_tab(frame) is not None

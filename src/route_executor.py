@@ -208,14 +208,16 @@ class RouteExecutor:
             ui=SemanticUI(self.actions.window,lambda:not input_allowed(self.actions.window))
             observed={}
             def dispatch():ui.enter_research_template(template)
+            def precondition(current):
+                return (current.get('faction')==3 and
+                    current.get('game_identity',{}).get('swf_sha256')==manifest['swf_sha256'] and
+                    current['raw_data'].get('saveVersion')==manifest['save_version'] and
+                    upgrade_owned(current,GOBLIN_BANK_ID) and ui.research_entry_available())
             def verify(before,after):
                 progress=template_progress(before,after,manifest);observed.update(progress)
                 return fresh_transition(before,after) and progress['progressed']
             result=self.actions.runner.run('GOBLIN_RESEARCH_TEMPLATE',
-                lambda current:current.get('faction')==3 and
-                    current.get('game_identity',{}).get('swf_sha256')==manifest['swf_sha256'] and
-                    current['raw_data'].get('saveVersion')==manifest['save_version'] and
-                    upgrade_owned(current,GOBLIN_BANK_ID),dispatch,verify,allow_no_effect=True)
+                precondition,dispatch,verify,allow_no_effect=True)
             result['build_verified']=bool(observed.get('complete'))
             if result['success']:
                 result.update(action='BUILD_COMPLETE' if observed['complete'] else 'BUILD_PARTIAL',
