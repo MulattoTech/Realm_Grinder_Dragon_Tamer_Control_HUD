@@ -45,6 +45,7 @@ from src.wiki_data import (
 )
 from src.save_reader import extract_save_string_from_sol
 from src.live_state import get_live_game_state
+from src.observation_cache import ObservationCache
 from src.telemetry_presenter import telemetry_banner,dragon_stage_views,mana_bar
 from src.runtime_safety import input_allowed,require_interactive_session
 from src.strategy_rules import PATH_CHOICES,selected_route
@@ -169,12 +170,23 @@ class ModernDragonTrackerApp:
         self.worker_thread = threading.Thread(target=self.bot.run_loop, daemon=True)
         self.worker_thread.start()
 
+        self._closing = False
+        self.observation_cache = ObservationCache(
+            reader=lambda: get_live_game_state(), poll_interval=2.5, stale_after=7.5
+        )
+        self.observation_cache.start()
+
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.root.after(100, self.update_loop)
         self.root.after(250, self.update_mana_bar)
 
 
     def on_close(self):
+        self._closing = True
+        try:
+            self.observation_cache.close()
+        except Exception:
+            pass
         try:
             self.root.destroy()
         except Exception:
@@ -1308,53 +1320,81 @@ class ModernDragonTrackerApp:
         return True
 
     def update_mana_bar(self):
-        """Refresh the live volatile mana bar at 250ms intervals without blocking the UI thread."""
+        """Refresh the mana bar from the latest completed background observation."""
         try:
-            if self.root.winfo_exists():
-                st = get_live_game_state()
+            if getattr(self, '_closing', False) or not self.root.winfo_exists():
+                return
+            snapshot = self.observation_cache.snapshot()
+            st = snapshot.state
+            if st is None:
+                self.mem_badge.configure(text='[WAIT]', fg=self.c_muted, bg='#0e1520')
+                self.mana_label.configure(
+                    text='Mana: Unknown / Unknown | Regen: Unknown/s', fg=self.c_muted
+                )
+                self.mana_bar_prog['value'] = 0
+                self.mem_source_lbl.configure(
+                    text='Observation pending' if snapshot.reading else 'No observation available',
+                    fg=self.c_muted
+                )
+            else:
                 bar = mana_bar(st)
                 health = st.get('telemetry', {}).get('memory_provider_health', 'UNKNOWN')
-                is_live = bar['is_live'] and health == 'HEALTHY'
+                age = snapshot.age_seconds
+                stale = age is None or age > self.observation_cache.stale_after
+                cached_error = snapshot.error is not None
+                is_live = bar['is_live'] and health == 'HEALTHY' and not stale and not cached_error
 
                 # [MEM] badge color: cyan-glow when live memory active, muted otherwise
                 badge_color = '#00e5c0' if is_live else self.c_muted
                 badge_bg = '#0a2020' if is_live else '#0e1520'
-                badge_text = '[MEM]' if is_live else '[SAV]'
+                badge_text = '[MEM]' if is_live else ('[STALE]' if stale or cached_error else '[SAV]')
                 self.mem_badge.configure(text=badge_text, fg=badge_color, bg=badge_bg)
 
                 # Mana label and progress bar
                 cur = bar['current_str']
                 mx = bar['maximum_str']
                 regen = bar['regen_str']
-                saturating = (bar.get('fill_pct') or 0) >= 95.0
+                saturating = is_live and (bar.get('fill_pct') or 0) >= 95.0
                 label_color = '#ff8c42' if saturating else (self.c_cyan if is_live else self.c_muted)
+                age_text = f' · stale {age:.0f}s' if stale and age is not None else (' · cached' if cached_error else '')
                 self.mana_label.configure(
-                    text=f'Mana: {cur} / {mx} | Regen: {regen}/s',
+                    text=f'Mana: {cur} / {mx} | Regen: {regen}/s{age_text}',
                     fg=label_color
                 )
                 fill = bar['fill_pct'] if bar['fill_pct'] is not None else 0
                 self.mana_bar_prog['value'] = fill
 
                 # Source badge on right
-                self.mem_source_lbl.configure(text=bar['source_badge'], fg=badge_color)
+                source_text = bar['source_badge']
+                if stale:
+                    source_text += f' · stale {age:.0f}s' if age is not None else ' · stale'
+                elif cached_error:
+                    source_text += ' · last read failed'
+                self.mem_source_lbl.configure(text=source_text, fg=badge_color)
         except Exception:
             pass
         finally:
             try:
-                if self.root.winfo_exists():
+                if not getattr(self, '_closing', False) and self.root.winfo_exists():
                     self.root.after(250, self.update_mana_bar)
             except Exception:
                 pass
 
     def action_force_refresh(self):
+        self.observation_cache.request_refresh()
         self.update_state()
-        self.set_feedback("Live save state refreshed from disk.")
+        self.set_feedback("Requested a fresh observation; the HUD will update when it completes.")
 
 
 
     def update_state(self):
         try:
-            st = get_live_game_state()
+            if getattr(self, '_closing', False):
+                return
+            snapshot = self.observation_cache.snapshot()
+            st = snapshot.state
+            if st is None:
+                return
             r = st["reincarnation"]
             gems = st["gems"]
             coins = st["coins"]
@@ -1385,7 +1425,12 @@ class ModernDragonTrackerApp:
             self.overall_eta_lbl.configure(text=f"ETA: {etas['total_eta']}")
             self.overall_target_lbl.configure(text=etas['target_completion_date'] or "")
             self.r46_eta_badge.configure(text=f"R46 ETA: ~{etas['r46_eta']}")
-            self.hf_lbl.configure(text=telemetry_banner(st,build_status))
+            banner = telemetry_banner(st,build_status)
+            age = snapshot.age_seconds
+            if age is None or age > self.observation_cache.stale_after or snapshot.error:
+                age_text = f'{age:.0f}s' if age is not None else 'unknown age'
+                banner += f'\nHUD observation stale/cached ({age_text}); waiting for a fresh read.'
+            self.hf_lbl.configure(text=banner)
 
             # Dynamic Pause State Sync
             cfg = load_config()
@@ -1572,9 +1617,12 @@ class ModernDragonTrackerApp:
                 pass
 
     def update_loop(self):
+        if getattr(self, '_closing', False):
+            return
         self.update_state()
         self.update_logs()
-        self.root.after(2500, self.update_loop)
+        if not getattr(self, '_closing', False):
+            self.root.after(2500, self.update_loop)
 
 
 def launch_monitor():
